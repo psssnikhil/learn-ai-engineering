@@ -4,7 +4,13 @@ title: Agentic AI
 
 # Agentic AI — One-Stop Guide
 
-Everything you need to design, build, and ship **autonomous AI systems**: single agents, harnesses, tools, and multi-agent orchestration.
+Everything you need to design, build, and ship **autonomous AI systems**.
+
+!!! tip "Dedicated Agent Engineering track"
+    For a structured curriculum on loops, memory, tools, harness, orchestration, observability, and evals — see **[Agent Engineering](../agent-engineering/index.md)**.
+
+!!! tip "2026 skills"
+    Claude Code, skills files, loop engineering → **[AI Engineering 2026](../ai-engineering-2026/index.md)**
 
 ## The agentic stack
 

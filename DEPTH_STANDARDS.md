@@ -40,6 +40,19 @@ All handbook lessons must meet this bar. Start accessible; end at engineer-grade
 - Links to [Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/)
 - `!!! note` / `!!! warning` admonitions for subtle points
 
+## Math formatting (renders on site)
+
+Use **LaTeX delimiters** (MathJax + pymdownx.arithmatex):
+
+| Type | Syntax | Example |
+|------|--------|---------|
+| Inline | `\( ... \)` | `\( \nabla_\theta \mathcal{L} \)` |
+| Block | `\[ ... \]` | `\[ \text{Attention}(Q,K,V) = \text{softmax}(...) V \]` |
+
+Do **not** use bare `$...$` for math — dollar amounts like `$0.04` will break rendering.
+
+Unicode math (`∈ ℝ`) is OK in prose but prefer LaTeX for formulas that need proper layout.
+
 ## Agent ownership (avoid conflicts)
 
 | Agent | Owns |

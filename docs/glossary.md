@@ -32,5 +32,9 @@ Quick definitions with links to handbook modules.
 | **RLHF** | Reinforcement Learning from Human Feedback | [M07](foundations/module-07-large-language-models-llms/index.md) |
 | **Tool use** | LLM calling external functions/APIs | [M11](build/module-11-ai-agents-fundamentals/index.md) |
 | **Trajectory eval** | Scoring full agent run (steps, tools, outcome) | [M19](production/module-19-llm-evaluation-quality/index.md) |
+| **Loop engineering** | Designing inner/outer agent control cycles | [2026 · Loop Engineering](ai-engineering-2026/loop-engineering.md) |
+| **Context engineering** | Curating what enters the context window | [2026 · Context Engineering](ai-engineering-2026/context-engineering.md) |
+| **Skills (SKILL.md)** | Reusable agent instruction files | [2026 · Skills & Rules](ai-engineering-2026/skills-and-rules.md) |
+| **Claude Code** | Agentic terminal coding harness | [2026 · Claude Code](ai-engineering-2026/claude-code.md) |
 | **Transformer** | Architecture based on self-attention | [M06](foundations/module-06-transformers-attention-mechanisms/index.md) |
 | **Vector database** | Store optimized for similarity search on embeddings | [M13](build/module-13-vector-databases-deep-dive/index.md) |

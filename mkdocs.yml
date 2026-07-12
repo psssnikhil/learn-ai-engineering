@@ -37,6 +37,8 @@ extra_css:
   - stylesheets/extra.css
 
 extra_javascript:
+  - javascripts/mathjax-config.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   - javascripts/mermaid-init.js
 
 plugins:
@@ -44,6 +46,8 @@ plugins:
 
 markdown_extensions:
   - admonition
+  - pymdownx.arithmatex:
+      generic: false
   - pymdownx.details
   - pymdownx.superfences:
       custom_fences:
@@ -63,6 +67,21 @@ nav:
   - Home: index.md
   - Getting Started: getting-started.md
   - Learning Path: learning-path.md
+  - Agent Engineering:
+      - Overview: agent-engineering/index.md
+      - The Agent Loop: agent-engineering/01-agent-loop.md
+      - Memory Systems: agent-engineering/02-memory.md
+      - Tools & MCP: agent-engineering/03-tools-and-mcp.md
+      - Harness Engineering: agent-engineering/04-harness-engineering.md
+      - Orchestration: agent-engineering/05-orchestration.md
+      - Observability & Tracing: agent-engineering/06-observability-and-tracing.md
+      - Agent Evals: agent-engineering/07-agent-evals.md
+  - "2026 Skills":
+      - Overview: ai-engineering-2026/index.md
+      - Claude Code: ai-engineering-2026/claude-code.md
+      - Skills & Rules: ai-engineering-2026/skills-and-rules.md
+      - Loop Engineering: ai-engineering-2026/loop-engineering.md
+      - Context Engineering: ai-engineering-2026/context-engineering.md
   - Foundations:
       - foundations/index.md
       - "M00 · GenAI Foundations":

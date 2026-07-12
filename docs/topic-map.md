@@ -77,7 +77,29 @@ flowchart LR
   Obs --> Evals[Evals]
 ```
 
-Deep dive: [Agentic AI hub](agentic-ai/index.md)
+Deep dive: [Agentic AI hub](agentic-ai/index.md) · **[Agent Engineering track](agent-engineering/index.md)**
+
+## Agent engineering (dedicated track)
+
+| Topic | Page |
+|-------|------|
+| Agent loop | [01 · Loop](agent-engineering/01-agent-loop.md) |
+| Memory | [02 · Memory](agent-engineering/02-memory.md) |
+| Tools & MCP | [03 · Tools](agent-engineering/03-tools-and-mcp.md) |
+| Harness engineering | [04 · Harness](agent-engineering/04-harness-engineering.md) |
+| Orchestration | [05 · Orchestration](agent-engineering/05-orchestration.md) |
+| Observability & tracing | [06 · Observability](agent-engineering/06-observability-and-tracing.md) |
+| Agent evals | [07 · Evals](agent-engineering/07-agent-evals.md) |
+
+## 2026 skills
+
+| Topic | Page |
+|-------|------|
+| Overview | [AI Engineering 2026](ai-engineering-2026/index.md) |
+| Claude Code | [claude-code.md](ai-engineering-2026/claude-code.md) |
+| Skills & rules | [skills-and-rules.md](ai-engineering-2026/skills-and-rules.md) |
+| Loop engineering | [loop-engineering.md](ai-engineering-2026/loop-engineering.md) |
+| Context engineering | [context-engineering.md](ai-engineering-2026/context-engineering.md) |
 
 ## Deep Dives (mathematical foundations)
 
@@ -89,6 +111,7 @@ Go beyond lesson summaries for full derivations:
 
 See [Deep Dives hub](deep-dives/index.md).
 
+## Visual references (open educational resources)
 
 | Diagram | Source | Topic |
 |---------|--------|-------|

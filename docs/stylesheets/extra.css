@@ -205,6 +205,51 @@
   white-space: nowrap;
 }
 
+/* ── Math / formulas (MathJax + arithmatex) ─────────────── */
+.arithmatex {
+  overflow-x: auto;
+}
+
+.md-typeset .arithmatex mjx-container {
+  margin: 0.6em 0;
+}
+
+.md-typeset mjx-container[display="true"] {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.4em 0;
+}
+
+.md-typeset mjx-container[display="true"] > mjx-math {
+  text-align: center;
+}
+
+/* Inline math — don't break line awkwardly */
+.md-typeset mjx-container:not([display="true"]) {
+  margin: 0 0.1em;
+}
+
+/* Code + math readability */
+.md-typeset code {
+  font-size: 0.85em;
+}
+
+.md-typeset pre code {
+  font-size: 0.82em;
+  line-height: 1.5;
+}
+
+.md-typeset table {
+  display: table;
+  width: 100%;
+  font-size: 0.85rem;
+}
+
+.md-typeset blockquote {
+  border-left: 4px solid var(--md-primary-fg-color--light);
+  color: var(--md-default-fg-color--light);
+}
+
 /* ── Search highlight ───────────────────────────────────── */
 .md-search-result mark {
   background: rgba(var(--md-primary-fg-color--rgb), 0.15);

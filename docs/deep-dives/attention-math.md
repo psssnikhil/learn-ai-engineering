@@ -172,7 +172,9 @@ most relevant to query `i` get the highest weights.
 
 ### Full Formula
 
-$$\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{Q K^T}{\sqrt{d_k}}\right) V$$
+\[
+\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{Q K^T}{\sqrt{d_k}}\right) V
+\]
 
 Shape summary for a sequence of length `n = 4`, `d_k = d_v = 3`:
 

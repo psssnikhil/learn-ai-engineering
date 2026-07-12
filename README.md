@@ -74,6 +74,8 @@ Full order: [Learning Path](docs/learning-path.md) · Find any topic: [Topic Map
 
 | Page | Purpose |
 |------|---------|
+| [Agent Engineering](docs/agent-engineering/index.md) | **Dedicated** loops, memory, harness, orchestration, observability, evals |
+| [2026 Skills](docs/ai-engineering-2026/index.md) | Claude Code, skills, loop engineering, context engineering |
 | [Getting Started](docs/getting-started.md) | Setup, navigation, OSS inspiration |
 | [Topic Map](docs/topic-map.md) | Concept → module lookup |
 | [Agentic AI](docs/agentic-ai/index.md) | Agents, harness, tools, orchestration |
