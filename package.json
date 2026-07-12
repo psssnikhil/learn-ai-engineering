@@ -1,0 +1,16 @@
+{
+  "name": "learn-ai-engineering",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AI Engineering Handbook — open-source learning knowledge base",
+  "scripts": {
+    "migrate": "node scripts/migrate-from-platform.mjs",
+    "extract-resources": "node scripts/extract-resources.mjs",
+    "docs:serve": "mkdocs serve",
+    "docs:build": "mkdocs build"
+  },
+  "devDependencies": {
+    "gray-matter": "^4.0.3"
+  }
+}
