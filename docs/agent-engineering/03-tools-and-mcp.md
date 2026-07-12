@@ -95,3 +95,13 @@ Full lesson: [M18 · MCP](../build/module-18-agent-harness-tools-runtime/lessons
 | Credential leakage | Tools use server-side secrets, never return keys |
 
 **Next:** [Harness Engineering →](04-harness-engineering.md)
+
+## Related papers
+
+| Paper | Link |
+|-------|------|
+| Toolformer — language models using tools | [arXiv:2302.04761](https://arxiv.org/abs/2302.04761) |
+| Gorilla — LLMs connected to massive APIs | [arXiv:2305.15334](https://arxiv.org/abs/2305.15334) |
+| ReAct — reasoning before tool calls | [arXiv:2210.03629](https://arxiv.org/abs/2210.03629) |
+
+Also: [Model Context Protocol spec](https://modelcontextprotocol.io/) · [Full list →](related-papers.md)

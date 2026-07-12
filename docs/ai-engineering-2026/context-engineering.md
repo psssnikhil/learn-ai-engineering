@@ -108,3 +108,13 @@ JSON status blocks beat paragraphs for machine consumption:
 - Simon Willison: [context engineering](https://simonwillison.net/) (ongoing essays)
 
 **Back to:** [2026 Skills overview](index.md)
+
+## Related papers
+
+| Paper | Link |
+|-------|------|
+| Lost in the Middle — long context degradation | [arXiv:2307.03172](https://arxiv.org/abs/2307.03172) |
+| MemGPT — virtual memory for context management | [arXiv:2310.08560](https://arxiv.org/abs/2310.08560) |
+| RAG — retrieval-augmented generation | [arXiv:2005.11401](https://arxiv.org/abs/2005.11401) |
+
+[Full list →](related-papers.md)

@@ -121,3 +121,13 @@ User request
 - Framework choice matters less than harness discipline
 
 **Next:** [Orchestration →](05-orchestration.md)
+
+## Related papers
+
+| Paper | Link |
+|-------|------|
+| SWE-agent — agent-computer interfaces | [arXiv:2405.15703](https://arxiv.org/abs/2405.15703) |
+| Voyager — skill library + harness loop | [arXiv:2305.16291](https://arxiv.org/abs/2305.16291) |
+| Reflexion — verbal RL in the loop | [arXiv:2303.11366](https://arxiv.org/abs/2303.11366) |
+
+[Full list →](related-papers.md)

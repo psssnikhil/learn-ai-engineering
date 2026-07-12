@@ -82,3 +82,14 @@ Full lessons:
 - Attach eval scores to traces for closed-loop improvement
 
 **Back to:** [Agent Engineering overview](index.md)
+
+## Related papers
+
+| Paper | Link |
+|-------|------|
+| AgentBench — agent capability benchmark | [arXiv:2308.03688](https://arxiv.org/abs/2308.03688) |
+| τ-bench — tool-agent-user interaction | [arXiv:2406.12045](https://arxiv.org/abs/2406.12045) |
+| WebArena — real-world web agent tasks | [arXiv:2307.13854](https://arxiv.org/abs/2307.13854) |
+| Judging LLM-as-a-Judge (MT-Bench) | [arXiv:2306.05685](https://arxiv.org/abs/2306.05685) |
+
+[Full list →](related-papers.md)

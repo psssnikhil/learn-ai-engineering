@@ -75,3 +75,13 @@ When delegating, pass structured context — not raw chat:
 Full module: [M12 · Multi-Agent Systems](../build/module-12-multi-agent-systems/index.md)
 
 **Next:** [Observability & Tracing →](06-observability-and-tracing.md)
+
+## Related papers
+
+| Paper | Link |
+|-------|------|
+| AutoGen — multi-agent conversation | [arXiv:2308.08155](https://arxiv.org/abs/2308.08155) |
+| MetaGPT — role-based agent teams | [arXiv:2308.00352](https://arxiv.org/abs/2308.00352) |
+| Generative Agents — multi-agent coordination | [arXiv:2304.03442](https://arxiv.org/abs/2304.03442) |
+
+[Full list →](related-papers.md)

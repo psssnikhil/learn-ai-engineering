@@ -106,3 +106,13 @@ Claude Code can spawn **subagents** for parallel research or isolated tasks — 
 - [M18 · Agent Harness](../build/module-18-agent-harness-tools-runtime/index.md)
 
 **Next:** [Skills & Rules →](skills-and-rules.md)
+
+## Related papers
+
+| Paper | Link |
+|-------|------|
+| SWE-agent — agent-computer interfaces for coding | [arXiv:2405.15703](https://arxiv.org/abs/2405.15703) |
+| SWE-bench — real GitHub issue benchmark | [arXiv:2310.06770](https://arxiv.org/abs/2310.06770) |
+| ReAct — iterative reason + act | [arXiv:2210.03629](https://arxiv.org/abs/2210.03629) |
+
+[Full list →](related-papers.md)

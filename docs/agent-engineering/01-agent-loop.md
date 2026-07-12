@@ -100,3 +100,14 @@ def agent_loop(goal: str, llm, tools: dict) -> str:
 - Every production agent needs observability on each loop iteration
 
 **Next:** [Memory Systems →](02-memory.md)
+
+## Related papers
+
+| Paper | Link |
+|-------|------|
+| ReAct — reason + act loop | [arXiv:2210.03629](https://arxiv.org/abs/2210.03629) |
+| Toolformer — self-taught tool use | [arXiv:2302.04761](https://arxiv.org/abs/2302.04761) |
+| Reflexion — learn from failure in-session | [arXiv:2303.11366](https://arxiv.org/abs/2303.11366) |
+| Chain-of-Thought prompting | [arXiv:2201.11903](https://arxiv.org/abs/2201.11903) |
+
+[Full list →](related-papers.md)

@@ -103,3 +103,14 @@ Implementation: [M19 · CI/CD for AI Quality](../production/module-19-llm-evalua
 - [M18 · Agent Loop and State](../build/module-18-agent-harness-tools-runtime/lessons/02-agent-loop-and-state.md)
 
 **Next:** [Context Engineering →](context-engineering.md)
+
+## Related papers
+
+| Paper | Link |
+|-------|------|
+| Reflexion — verbal reinforcement in agent loops | [arXiv:2303.11366](https://arxiv.org/abs/2303.11366) |
+| Tree of Thoughts — branching reasoning loops | [arXiv:2305.10601](https://arxiv.org/abs/2305.10601) |
+| Scaling LLM Test-Time Compute | [arXiv:2408.03314](https://arxiv.org/abs/2408.03314) |
+| DSPy — outer-loop pipeline optimization | [arXiv:2310.03714](https://arxiv.org/abs/2310.03714) |
+
+[Full list →](related-papers.md)

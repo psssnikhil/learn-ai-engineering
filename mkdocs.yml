@@ -76,12 +76,14 @@ nav:
       - Orchestration: agent-engineering/05-orchestration.md
       - Observability & Tracing: agent-engineering/06-observability-and-tracing.md
       - Agent Evals: agent-engineering/07-agent-evals.md
+      - Related Papers: agent-engineering/related-papers.md
   - "2026 Skills":
       - Overview: ai-engineering-2026/index.md
       - Claude Code: ai-engineering-2026/claude-code.md
       - Skills & Rules: ai-engineering-2026/skills-and-rules.md
       - Loop Engineering: ai-engineering-2026/loop-engineering.md
       - Context Engineering: ai-engineering-2026/context-engineering.md
+      - Related Papers: ai-engineering-2026/related-papers.md
   - Foundations:
       - foundations/index.md
       - "M00 · GenAI Foundations":

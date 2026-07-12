@@ -77,3 +77,12 @@ Full lessons:
 5. Fix prompt, tool, or permission — add regression eval
 
 **Next:** [Agent Evals →](07-agent-evals.md)
+
+## Related papers
+
+| Paper | Link |
+|-------|------|
+| AgentBench — evaluating LLMs as agents | [arXiv:2308.03688](https://arxiv.org/abs/2308.03688) |
+| WebArena — realistic web agent environment | [arXiv:2307.13854](https://arxiv.org/abs/2307.13854) |
+
+Also: [OpenTelemetry GenAI conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/) · [Full list →](related-papers.md)

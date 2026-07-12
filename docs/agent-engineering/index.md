@@ -86,3 +86,4 @@ Inspired by [Awesome Harness Engineering](https://github.com/ai-boost/awesome-ha
 - [2026 Skills](../ai-engineering-2026/index.md) — Claude Code, skills, loop engineering
 - [Evals & Observability hub](../evals-observability/index.md)
 - [Glossary — harness, MCP, trajectory eval](../glossary.md)
+- [Related papers](related-papers.md) — ReAct, Toolformer, MemGPT, AgentBench, and more

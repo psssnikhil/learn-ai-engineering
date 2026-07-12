@@ -97,3 +97,13 @@ This repo includes authoring guidance in [DEPTH_STANDARDS.md](https://github.com
 | Secrets in skill files | Never — use env vars |
 
 **Next:** [Loop Engineering →](loop-engineering.md)
+
+## Related papers
+
+| Paper | Link |
+|-------|------|
+| Voyager — growing a skill library from experience | [arXiv:2305.16291](https://arxiv.org/abs/2305.16291) |
+| LLMs as Tool Makers — agents creating reusable tools | [arXiv:2305.17126](https://arxiv.org/abs/2305.17126) |
+| DSPy — self-improving prompt pipelines | [arXiv:2310.03714](https://arxiv.org/abs/2310.03714) |
+
+[Full list →](related-papers.md)

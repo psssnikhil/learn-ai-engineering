@@ -120,3 +120,14 @@ Update via tool: `update_user_profile(field, value)` with human-readable audit l
 - Multi-agent systems need clear memory ownership
 
 **Next:** [Tools & MCP →](03-tools-and-mcp.md) · Full lesson: [M11 · Agent Memory](../build/module-11-ai-agents-fundamentals/lessons/05-Agent-Memory.md)
+
+## Related papers
+
+| Paper | Link |
+|-------|------|
+| MemGPT — virtual context / memory paging | [arXiv:2310.08560](https://arxiv.org/abs/2310.08560) |
+| Generative Agents — long-term agent memory | [arXiv:2304.03442](https://arxiv.org/abs/2304.03442) |
+| RAG — retrieval-augmented generation | [arXiv:2005.11401](https://arxiv.org/abs/2005.11401) |
+| Lost in the Middle — context placement | [arXiv:2307.03172](https://arxiv.org/abs/2307.03172) |
+
+[Full list →](related-papers.md)

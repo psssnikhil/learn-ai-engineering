@@ -49,5 +49,6 @@ flowchart LR
 - [Awesome Harness Engineering](https://github.com/ai-boost/awesome-harness-engineering)
 - [Anthropic Claude Code docs](https://docs.anthropic.com/en/docs/claude-code)
 - [Cursor Skills](https://cursor.com/docs/context/skills) (ecosystem)
+- [Related papers](related-papers.md) — DeepSeek-R1, SWE-agent, DSPy, Lost in the Middle, and more
 
 **Start:** [Claude Code →](claude-code.md)
