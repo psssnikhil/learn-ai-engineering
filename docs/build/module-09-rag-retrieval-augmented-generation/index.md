@@ -8,8 +8,8 @@ Master RAG systems from basics to advanced agentic patterns for building knowled
 |---|---|
 | **Module ID** | `module-09` |
 | **Phase** | Build |
-| **Lessons** | 10 |
-| **Est. hours** | ~15h |
+| **Lessons** | 11 |
+| **Est. hours** | ~16h |
 ## Lessons
 | # | Lesson | Duration | Level |
 |---|--------|----------|-------|
@@ -23,6 +23,7 @@ Master RAG systems from basics to advanced agentic patterns for building knowled
 | 8 | [RAG Evaluation Metrics](lessons/08-RAG-Evaluation-Metrics.md) | 40 min | advanced |
 | 9 | [Agentic RAG](lessons/09-Agentic-RAG.md) | 45 min | advanced |
 | 10 | [RAG in Production](lessons/10-RAG-in-Production.md) | 50 min | advanced |
+| 11 | [Graph RAG and Knowledge Graphs](lessons/11-graph-rag-and-knowledge-graphs.md) | 60 min | advanced |
 
 
 **Start here:** [Introduction to RAG Systems](lessons/01-introduction-to-rag.md)

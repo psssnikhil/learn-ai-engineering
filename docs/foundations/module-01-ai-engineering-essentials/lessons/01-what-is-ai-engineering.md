@@ -1,164 +1,245 @@
 ---
 title: What is AI Engineering?
-description: 'Understand the role, evolution, and importance of AI Engineering'
-duration: 20 min
+description: >-
+  Understand the discipline of AI engineering — what it is, how it differs from
+  ML engineering and data science, what the modern AI stack looks like, and why
+  the skills you build in this curriculum transfer across the rapidly evolving landscape
+duration: 45 min
 difficulty: beginner
 has_code: false
 module: module-01
-youtube: 'https://www.youtube.com/watch?v=JMUxmLyrhSk'
-objectives:
-  - Understand what AI Engineering is
-  - Know the difference between AI and ML Engineering
-  - Identify the modern AI stack layers
-  - List what you'll build in this course
 ---
 # What is AI Engineering?
 
-![AI Engineering](https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800)
+## Prerequisites
 
-## The AI Revolution
+- [Module 00: GenAI Foundations](../../module-00-genai-foundations-from-nlp-to-transformers/lessons/01-prerequisites.md) — or general software engineering background
 
-We're living through the biggest technological shift since the internet. AI is not just another technology trend—it's fundamentally changing how we build software.
+## What You'll Learn
 
-## What is AI Engineering?
-
-**AI Engineering** is the discipline of building production applications powered by AI models, without training the models yourself.
-
-Think of it this way:
-- **ML Engineer**: Trains models (like training a dog)
-- **AI Engineer**: Uses trained models to build applications (like using a trained dog to help people)
-
-## The Evolution
-
-### 2010-2022: ML Engineering Era
-- Train your own models
-- Needs tons of data
-- Requires ML expertise
-- Months to production
-
-### 2023-Present: AI Engineering Era
-- Use pre-trained models (GPT, Claude)
-- No training data needed
-- API calls instead of model training
-- Days/weeks to production
-
-## AI Engineering vs ML Engineering vs Data Science
-
-| Role | AI Engineer | ML Engineer | Data Scientist |
-|------|-------------|-------------|----------------|
-| **Focus** | Building apps | Training models | Insights from data |
-| **Skills** | APIs, RAG, Agents | PyTorch, Training | Statistics, Analysis |
-| **Models** | Pre-trained | Custom-trained | Pre-trained |
-| **Output** | Production apps | Trained models | Reports, dashboards |
-| **Time to Value** | Days-weeks | Months | Varies |
-| **Typical Salary** | $120k-$250k | $130k-$280k | $100k-$200k |
-
-## The Modern AI Stack
-
-```
-┌─────────────────────────────────────┐
-│   YOUR APPLICATION                  │
-│   What users interact with          │
-│   - Web apps, Mobile apps, APIs     │
-└───────────────┬─────────────────────┘
-                │
-┌───────────────▼─────────────────────┐
-│   ORCHESTRATION LAYER               │
-│   How you control AI                │
-│   - LangChain, LlamaIndex, Custom   │
-└───────────────┬─────────────────────┘
-                │
-┌───────────────▼─────────────────────┐
-│   LLM PROVIDERS                     │
-│   The AI brain                      │
-│   - OpenAI (GPT-4.1, o3, o4-mini)   │
-│   - Anthropic (Claude 4 Opus/Sonnet)│
-│   - Google (Gemini 2.5)             │
-│   - Open source (Llama 4, Mistral)  │
-└───────────────┬─────────────────────┘
-                │
-┌───────────────▼─────────────────────┐
-│   DATA LAYER                        │
-│   Where information lives           │
-│   - Vector DBs (Pinecone, Chroma)   │
-│   - Traditional DBs (PostgreSQL)    │
-│   - Cache (Redis)                   │
-└─────────────────────────────────────┘
-```
-
-## What You'll Build in This Course
-
-By the end of this program, you'll have built:
-
-### 1. RAG Systems (Weeks 4-6)
-Chat with your documents, PDFs, websites. Think "ChatGPT for your company's knowledge base."
-
-**Real-world examples:**
-- Customer support bot that knows all your docs
-- Internal knowledge search
-- Legal document Q&A
-
-### 2. AI Agents (Weeks 7-9)
-Autonomous systems that use tools and make decisions.
-
-**Real-world examples:**
-- Research assistant that browses web + summarizes
-- Code review bot
-- Data analysis agent
-
-### 3. Multi-Agent Systems (Week 8)
-Teams of specialized AI agents working together.
-
-**Real-world examples:**
-- Content creation pipeline (researcher + writer + editor)
-- Complex task decomposition
-- Agent orchestration
-
-## Why This Matters NOW
-
-### Market Demand 📈
-- AI Engineer = One of the fastest-growing tech roles in 2025-2026
-- Explosive growth in job postings across industries
-- Companies building AI teams at unprecedented scale
-
-### High Salaries 💰
-- Junior: $110k - $160k
-- Mid-level: $160k - $220k
-- Senior: $220k - $400k+
-
-### Future-Proof 🔮
-- AI is transforming every industry
-- These skills transfer across domains
-- You're building the automation, not being replaced by it
-
-## Ready to Start?
-
-In the next lesson, you'll:
-- Set up your development environment
-- Get API keys
-- Make your first AI API call
-- Build a working chatbot
-
-**Let's begin your AI engineering journey!** 🚀
+| Objective | Why It Matters |
+|-----------|---------------|
+| Define AI engineering precisely | The discipline is new; many job descriptions conflate it with ML and data science |
+| Understand the pre-trained model paradigm shift | This explains why the skills needed changed dramatically in 2022 |
+| Map the modern AI engineering stack | Helps you choose the right tool for each layer of an AI application |
+| Identify what skills transfer across model generations | The landscape changes fast; transferable understanding is the durable asset |
 
 ---
 
-## 📹 Recommended Videos
+## A Precise Definition
 
-- [What is AI Engineering?](https://www.youtube.com/watch?v=JMUxmLyrhSk) — Fireship overview of AI engineering as a career
-- [AI Engineer vs ML Engineer](https://www.youtube.com/watch?v=JlMBHnGqCSY) — Key differences explained
-- [The AI Engineering Stack Explained](https://www.youtube.com/watch?v=rvGTJq0oLXE) — Full walkthrough of the modern AI stack
+**AI Engineering** is the discipline of building reliable, observable, cost-effective software systems that use AI models as components — typically large pre-trained models accessed via API.
+
+The key word is *component*. In AI engineering, a language model (or image model, or embedding model) is a building block — like a database or a message queue — that you integrate, evaluate, and operate. You are not the person who trained the model.
+
+This distinguishes AI engineering from:
+
+- **ML Engineering**: Trains, evaluates, and deploys custom models. Involves PyTorch, data pipelines, distributed training, model optimization. Main output: a trained model.
+- **Data Science**: Extracts insights from data. Involves statistics, visualization, hypothesis testing. Main output: analysis and recommendations.
+- **AI Engineering**: Builds applications on top of pre-trained models. Involves APIs, prompt design, retrieval systems, evaluation, and production engineering. Main output: a working software system.
+
+| Aspect | AI Engineer | ML Engineer | Data Scientist |
+|--------|-------------|-------------|----------------|
+| **Core question** | How do I build a reliable system with this model? | How do I train a better model? | What does this data tell us? |
+| **Primary tools** | APIs, vector DBs, orchestration frameworks | PyTorch, TensorFlow, HPC clusters | Python, SQL, Jupyter |
+| **Model relationship** | Consumer of pre-trained models | Producer of models | Consumer of pre-trained models |
+| **Evaluation focus** | End-to-end system quality, latency, cost | Model metrics (loss, accuracy, perplexity) | Statistical significance, business KPIs |
+| **Data requirement** | Moderate (for evaluation and retrieval) | Large (for training) | Variable |
+
+!!! note "The Lines Are Blurry"
+    In practice, many teams need overlap. A startup AI engineer may fine-tune models occasionally. An ML engineer may consume APIs for rapid prototyping. The distinction is useful for understanding skill focus, not as a rigid boundary.
 
 ---
 
-## 📚 Additional Resources
+## Why 2022 Changed the Skill Requirements
 
-### Articles & Blogs:
-- [What is AI Engineering?](https://www.latent.space/p/ai-engineer) — Latent Space deep dive on the AI engineer role
-- [The Rise of the AI Engineer](https://www.oreilly.com/radar/the-rise-of-the-ai-engineer/) — O'Reilly analysis of the emerging role
-- [AI Engineering vs ML Engineering](https://huyenchip.com/2024/07/25/genai-platform.html) — Chip Huyen on building GenAI platforms
+Before 2022, building AI systems required training your own models. This meant:
+- Collecting and labeling thousands to millions of domain-specific examples
+- Deep ML expertise to design model architectures and training pipelines
+- Significant compute budgets
+- 6–18 month development cycles before a working prototype
 
-### Documentation:
-- [OpenAI Platform Docs](https://platform.openai.com/docs) — Official OpenAI API documentation
-- [Anthropic Docs](https://docs.anthropic.com/) — Claude API documentation
-- [Google AI Studio](https://ai.google.dev/) — Gemini API getting started
+After GPT-3 became widely available via API (2021) and especially after ChatGPT demonstrated the general-public viability of instruction-following models (2022), the economics changed:
+
+```
+Before 2022 (ML-centric):
+  Problem: "Classify customer support tickets by category"
+  Solution: Collect 50K labeled tickets → fine-tune BERT → deploy model service
+  Timeline: 3-6 months
+  Cost: significant
+
+After 2022 (AI engineering):
+  Problem: "Classify customer support tickets by category"
+  Solution: Write a clear classification prompt → call GPT-4o-mini API → evaluate
+  Timeline: 1-2 days
+  Cost: pennies per thousand tickets at current API pricing
+```
+
+This shift did not eliminate ML engineering — training custom models still produces better results for specific domains with sufficient data. But it changed *when* AI engineering (via APIs) is the right first approach.
+
+---
+
+## The Modern AI Engineering Stack
+
+Understanding the stack helps you reason about where a problem lives and what tools to reach for:
+
+```
+┌──────────────────────────────────────────────────────┐
+│  APPLICATION LAYER                                    │
+│  Your product: web app, mobile app, API, CLI         │
+│  Handles: UX, session management, business logic     │
+└───────────────────────────┬──────────────────────────┘
+                            │
+┌───────────────────────────▼──────────────────────────┐
+│  ORCHESTRATION LAYER                                  │
+│  Controls: LLM calls, tool use, multi-step workflows  │
+│  Examples: LangChain, LlamaIndex, custom Python code  │
+│  Patterns: RAG, agents, chain-of-thought, routing    │
+└───────────────────────────┬──────────────────────────┘
+                            │
+┌───────────────────────────▼──────────────────────────┐
+│  MODEL LAYER                                          │
+│  The intelligence: text, code, vision, embeddings    │
+│  Examples:                                            │
+│    OpenAI: GPT-4o, GPT-4o-mini, text-embedding-3    │
+│    Anthropic: Claude 4 Opus/Sonnet/Haiku             │
+│    Google: Gemini 2.5 Pro/Flash                      │
+│    Open weights: LLaMA 3, Mistral, Qwen              │
+└───────────────────────────┬──────────────────────────┘
+                            │
+┌───────────────────────────▼──────────────────────────┐
+│  DATA LAYER                                           │
+│  Where information lives and how it is retrieved     │
+│  Vector databases: Pinecone, Chroma, pgvector        │
+│  Traditional: PostgreSQL, Redis, S3                  │
+│  Streaming: Kafka, Kinesis (for real-time events)    │
+└──────────────────────────────────────────────────────┘
+```
+
+### What AI Engineers Own
+
+You will typically design and build:
+- **Prompt templates**: how to structure inputs to the model
+- **Retrieval pipelines**: how to find relevant context (RAG)
+- **Agent loops**: how the model decides what tools to use
+- **Evaluation harnesses**: how to measure if the system is working
+- **Observability**: logging, cost tracking, latency monitoring
+- **Fallback logic**: what to do when the model fails or returns poor output
+
+You will typically *not* own:
+- The model's weights
+- The model's training process
+- The hosting infrastructure (unless self-hosting open weights)
+
+---
+
+## What You Will Build in This Curriculum
+
+By the end of this program, you will have built production-grade versions of:
+
+**RAG Systems (Modules 3–5):** Embed a document corpus, store embeddings in a vector database, retrieve relevant chunks at query time, and feed them into an LLM prompt. This is the pattern behind document Q&A, internal knowledge search, and customer support bots.
+
+**AI Agents (Modules 6–8):** Systems where the model decides which tools to call, observes the results, and continues until it has an answer. You will build both single-agent and multi-agent architectures.
+
+**Evaluation Pipelines (Module 9):** Systematic ways to measure system quality. The gap between a working demo and a production system is almost always an evaluation gap — you cannot improve what you do not measure.
+
+**Production Deployment (Module 10):** Cost optimization, observability, rate limiting, graceful degradation, and latency management.
+
+---
+
+## Why Understanding Foundations Matters
+
+You might wonder: "If I'm just calling APIs, why did I spend a module on Transformer internals?"
+
+Three reasons:
+
+**Debugging**: When a model gives wrong answers, you need to understand whether the issue is in the prompt (model has the information but is guided wrong), retrieval (model does not have the right context), or model capability (the task exceeds what the model can do). Knowing how attention and in-context learning work helps you diagnose this.
+
+**Informed design**: Understanding that context window has O(n²) cost means you know why chunking strategies matter. Understanding that models are probabilistic next-token predictors means you know why few-shot examples work and why deterministic-seeming prompts sometimes fail.
+
+**Transferability**: Models change rapidly. The API you use today may be deprecated in 18 months. The underlying architecture and training paradigm — which you now understand — is far more stable. An engineer who understands why attention works will adapt to new model families faster than one who only knows how to call a specific API.
+
+---
+
+## The Evaluation-First Mindset
+
+The most important mindset shift for AI engineering:
+
+> **Build your evaluation harness before you build your system.**
+
+In traditional software engineering, you write unit tests before or alongside code. In AI engineering, you need something analogous: a set of test cases with known correct behavior that you can run against your system.
+
+Without this, you are flying blind. You cannot tell if a prompt change made things better or worse. You cannot compare model versions. You cannot catch regressions.
+
+```python
+# A minimal evaluation setup for a document Q&A system
+eval_cases = [
+    {
+        "question": "What is the company's refund policy?",
+        "expected_answer_contains": "30 days",
+        "document": "returns_policy.pdf",
+    },
+    {
+        "question": "Who is the CEO?",
+        "expected_answer_contains": "Jane Smith",
+        "document": "about_us.pdf",
+    },
+]
+
+def evaluate_rag_system(system, eval_cases):
+    results = []
+    for case in eval_cases:
+        answer = system.query(case["question"], case["document"])
+        passed = case["expected_answer_contains"].lower() in answer.lower()
+        results.append({"passed": passed, "answer": answer, "case": case})
+    return results
+```
+
+This mindset — evaluation first, then build — is what separates AI engineers who produce reliable systems from those who produce impressive demos.
+
+---
+
+## Edge Cases and Misconceptions
+
+**"AI engineering is just prompt engineering."** Prompt design is one component. Production AI engineering also involves retrieval architecture, evaluation design, cost management, observability, latency optimization, and integration with existing systems. Most of the engineering surface area is not in the prompt.
+
+**"Better model = better system."** Not necessarily. A well-designed RAG pipeline with GPT-4o-mini often outperforms a poor RAG pipeline with GPT-4o. The retrieval quality, prompt structure, and evaluation rigor matter at least as much as model quality.
+
+**"Open-source models will always be behind proprietary ones."** This was true in 2020. By 2024, open models like LLaMA 3 70B are competitive with GPT-3.5-class models. The right model choice depends on cost, latency, privacy requirements, and the specific task — not just raw capability.
+
+**"API rate limits are a minor inconvenience."** At production scale, rate limiting is a systems design problem. A document processing pipeline that hits rate limits every thousand requests needs exponential backoff, token bucket algorithms, and possibly multiple provider accounts.
+
+---
+
+## Production Connection
+
+The skills in this module directly apply to production systems:
+
+| Skill | Where It Appears |
+|-------|-----------------|
+| Stack understanding | Architecture decisions: which layer handles what |
+| Evaluation mindset | CI/CD for AI: blocking deploys on quality regression |
+| Model selection | Cost optimization: choosing the cheapest model adequate for the task |
+| Orchestration | Multi-step workflows: agents, RAG, structured generation |
+
+---
+
+## Key Takeaways
+
+- AI engineering is building software systems with pre-trained models as components — distinct from training models (ML engineering) or analyzing data (data science)
+- The 2022 shift to instruction-following models via API dramatically reduced the barrier to building AI-powered systems
+- The modern AI stack has four layers: application, orchestration, model, and data
+- Understanding Transformer internals helps you debug, design better systems, and adapt as the model landscape evolves
+- The most important mindset shift: build your evaluation harness before building the system
+
+---
+
+## Further Reading
+
+- [Chip Huyen: AI Engineering](https://huyenchip.com/2024/07/25/genai-platform.html) — practical overview of the full GenAI platform engineering stack
+- [Latent Space: The AI Engineer](https://www.latent.space/p/ai-engineer) — the original essay defining the AI engineer role
+- [Simon Willison's AI Notes](https://simonwillison.net/tags/ai/) — practical, engineering-focused observations on working with LLMs in production
+
+---
+
+**Next:** [Your First AI Application](02-first-ai-application.md)

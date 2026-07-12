@@ -1,625 +1,515 @@
 ---
-title: Gradient Descent - The Learning Algorithm
+title: Gradient Descent — How Neural Networks Learn
 description: >-
-  Discover how neural networks actually learn by following gradients downhill to
-  minimize loss
-duration: 35 min
-difficulty: intermediate
+  Understand gradient descent from first principles, trace a full numerical
+  example from loss to weight update, understand learning rate effects,
+  mini-batches, and the variants used in modern deep learning
+duration: 90 min
+difficulty: beginner
 has_code: true
 module: module-05
-youtube: 'https://www.youtube.com/watch?v=IHZwWFHWa-w'
-objectives:
-  - Understand how gradient descent works
-  - Explain the role of learning rate
-  - Calculate gradients for simple functions
-  - Recognize different variants of gradient descent
 ---
-# Gradient Descent: The Learning Algorithm
+# Gradient Descent — How Neural Networks Learn
 
-![Gradient Descent](https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800)
+## Prerequisites
 
-## The Most Important Algorithm in Deep Learning
+- [Lesson 02: Neurons & Activation Functions](02-neurons-activation-functions.md)
+- [Lesson 03: Loss Functions](03-loss-functions.md)
+- [Module 00 Lesson 02: Math Foundations](../../module-00-genai-foundations-from-nlp-to-transformers/lessons/02-math-foundations.md) — gradients, partial derivatives
 
-**Gradient descent** is how neural networks learn. It's the magic that makes everything work!
+## What You'll Learn
 
-Think of it like hiking down a mountain in fog:
-- You can't see the bottom
-- But you can feel which direction is downhill
-- You take small steps in that direction
-- Eventually, you reach the valley
-
-Neural networks do exactly this to minimize loss!
+| Objective | Why It Matters |
+|-----------|---------------|
+| Understand the gradient as a direction, not a value | Prerequisite for all of modern ML |
+| Trace a complete gradient descent update numerically | Required before understanding backpropagation |
+| Understand learning rate effects precisely | The most impactful hyperparameter in practice |
+| Distinguish batch, mini-batch, and stochastic GD | SGD-based training is used in all modern models |
+| Understand Adam vs. SGD | Adam is the default for transformers; SGD for CNNs |
 
 ---
 
-## The Intuition: Rolling Downhill
+## The Core Problem
 
-Imagine a ball rolling down a curved surface:
+A neural network has millions of parameters (weights \(W\), biases \(b\)). Training means finding values for all parameters such that the loss \(\mathcal{L}\) is minimized. The space of parameters is high-dimensional — GPT-2 small has 117 million parameters.
 
-```
-        Loss
-         ↑
-    🔴   |
-     ╲  |
-      ╲ |
-       ╲|
-        •────────→ Weight
-      Valley
-```
+We cannot enumerate all possible weights. We need an algorithm that efficiently navigates this high-dimensional space toward the minimum.
 
-- **Ball** = Current weights
-- **Surface** = Loss landscape
-- **Gravity** = Gradient (direction to go)
-- **Goal** = Reach the lowest point (minimum loss)
-
-The ball naturally rolls downhill. Gradient descent does the same thing mathematically!
+**Gradient descent** is that algorithm.
 
 ---
 
-## The Math (Simplified)
+## Intuition: The Hillwalker Analogy
 
-### What is a Gradient?
+Imagine you are on a foggy mountain. You want to reach the lowest valley. You cannot see far, but you can feel the slope beneath your feet.
 
-The **gradient** is the direction and rate of steepest increase.
+- The **slope** at your position is the **gradient** of the loss with respect to your current parameters
+- You take a **step downhill** — in the direction opposite to the gradient
+- You repeat until the slope is flat — you've reached a local minimum
 
-For a function `f(x)`:
-```
-Gradient = ∂f/∂x (derivative)
-```
+Mathematically, the gradient \(\nabla_\theta \mathcal{L}\) is a vector that points in the direction of steepest *increase* of the loss. We step in the opposite direction:
 
-**Example**: `f(x) = x²`
+\[
+\theta \leftarrow \theta - \alpha \nabla_\theta \mathcal{L}
+\]
 
-```
-f(x) = x²
-Gradient = 2x
-
-At x=3: gradient = 6 (steep upward slope)
-At x=0: gradient = 0 (flat, we're at minimum!)
-```
-
-### The Update Rule
-
-```
-new_weight = old_weight - learning_rate × gradient
-```
-
-**Why minus?**
-- Gradient points **uphill** (increasing loss)
-- We want to go **downhill** (decreasing loss)
-- So we subtract!
+where \(\alpha\) is the **learning rate** — the step size.
 
 ---
 
-## Step-by-Step Example
+## Gradient of the Loss: One-Dimensional Example
 
-Let's minimize `f(x) = (x-3)²` (minimum at x=3)
+Let us start simple. Suppose the loss is a function of a single weight \(w\):
 
-**Starting point**: x = 0  
-**Learning rate**: α = 0.1  
-**Gradient**: f'(x) = 2(x-3)
+\[
+\mathcal{L}(w) = (w - 3)^2 \quad \text{(minimum at } w=3 \text{)}
+\]
 
-**Iteration 1:**
-```
-x₀ = 0
-gradient = 2(0-3) = -6
-x₁ = 0 - 0.1×(-6) = 0 + 0.6 = 0.6
-```
+The gradient (derivative) is:
 
-**Iteration 2:**
-```
-x₁ = 0.6
-gradient = 2(0.6-3) = -4.8
-x₂ = 0.6 - 0.1×(-4.8) = 1.08
-```
-
-**Iteration 3:**
-```
-x₂ = 1.08
-gradient = 2(1.08-3) = -3.84
-x₃ = 1.08 + 0.384 = 1.464
-```
-
-Continue... converges to x ≈ 3! 🎯
-
----
-
-## Learning Rate: The Most Important Hyperparameter
-
-The **learning rate (α)** controls how big each step is.
-
-### Too Small
-
-```
-Learning rate = 0.001
-
-Loss
-  ↑
-10|•
-  | •
- 5|  •
-  |   •
- 0|____•___________→ Steps
-      (Very slow! Takes forever)
-```
-
-**Problem**: Training takes too long, might never converge
-
----
-
-### Too Large
-
-```
-Learning rate = 10
-
-Loss
-  ↑
-15|    •
-  |  •   •
-10|•       •
-  |  •   •    (Bouncing around!)
- 5|    •
-  └─────────────→ Steps
-```
-
-**Problem**: Overshoots the minimum, loss oscillates or explodes!
-
----
-
-### Just Right
-
-```
-Learning rate = 0.1
-
-Loss
-  ↑
-10|•
-  | ╲
- 5|  ╲
-  |   ╲__
- 0|______╲_____→ Steps
-      (Smooth convergence)
-```
-
-**Sweet spot**: Fast enough, but stable
-
-**Typical values**: 0.001, 0.01, 0.1
-- Usually start with 0.001 and tune from there
-
----
-
-## Gradient Descent in Neural Networks
-
-For a neural network with weights W and bias b:
-
-```python
-# Forward pass
-predictions = model(X, W, b)
-
-# Calculate loss
-loss = loss_function(y_true, predictions)
-
-# Backward pass (compute gradients)
-∂L/∂W, ∂L/∂b = compute_gradients(loss)
-
-# Update weights
-W = W - learning_rate × ∂L/∂W
-b = b - learning_rate × ∂L/∂b
-```
-
-This happens **thousands of times** during training!
-
----
-
-## Code Implementation
-
-```python
-import numpy as np
-import matplotlib.pyplot as plt
-
-def gradient_descent(x_start, learning_rate, num_iterations):
-    """
-    Minimize f(x) = (x-3)² using gradient descent
-    """
-    x = x_start
-    history = [x]
-    
-    for i in range(num_iterations):
-        # Calculate gradient: f'(x) = 2(x-3)
-        gradient = 2 * (x - 3)
-        
-        # Update x
-        x = x - learning_rate * gradient
-        history.append(x)
-        
-        if i % 10 == 0:
-            loss = (x - 3)**2
-            print(f"Iteration {i}: x = {x:.4f}, loss = {loss:.4f}")
-    
-    return x, history
-
-# Run gradient descent
-final_x, history = gradient_descent(
-    x_start=0, 
-    learning_rate=0.1, 
-    num_iterations=50
-)
-
-print(f"
-Final x: {final_x:.4f}")
-print(f"Target: 3.0000")
-
-# Visualize
-plt.figure(figsize=(10, 6))
-plt.plot(history, label='x value')
-plt.axhline(y=3, color='r', linestyle='--', label='Target (minimum)')
-plt.xlabel('Iteration')
-plt.ylabel('x')
-plt.title('Gradient Descent Convergence')
-plt.legend()
-plt.grid(True)
-plt.show()
-```
-
----
-
-## Variants of Gradient Descent
-
-### 1. Batch Gradient Descent (BGD)
-
-Uses **all** training data for each update.
-
-```python
-# Calculate gradient on entire dataset
-for epoch in range(num_epochs):
-    gradient = compute_gradient(X_train, y_train, weights)
-    weights = weights - learning_rate * gradient
-```
-
-**Pros:**
-- ✅ Stable, smooth convergence
-- ✅ Guaranteed to reach minimum (convex functions)
-
-**Cons:**
-- ❌ Slow for large datasets
-- ❌ Can't fit huge datasets in memory
-
----
-
-### 2. Stochastic Gradient Descent (SGD)
-
-Uses **one** training example at a time.
-
-```python
-# Update after each sample
-for epoch in range(num_epochs):
-    for x, y in shuffle(training_data):
-        gradient = compute_gradient(x, y, weights)
-        weights = weights - learning_rate * gradient
-```
-
-**Pros:**
-- ✅ Fast updates
-- ✅ Can escape local minima (noisy updates)
-- ✅ Works with huge datasets
-
-**Cons:**
-- ❌ Noisy, erratic path
-- ❌ May not converge exactly
-
----
-
-### 3. Mini-Batch Gradient Descent (Most Common!)
-
-Uses **small batches** of data (typically 32, 64, 128, 256).
-
-```python
-batch_size = 32
-
-for epoch in range(num_epochs):
-    for batch in get_batches(X_train, y_train, batch_size):
-        X_batch, y_batch = batch
-        gradient = compute_gradient(X_batch, y_batch, weights)
-        weights = weights - learning_rate * gradient
-```
-
-**Pros:**
-- ✅ Balanced: faster than BGD, more stable than SGD
-- ✅ Efficient use of GPU/CPU vectorization
-- ✅ Best of both worlds!
-
-**Cons:**
-- None really - this is the standard!
-
-**Best practice**: Use mini-batch with batch size 32-256
-
----
-
-## Advanced Optimizers (Beyond Basic GD)
-
-### 1. Momentum
-
-Adds "momentum" to smooth out updates:
-
-```python
-velocity = 0.9 * velocity + learning_rate * gradient
-weights = weights - velocity
-```
-
-Think: **ball rolling with inertia**
-
-**Pros:**
-- Accelerates in consistent directions
-- Dampens oscillations
-- Faster convergence
-
----
-
-### 2. Adam (Adaptive Moment Estimation)
-
-The **most popular** optimizer (2024):
-
-```python
-# Combines momentum + adaptive learning rates
-m = β₁ * m + (1-β₁) * gradient        # 1st moment
-v = β₂ * v + (1-β₂) * gradient²       # 2nd moment
-weights = weights - α * m / (√v + ε)
-```
-
-**Why Adam is popular:**
-- ✅ Works well out of the box
-- ✅ Adapts learning rate per parameter
-- ✅ Fast convergence
-- ✅ Default choice for most problems
-
-**Typical hyperparameters:**
-- α (learning rate) = 0.001
-- β₁ = 0.9
-- β₂ = 0.999
-
----
-
-### 3. RMSprop
-
-```python
-# Divides learning rate by running average of gradient magnitudes
-cache = 0.9 * cache + 0.1 * gradient²
-weights = weights - learning_rate * gradient / (√cache + ε)
-```
-
-**Good for**: Recurrent neural networks (RNNs)
-
----
-
-## Comparison of Optimizers
-
-```
-Path to minimum:
-
-SGD:        ~~~~~~~~~~~~~~~~•  (zigzag, slow)
-Momentum:   ~~~~~~~•           (smoother, faster)
-Adam:       ~~~~•              (fastest, smoothest)
-```
-
-**Recommendation**: Start with **Adam**, learning rate 0.001
-
----
-
-## Complete Training Loop Example
+\[
+\frac{d\mathcal{L}}{dw} = 2(w - 3)
+\]
 
 ```python
 import numpy as np
 
-class NeuralNetwork:
-    def __init__(self, input_size, hidden_size, output_size, learning_rate=0.01):
-        # Initialize weights randomly
-        self.W1 = np.random.randn(input_size, hidden_size) * 0.01
-        self.b1 = np.zeros((1, hidden_size))
-        self.W2 = np.random.randn(hidden_size, output_size) * 0.01
-        self.b2 = np.zeros((1, output_size))
-        
-        self.learning_rate = learning_rate
-        self.loss_history = []
-    
-    def forward(self, X):
-        """Forward propagation"""
-        self.Z1 = np.dot(X, self.W1) + self.b1
-        self.A1 = np.maximum(0, self.Z1)  # ReLU
-        self.Z2 = np.dot(self.A1, self.W2) + self.b2
-        self.A2 = 1 / (1 + np.exp(-self.Z2))  # Sigmoid
-        return self.A2
-    
-    def backward(self, X, y):
-        """Backward propagation (compute gradients)"""
-        m = X.shape[0]
-        
-        # Output layer gradients
-        dZ2 = self.A2 - y
-        dW2 = (1/m) * np.dot(self.A1.T, dZ2)
-        db2 = (1/m) * np.sum(dZ2, axis=0, keepdims=True)
-        
-        # Hidden layer gradients
-        dA1 = np.dot(dZ2, self.W2.T)
-        dZ1 = dA1 * (self.Z1 > 0)  # ReLU derivative
-        dW1 = (1/m) * np.dot(X.T, dZ1)
-        db1 = (1/m) * np.sum(dZ1, axis=0, keepdims=True)
-        
-        return dW1, db1, dW2, db2
-    
-    def update_weights(self, dW1, db1, dW2, db2):
-        """Gradient descent update"""
-        self.W1 -= self.learning_rate * dW1
-        self.b1 -= self.learning_rate * db1
-        self.W2 -= self.learning_rate * dW2
-        self.b2 -= self.learning_rate * db2
-    
-    def train(self, X, y, epochs=1000):
-        """Full training loop"""
-        for epoch in range(epochs):
-            # Forward pass
-            predictions = self.forward(X)
-            
-            # Calculate loss
-            loss = -np.mean(y * np.log(predictions + 1e-8) + 
-                           (1 - y) * np.log(1 - predictions + 1e-8))
-            self.loss_history.append(loss)
-            
-            # Backward pass
-            dW1, db1, dW2, db2 = self.backward(X, y)
-            
-            # Update weights (gradient descent!)
-            self.update_weights(dW1, db1, dW2, db2)
-            
-            if epoch % 100 == 0:
-                accuracy = np.mean((predictions > 0.5) == y)
-                print(f"Epoch {epoch}: Loss = {loss:.4f}, Accuracy = {accuracy:.4f}")
+def gradient_descent_1d():
+    """
+    Minimize L(w) = (w - 3)^2 using gradient descent.
+    Trace each step to build intuition.
+    """
+    def loss(w):       return (w - 3) ** 2
+    def grad_loss(w):  return 2 * (w - 3)
 
-# Example usage
-X = np.random.randn(100, 3)  # 100 samples, 3 features
-y = (X[:, 0] + X[:, 1] > 0).astype(float).reshape(-1, 1)  # Simple rule
+    w = 8.0          # initial weight — far from minimum at w=3
+    lr = 0.1         # learning rate
+    steps = 20
 
-nn = NeuralNetwork(input_size=3, hidden_size=5, output_size=1, learning_rate=0.1)
-nn.train(X, y, epochs=1000)
+    print(f"{'Step':5} {'w':8} {'L(w)':8} {'Gradient':10} {'Update':10}")
+    print("-" * 50)
+
+    for step in range(steps):
+        L    = loss(w)
+        grad = grad_loss(w)
+        update = -lr * grad
+
+        print(f"{step:5d} {w:8.4f} {L:8.4f} {grad:10.4f} {update:10.4f}")
+
+        w = w + update   # gradient descent step
+
+        if abs(grad) < 0.001:
+            print(f"\nConverged at step {step}! w = {w:.4f}")
+            break
+
+gradient_descent_1d()
 ```
+
+Each step:
+1. Compute loss at current \(w\)
+2. Compute gradient — the slope at current \(w\)
+3. Step opposite to gradient by \(\alpha \times \text{gradient}\)
 
 ---
 
-## Visualizing the Training Process
+## The Learning Rate: Critical Hyperparameter
 
 ```python
-import matplotlib.pyplot as plt
+import numpy as np
 
-def plot_training(loss_history):
-    """Visualize loss decreasing over time"""
-    plt.figure(figsize=(10, 6))
-    plt.plot(loss_history)
-    plt.title('Training Loss Over Time')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.grid(True)
-    plt.yscale('log')  # Log scale to see details
-    plt.show()
+def learning_rate_comparison():
+    """
+    Show the effect of different learning rates on convergence.
+    L(w) = (w - 3)^2, starting at w=0.
+    """
+    def loss(w):      return (w - 3) ** 2
+    def grad_loss(w): return 2 * (w - 3)
 
-plot_training(nn.loss_history)
+    learning_rates = {
+        "Too small (lr=0.001)": 0.001,
+        "Good (lr=0.1)":        0.1,
+        "Too large (lr=0.95)":  0.95,
+        "Diverges (lr=1.5)":    1.5,
+    }
+
+    for name, lr in learning_rates.items():
+        w = 0.0
+        trajectory = [w]
+        for _ in range(50):
+            grad = grad_loss(w)
+            w = w - lr * grad
+            trajectory.append(w)
+            if abs(w) > 100:   # diverged
+                break
+        final_w = trajectory[-1]
+        print(f"{name}: final w = {final_w:.4f}  L = {loss(final_w):.6f}")
+
+learning_rate_comparison()
+# Too small: slow convergence, still far from minimum after 50 steps
+# Good: converges quickly to w ≈ 3.0
+# Too large: oscillates but may converge
+# Diverges: explodes to ±∞
+```
+
+!!! warning "Learning Rate is the Most Important Hyperparameter"
+    If your model doesn't train, check the learning rate first. Common starting points: `1e-3` for Adam, `1e-1` for SGD with momentum. Transformers typically use `1e-4` to `3e-4` with warmup and decay schedules.
+
+---
+
+## Gradient Descent in Multiple Dimensions
+
+With multiple parameters, the gradient is a vector of partial derivatives — one per parameter:
+
+\[
+\nabla_\theta \mathcal{L} = \begin{bmatrix} \frac{\partial \mathcal{L}}{\partial w_1} \\ \frac{\partial \mathcal{L}}{\partial w_2} \\ \vdots \end{bmatrix}
+\]
+
+```python
+import numpy as np
+
+def gradient_descent_2d():
+    """
+    Minimize L(w1, w2) = w1^2 + 4*w2^2 — an elliptical bowl.
+    Minimum is at (w1, w2) = (0, 0).
+    """
+    def loss(w1, w2):          return w1**2 + 4 * w2**2
+    def grad(w1, w2):          return np.array([2*w1, 8*w2])
+
+    params = np.array([3.0, 2.0])   # start at (3, 2)
+    lr = 0.1
+
+    print(f"{'Step':5} {'w1':8} {'w2':8} {'Loss':10}")
+    print("-" * 40)
+
+    for step in range(15):
+        L = loss(*params)
+        g = grad(*params)
+        print(f"{step:5d} {params[0]:8.4f} {params[1]:8.4f} {L:10.4f}")
+        params = params - lr * g
+
+    print(f"\nFinal: w1={params[0]:.6f}  w2={params[1]:.6f}  (should be near 0, 0)")
+
+gradient_descent_2d()
+```
+
+Notice: convergence is slower for \(w_2\) — the gradient is larger there (coefficient 4 vs 1 for \(w_1\)) so overshooting is more likely. This asymmetry motivates **adaptive learning rates** like Adam.
+
+---
+
+## Batch, Mini-Batch, and Stochastic Gradient Descent
+
+In practice, computing the gradient over the entire dataset before each update (full batch GD) is prohibitively expensive. The variants:
+
+| Variant | Batch Size | Update Frequency | Noise | Used When |
+|---------|-----------|-----------------|-------|-----------|
+| Full Batch GD | All N examples | Once per epoch | Low | Small datasets only |
+| Mini-Batch SGD | B examples (32-256) | B updates per epoch | Medium | Standard practice |
+| Stochastic GD | 1 example | N updates per epoch | High | Online learning |
+
+```python
+import numpy as np
+
+def compare_gradient_estimates():
+    """
+    Show how gradient estimates differ with different batch sizes.
+    Task: linear regression, L(w) = (1/N) sum (wx_i - y_i)^2
+    True gradient with all data vs. noisy estimate with 1 example.
+    """
+    np.random.seed(42)
+    N  = 1000
+    X  = np.random.randn(N)           # features
+    y  = 2.5 * X + 0.3 + np.random.randn(N) * 0.5   # true w=2.5, noise
+
+    w = 0.0   # initialize
+
+    def batch_gradient(w, X_b, y_b):
+        preds = w * X_b
+        return 2 * np.mean((preds - y_b) * X_b)
+
+    # True gradient (full data)
+    true_grad = batch_gradient(w, X, y)
+    print(f"True gradient (N={N}):            {true_grad:.6f}")
+
+    # Mini-batch estimates (average over 5 random mini-batches of size 32)
+    mb_grads = []
+    for _ in range(5):
+        idx = np.random.choice(N, 32, replace=False)
+        mb_grads.append(batch_gradient(w, X[idx], y[idx]))
+    print(f"Mini-batch gradient (B=32, mean): {np.mean(mb_grads):.6f}  std: {np.std(mb_grads):.6f}")
+
+    # Stochastic estimates (single examples)
+    sg_grads = [batch_gradient(w, X[i:i+1], y[i:i+1]) for i in range(5)]
+    print(f"Stochastic gradient (B=1, mean):  {np.mean(sg_grads):.6f}  std: {np.std(sg_grads):.6f}")
+    print("\nNote: mini-batch is unbiased but noisy; noise helps escape local minima")
+
+compare_gradient_estimates()
+```
+
+**Why mini-batch works so well:**
+1. Noisy gradients help escape sharp local minima and saddle points
+2. Parallelizes perfectly on GPUs — process B examples simultaneously
+3. Memory efficient — no need to load all N examples at once
+
+---
+
+## Numerical Complete Example: One Gradient Step in a Neural Network
+
+A full end-to-end step: forward pass → compute loss → compute gradient → update weight.
+
+```python
+import numpy as np
+
+def full_gradient_step():
+    """
+    One complete gradient descent step for a simple network.
+    Input: 2 features. One hidden neuron (ReLU). One output (linear). Loss: MSE.
+    We manually compute everything to see exactly what happens.
+    """
+    # Data: one example
+    x = np.array([1.0, 0.5])   # input
+    y = 2.0                     # target
+
+    # Parameters (initialized)
+    w1 = np.array([0.3, -0.5])  # weights of hidden neuron (shape 2)
+    b1 = 0.1                    # bias of hidden neuron
+    w2 = np.array([0.8])        # weight from hidden to output
+    b2 = 0.2                    # output bias
+
+    lr = 0.01
+
+    print("=== Forward Pass ===")
+    # Hidden neuron pre-activation
+    z1 = np.dot(w1, x) + b1
+    print(f"z1 = w1·x + b1 = {np.dot(w1, x):.4f} + {b1} = {z1:.4f}")
+
+    # Hidden neuron activation (ReLU)
+    a1 = max(0, z1)
+    relu_grad = 1.0 if z1 > 0 else 0.0   # ReLU derivative
+    print(f"a1 = ReLU({z1:.4f}) = {a1:.4f}  (ReLU'={relu_grad})")
+
+    # Output (linear)
+    y_hat = w2[0] * a1 + b2
+    print(f"ŷ = w2*a1 + b2 = {w2[0]} * {a1:.4f} + {b2} = {y_hat:.4f}")
+
+    # Loss (MSE for single example)
+    loss = (y_hat - y) ** 2
+    print(f"\nLoss = (ŷ - y)^2 = ({y_hat:.4f} - {y})^2 = {loss:.4f}")
+
+    print("\n=== Backward Pass (chain rule) ===")
+    # d(Loss)/d(ŷ)
+    dL_dyhat = 2 * (y_hat - y)
+    print(f"∂L/∂ŷ = 2(ŷ - y) = 2({y_hat:.4f} - {y}) = {dL_dyhat:.4f}")
+
+    # d(Loss)/d(w2) via chain rule
+    dL_dw2 = dL_dyhat * a1
+    print(f"∂L/∂w2 = ∂L/∂ŷ · ∂ŷ/∂w2 = {dL_dyhat:.4f} * {a1:.4f} = {dL_dw2:.4f}")
+
+    # d(Loss)/d(b2)
+    dL_db2 = dL_dyhat * 1   # ∂ŷ/∂b2 = 1
+    print(f"∂L/∂b2 = ∂L/∂ŷ · 1 = {dL_db2:.4f}")
+
+    # d(Loss)/d(a1) = d(Loss)/d(ŷ) * w2
+    dL_da1 = dL_dyhat * w2[0]
+    print(f"∂L/∂a1 = ∂L/∂ŷ · w2 = {dL_dyhat:.4f} * {w2[0]} = {dL_da1:.4f}")
+
+    # d(Loss)/d(z1) = d(Loss)/d(a1) * ReLU'(z1)
+    dL_dz1 = dL_da1 * relu_grad
+    print(f"∂L/∂z1 = ∂L/∂a1 · ReLU'({z1:.4f}) = {dL_da1:.4f} * {relu_grad} = {dL_dz1:.4f}")
+
+    # d(Loss)/d(w1) = d(Loss)/d(z1) * x
+    dL_dw1 = dL_dz1 * x
+    print(f"∂L/∂w1 = ∂L/∂z1 · x = {dL_dz1:.4f} * {x} = {dL_dw1}")
+
+    # d(Loss)/d(b1)
+    dL_db1 = dL_dz1 * 1
+    print(f"∂L/∂b1 = ∂L/∂z1 = {dL_db1:.4f}")
+
+    print("\n=== Weight Update ===")
+    w2_new = w2 - lr * np.array([dL_dw2])
+    b2_new = b2 - lr * dL_db2
+    w1_new = w1 - lr * dL_dw1
+    b1_new = b1 - lr * dL_db1
+
+    print(f"w2: {w2[0]:.4f} → {w2_new[0]:.4f}  (Δ = {w2_new[0]-w2[0]:.6f})")
+    print(f"b2: {b2:.4f}  → {b2_new:.4f}  (Δ = {b2_new-b2:.6f})")
+    print(f"w1: {w1} → {w1_new}  (Δ = {w1_new-w1})")
+    print(f"b1: {b1:.4f}  → {b1_new:.4f}  (Δ = {b1_new-b1:.6f})")
+
+    # Verify: new prediction is slightly closer to y=2.0
+    z1_new = np.dot(w1_new, x) + b1_new
+    a1_new = max(0, z1_new)
+    yhat_new = w2_new[0] * a1_new + b2_new
+    print(f"\nNew prediction: {yhat_new:.4f}  (was {y_hat:.4f}, target is {y})")
+    print(f"Loss improved: {(yhat_new - y)**2:.4f} < {loss:.4f}")
+
+full_gradient_step()
 ```
 
 ---
 
-## Common Issues and Solutions
+## Adam: Adaptive Moment Estimation
 
-### Issue 1: Loss Exploding (NaN)
-**Cause**: Learning rate too high  
-**Solution**: Reduce learning rate by 10x
+Vanilla gradient descent struggles with:
+- Different parameters having different gradient scales (some gradients always large, some always small)
+- Saddle points where gradients are near-zero
 
-### Issue 2: Loss Not Decreasing
-**Cause**: Learning rate too low, or stuck in bad local minimum  
-**Solution**: Increase learning rate, or restart with different initialization
+**Adam** addresses this with two moment estimates:
 
-### Issue 3: Loss Oscillating
-**Cause**: Learning rate too high  
-**Solution**: Reduce learning rate, use momentum or Adam
+\[
+m_t = \beta_1 m_{t-1} + (1 - \beta_1) g_t \quad \text{(first moment: exponential moving average of gradient)}
+\]
+\[
+v_t = \beta_2 v_{t-1} + (1 - \beta_2) g_t^2 \quad \text{(second moment: exponential moving average of gradient squared)}
+\]
+\[
+\hat{m}_t = \frac{m_t}{1 - \beta_1^t}, \quad \hat{v}_t = \frac{v_t}{1 - \beta_2^t} \quad \text{(bias correction)}
+\]
+\[
+\theta_t = \theta_{t-1} - \alpha \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \varepsilon}
+\]
 
-### Issue 4: Slow Training
-**Cause**: Learning rate too low, or dataset too large  
-**Solution**: Increase learning rate, use mini-batches, try Adam
+Typical defaults: \(\beta_1 = 0.9\), \(\beta_2 = 0.999\), \(\varepsilon = 10^{-8}\), \(\alpha = 10^{-3}\).
 
----
+```python
+import numpy as np
 
-## 📹 Recommended Videos
+class AdamOptimizer:
+    """Minimal Adam implementation to understand the mechanics."""
 
-- [3Blue1Brown: Gradient Descent](https://www.youtube.com/watch?v=IHZwWFHWa-w) - Beautiful visualization
-- [StatQuest: Gradient Descent](https://www.youtube.com/watch?v=sDv4f4s2SB8) - Clear explanation
-- [Optimizers Explained](https://www.youtube.com/watch?v=mdKjMPmcWjY) - Adam, RMSprop, etc.
+    def __init__(self, lr=1e-3, beta1=0.9, beta2=0.999, eps=1e-8):
+        self.lr    = lr
+        self.beta1 = beta1
+        self.beta2 = beta2
+        self.eps   = eps
+        self.t     = 0     # step counter
+        self.m     = None  # first moment
+        self.v     = None  # second moment
 
----
+    def step(self, params: np.ndarray, grads: np.ndarray) -> np.ndarray:
+        """One Adam update step. Returns new params."""
+        if self.m is None:
+            self.m = np.zeros_like(params)
+            self.v = np.zeros_like(params)
 
----
+        self.t += 1
 
-## 🎯 Key Takeaways
+        # Update biased moments
+        self.m = self.beta1 * self.m + (1 - self.beta1) * grads
+        self.v = self.beta2 * self.v + (1 - self.beta2) * grads**2
 
+        # Bias-corrected moments
+        m_hat = self.m / (1 - self.beta1**self.t)
+        v_hat = self.v / (1 - self.beta2**self.t)
+
+        # Parameter update
+        return params - self.lr * m_hat / (np.sqrt(v_hat) + self.eps)
+
+
+def adam_vs_sgd_comparison():
+    """Compare Adam vs. SGD on a simple 2D problem."""
+    def loss(params): return params[0]**2 + 100 * params[1]**2   # narrow valley
+    def grad(params): return np.array([2*params[0], 200*params[1]])
+
+    adam = AdamOptimizer(lr=0.1)
+    start = np.array([3.0, 0.3])
+
+    params_adam = start.copy()
+    params_sgd  = start.copy()
+    lr_sgd = 0.001
+
+    print(f"{'Step':5} {'Adam Loss':12} {'SGD Loss':12}")
+    for step in range(1, 21):
+        g_adam = grad(params_adam)
+        params_adam = adam.step(params_adam, g_adam)
+
+        g_sgd = grad(params_sgd)
+        params_sgd = params_sgd - lr_sgd * g_sgd
+
+        if step % 5 == 0:
+            print(f"{step:5d} {loss(params_adam):12.6f} {loss(params_sgd):12.6f}")
+
+    print(f"\nAdam converges faster on this ill-conditioned problem (100x scale difference in w1 vs w2)")
+
+adam_vs_sgd_comparison()
 ```
-✅ Gradient descent minimizes loss by following the gradient downhill
-✅ Update rule: weight = weight - learning_rate × gradient  
-✅ Learning rate is the most important hyperparameter
-✅ Mini-batch GD is the standard (batch size 32-256)
-✅ Adam optimizer is the modern default choice
-✅ Training = repeating gradient descent thousands of times
+
+**Why Adam is default for Transformers**: transformer training has very different gradient scales across parameters (embedding layers vs. attention weights). Adam's per-parameter adaptive rates handle this naturally. SGD with momentum is preferred for CNNs where gradient scales are more uniform.
+
+---
+
+## Learning Rate Schedules
+
+The learning rate should not be constant throughout training:
+
+```python
+import numpy as np
+
+def learning_rate_schedules():
+    """
+    Common LR schedules used in practice.
+    """
+    total_steps = 1000
+    warmup_steps = 100
+    steps = np.arange(1, total_steps + 1)
+
+    # 1. Constant
+    constant_lr = np.full(total_steps, 3e-4)
+
+    # 2. Linear warmup + cosine decay (standard for Transformers)
+    def cosine_with_warmup(step, base_lr=3e-4, warmup=100, total=1000):
+        if step < warmup:
+            return base_lr * step / warmup    # linear warmup
+        progress = (step - warmup) / (total - warmup)
+        return base_lr * 0.5 * (1 + np.cos(np.pi * progress))
+
+    cosine_lr = np.array([cosine_with_warmup(s) for s in steps])
+
+    # 3. Step decay (common in CNNs)
+    step_lr = np.array([1e-3 * (0.1 ** (s // 333)) for s in steps])
+
+    print("Learning Rate Schedules (sample values):")
+    for step in [1, 50, 100, 200, 500, 1000]:
+        print(f"  Step {step:5d}: cosine={cosine_with_warmup(step):.6f}  constant={3e-4:.6f}")
+
+    print("\nWhy warmup? In early training, gradients are very noisy.")
+    print("A large LR causes divergence. Warmup lets the model stabilize first.")
+    print("Cosine decay: LR anneals smoothly to ~0 as training ends.")
+
+learning_rate_schedules()
 ```
 
 ---
 
-## 📊 Quick Reference Guide
+## Edge Cases and Misconceptions
 
-### Gradient Descent Variants Comparison
+**"Gradient descent always finds the global minimum."** False. It finds a local minimum. For non-convex loss surfaces (all neural networks), there can be many local minima. In practice, deep networks often have many local minima of similar quality — finding the global minimum is not necessary.
 
-| Type | Batch Size | Memory | Speed | Noise | Best For |
-|------|-----------|--------|-------|-------|----------|
-| **Batch GD** | All data | High | Slow | None | Small datasets (<10K) |
-| **Stochastic GD** | 1 | Low | Fast | High | Online learning |
-| **Mini-Batch GD** | 32-256 | Medium | **Optimal** | Low | **Standard choice** ✅ |
+**"Smaller learning rate is always safer."** A too-small learning rate can get stuck in saddle points (points where gradient ≈ 0 but which are not minima) or converge so slowly the model never reaches good performance. Learning rate scheduling, not just small LR, is the answer.
 
-### Optimizer Recommendations
+**"Adam is always better than SGD."** Not true for all tasks. For image classification with CNNs, SGD with momentum often generalizes better than Adam. Adam sometimes overfits because its adaptive learning rates allow it to memorize data faster. For LLMs and transformers, Adam variants are superior.
 
-| Optimizer | Learning Rate | When to Use | Pros | Cons |
-|-----------|--------------|-------------|------|------|
-| **SGD** | 0.01-0.1 | Simple problems | Simple, well-understood | Slow convergence |
-| **SGD + Momentum** | 0.01-0.1 | General use | Faster than SGD | Still slower than Adam |
-| **Adam** | 0.001 | **Default choice** ✅ | Fast, adaptive | Slightly more memory |
-| **AdamW** | 0.001 | Fine-tuning | Better regularization | - |
-
-### Typical Hyperparameters
-
-| Parameter | Range | Recommended Start | Notes |
-|-----------|-------|-------------------|-------|
-| **Learning Rate** | 0.0001 - 0.1 | **0.001** | Most critical parameter |
-| **Batch Size** | 16 - 512 | **32** | Power of 2 for GPU |
-| **Momentum (β₁)** | 0.8 - 0.99 | **0.9** | For SGD with momentum |
-| **Adam β₂** | 0.9 - 0.9999 | **0.999** | Second moment |
-| **Gradient Clip** | 1.0 - 10.0 | **5.0** | For RNNs |
-
-### Common Issues Troubleshooting
-
-| Problem | Symptoms | Solution |
-|---------|----------|----------|
-| 🔴 **Loss exploding** | NaN, Inf values | ↓ Reduce learning rate by 10x |
-| 🟡 **Loss not decreasing** | Flat line | ↑ Increase learning rate |
-| 🟡 **Loss oscillating** | Zigzag pattern | ↓ Reduce learning rate or add momentum |
-| 🔵 **Very slow training** | Tiny improvements | ↑ Increase learning rate or change optimizer |
-| 🟣 **Overfitting** | Train ↓ Val ↑ | Add regularization, dropout |
+**"Gradients point toward the minimum."** Gradients point toward *steepest ascent*. We go *against* the gradient for gradient *descent*.
 
 ---
 
-## 💡 Pro Tips
+## Key Takeaways
 
-1. **Start with Adam**: It works out of the box for 90% of problems
-2. **Learning rate is king**: Spend time tuning this first
-3. **Plot your losses**: Always visualize training curves
-4. **Use learning rate schedules**: Decay over time for better convergence
-5. **Batch size matters**: Larger batches = more stable but slower
-6. **Gradient clipping**: Essential for RNNs to prevent explosions
-
----
-
-## 🚀 Next Lesson
-
-**Lesson 5: Backpropagation** - How Networks Calculate Gradients
-
-You'll learn:
-- 🧮 Chain rule in practice
-- 🔄 Backward pass implementation
-- 🎯 Computing gradients efficiently
-- 📊 Computational graphs
-
-**Get ready for the math!** This is where it all comes together! 💪
+- Gradient descent works by repeatedly computing the gradient of the loss and taking a step opposite to it
+- The **learning rate** \(\alpha\) controls step size — too small: slow convergence; too large: oscillation or divergence
+- **Mini-batch SGD** is the standard: update after processing B examples (typically 32-256), balancing accuracy of gradient estimate with computational efficiency
+- A single gradient descent step = forward pass → loss → gradient computation → weight update
+- **Adam** maintains exponential moving averages of gradients and their squares, providing per-parameter adaptive learning rates — default for Transformer training
+- **Learning rate schedules** (warmup + cosine decay) are essential for modern LLM training
+- Gradient descent does not guarantee finding the global minimum — but local minima in deep networks are often good enough
 
 ---
 
-## 📚 Additional Resources
+## Further Reading
 
-- 📺 [3Blue1Brown: Gradient Descent](https://www.youtube.com/watch?v=IHZwWFHWa-w) - Best visualization
-- 📺 [StatQuest: Gradient Descent](https://www.youtube.com/watch?v=sDv4f4s2SB8) - Clear explanation
-- 📄 [Adam Paper](https://arxiv.org/abs/1412.6980) - Original algorithm
-- 💻 [Interactive Demo](https://playground.tensorflow.org) - Visual learning
+- [3Blue1Brown: Gradient Descent, How Neural Networks Learn](https://www.youtube.com/watch?v=IHZwWFHWa-w) — best visual introduction
+- [Kingma & Ba (2014): Adam: A Method for Stochastic Optimization](https://arxiv.org/abs/1412.6980) — original Adam paper
+- [Sebastian Ruder's Overview of Gradient Descent Optimization Algorithms](https://ruder.io/optimizing-gradient-descent/) — comprehensive comparison of variants
 
 ---
 
-*⏱️ Estimated time: 35 minutes | 📊 Difficulty: Intermediate | ✅ Completion: Add to your progress*
+**Next:** [Backpropagation — Computing Gradients Through Any Network](05-backpropagation.md)

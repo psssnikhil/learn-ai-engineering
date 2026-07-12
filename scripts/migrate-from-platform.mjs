@@ -29,16 +29,25 @@ const MODULE_PHASE = {
   'module-12': { phase: 'build', order: 3 },
   'module-13': { phase: 'build', order: 4 },
   'module-14': { phase: 'build', order: 5 },
+  'module-18': { phase: 'build', order: 6, handbookNative: true },
   'module-10': { phase: 'production', order: 1 },
   'module-16': { phase: 'production', order: 2 },
+  'module-19': { phase: 'production', order: 3, handbookNative: true },
   'module-15': { phase: 'advanced', order: 1 },
   'module-17': { phase: 'advanced', order: 2 },
 };
 
+/** Handbook-only modules — never deleted or overwritten by platform import */
+const HANDBOOK_NATIVE_IDS = new Set(
+  Object.entries(MODULE_PHASE)
+    .filter(([, m]) => m.handbookNative)
+    .map(([id]) => id),
+);
+
 const PHASE_META = {
   foundations: { label: 'Foundations', summary: 'Core ML, transformers, and LLMs.' },
-  build: { label: 'Build', summary: 'RAG, agents, vector search, and prompts.' },
-  production: { label: 'Production', summary: 'LLMOps, deployment, and safety.' },
+  build: { label: 'Build', summary: 'RAG, agents, harness, tools, and prompts.' },
+  production: { label: 'Production', summary: 'LLMOps, evals, deployment, and safety.' },
   advanced: { label: 'Advanced', summary: 'Fine-tuning and capstone projects.' },
 };
 
@@ -63,13 +72,42 @@ function moduleLabel(mod) {
 }
 
 function readModule(moduleId) {
+  if (!MODULE_PHASE[moduleId]) return null;
+  if (HANDBOOK_NATIVE_IDS.has(moduleId)) {
+    return readHandbookNativeModule(moduleId);
+  }
   const modulePath = path.join(SOURCE, moduleId);
   const jsonPath = path.join(modulePath, 'module.json');
   if (!fs.existsSync(jsonPath)) return null;
   const data = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
   if (data.listed === false) return null;
-  if (!MODULE_PHASE[moduleId]) return null;
-  return { ...data, modulePath, meta: MODULE_PHASE[moduleId] };
+  return { ...data, modulePath, meta: MODULE_PHASE[moduleId], handbookNative: false };
+}
+
+function readHandbookNativeModule(moduleId) {
+  const phase = MODULE_PHASE[moduleId].phase;
+  const dirs = fs.readdirSync(path.join(DOCS, phase)).filter((d) => d.startsWith(`${moduleId}-`));
+  if (dirs.length === 0) return null;
+  const folder = dirs[0];
+  const moduleDir = path.join(DOCS, phase, folder);
+  const indexPath = path.join(moduleDir, 'index.md');
+  if (!fs.existsSync(indexPath)) return null;
+  const parsed = matter(fs.readFileSync(indexPath, 'utf-8'));
+  return {
+    id: moduleId,
+    title: parsed.data.title || moduleId,
+    description: parsed.content.split('\n')[0] || '',
+    estimatedHours: countLessonsInDir(moduleDir) * 0.6,
+    modulePath: moduleDir,
+    meta: MODULE_PHASE[moduleId],
+    handbookNative: true,
+  };
+}
+
+function countLessonsInDir(moduleDir) {
+  const lessonsDir = path.join(moduleDir, 'lessons');
+  if (!fs.existsSync(lessonsDir)) return 0;
+  return fs.readdirSync(lessonsDir).filter((f) => f.endsWith('.md')).length;
 }
 
 function listLessons(modulePath) {
@@ -107,10 +145,50 @@ function transformLesson(content, moduleMeta) {
   return matter.stringify(parsed.content.trim(), fm);
 }
 
-function clearPhaseDirs() {
-  for (const phase of PHASE_ORDER) {
-    const dir = path.join(DOCS, phase);
-    if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true });
+function clearPlatformModules() {
+  for (const moduleId of Object.keys(MODULE_PHASE)) {
+    if (HANDBOOK_NATIVE_IDS.has(moduleId)) continue;
+    const mod = readModuleFromPlatform(moduleId);
+    if (!mod) continue;
+    const folder = moduleFolderName(mod);
+    const dir = path.join(DOCS, mod.meta.phase, folder);
+    if (fs.existsSync(dir)) {
+      if (moduleId === 'module-12') {
+        clearModuleKeepingHandbookLessons(dir);
+      } else {
+        fs.rmSync(dir, { recursive: true });
+      }
+    }
+  }
+}
+
+function readModuleFromPlatform(moduleId) {
+  const modulePath = path.join(SOURCE, moduleId);
+  const jsonPath = path.join(modulePath, 'module.json');
+  if (!fs.existsSync(jsonPath)) return null;
+  const data = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+  if (data.listed === false) return null;
+  if (!MODULE_PHASE[moduleId]) return null;
+  return { ...data, modulePath, meta: MODULE_PHASE[moduleId] };
+}
+
+/** Keep handbook-authored lessons (e.g. M12 L04–10) when re-importing from platform */
+function clearModuleKeepingHandbookLessons(moduleDir) {
+  const lessonsDir = path.join(moduleDir, 'lessons');
+  const preserved = new Map();
+  if (fs.existsSync(lessonsDir)) {
+    for (const file of fs.readdirSync(lessonsDir)) {
+      if (!file.endsWith('.md')) continue;
+      const num = parseInt(file.slice(0, 2), 10);
+      if (num >= 4) preserved.set(file, fs.readFileSync(path.join(lessonsDir, file), 'utf-8'));
+    }
+  }
+  fs.rmSync(moduleDir, { recursive: true });
+  if (preserved.size > 0) {
+    fs.mkdirSync(lessonsDir, { recursive: true });
+    for (const [file, content] of preserved) {
+      fs.writeFileSync(path.join(lessonsDir, file), content);
+    }
   }
 }
 
@@ -133,7 +211,7 @@ function main() {
     process.exit(1);
   }
 
-  clearPhaseDirs();
+  clearPlatformModules();
 
   const modules = Object.keys(MODULE_PHASE)
     .map(readModule)
@@ -146,8 +224,7 @@ function main() {
 
   const navByPhase = Object.fromEntries(PHASE_ORDER.map((p) => [p, []]));
   const learningPathRows = [];
-  let totalLessons = 0;
-  let totalExercises = 0;
+  const counters = { totalLessons: 0, totalExercises: 0 };
 
   for (const mod of modules) {
     const phase = mod.meta.phase;
@@ -156,8 +233,13 @@ function main() {
     const moduleDir = path.join(DOCS, relPath);
     const lessonsDir = path.join(moduleDir, 'lessons');
     const exercisesDir = path.join(moduleDir, 'exercises');
-    const srcLessonsDir = path.join(mod.modulePath, 'lessons');
 
+    if (mod.handbookNative) {
+      registerNativeModule(mod, navByPhase, learningPathRows, counters);
+      continue;
+    }
+
+    const srcLessonsDir = path.join(mod.modulePath, 'lessons');
     fs.mkdirSync(lessonsDir, { recursive: true });
 
     const lessonMeta = [];
@@ -171,7 +253,7 @@ function main() {
         transformLesson(raw, { id: mod.id, title: mod.title, phaseLabel: PHASE_META[phase].label }),
       );
 
-      if (copyExercise(srcLessonsDir, lessonId, exercisesDir)) totalExercises++;
+      if (copyExercise(srcLessonsDir, lessonId, exercisesDir)) counters.totalExercises++;
 
       lessonMeta.push({
         file,
@@ -179,7 +261,13 @@ function main() {
         duration: parsed.data.duration,
         difficulty: parsed.data.difficulty,
       });
-      totalLessons++;
+      counters.totalLessons++;
+    }
+
+    if (mod.id === 'module-12') {
+      const before = lessonMeta.length;
+      mergeHandbookLessons(lessonsDir, lessonMeta);
+      counters.totalLessons += lessonMeta.length - before;
     }
 
     const lessonTable = buildLessonTable(lessonMeta);
@@ -192,7 +280,6 @@ function main() {
       `| **Phase** | ${PHASE_META[phase].label} |`,
       `| **Lessons** | ${lessonMeta.length} |`,
       `| **Est. hours** | ~${mod.estimatedHours}h |`,
-      mod.id === 'module-12' ? `| **Status** | Partial — see [GAPS.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/GAPS.md) |` : '',
       '',
       '## Lessons',
       '',
@@ -228,7 +315,7 @@ function main() {
       lessons: lessonMeta.length,
       hours: mod.estimatedHours,
       path: `${relPath}/index.md`,
-      partial: mod.id === 'module-12',
+      partial: false,
     });
   }
 
@@ -236,7 +323,7 @@ function main() {
   writeLearningPath(learningPathRows);
   updateMkdocs(buildNavYaml(navByPhase));
 
-  console.log(`Migrated ${modules.length} modules, ${totalLessons} lessons, ${totalExercises} exercise sets.`);
+  console.log(`Migrated ${modules.length} modules, ${counters.totalLessons} lessons, ${counters.totalExercises} exercise sets.`);
 }
 
 function writePhaseIndexes(navByPhase) {
@@ -264,7 +351,7 @@ function writePhaseIndexes(navByPhase) {
 function writeLearningPath(rows) {
   let currentPhase = '';
   const lines = [
-    'Four phases · Fourteen modules · Follow in order',
+    'Four phases · Sixteen modules · Follow in order',
     '',
   ];
   for (const row of rows) {
@@ -286,11 +373,61 @@ function writeLearningPath(rows) {
   );
 }
 
+function mergeHandbookLessons(lessonsDir, lessonMeta) {
+  if (!fs.existsSync(lessonsDir)) return;
+  const existing = new Set(lessonMeta.map((l) => l.file));
+  for (const file of fs.readdirSync(lessonsDir).filter((f) => f.endsWith('.md')).sort()) {
+    if (existing.has(file)) continue;
+    const raw = fs.readFileSync(path.join(lessonsDir, file), 'utf-8');
+    const parsed = matter(raw);
+    lessonMeta.push({
+      file,
+      title: parsed.data.title || file.replace('.md', ''),
+      duration: parsed.data.duration,
+      difficulty: parsed.data.difficulty,
+    });
+    existing.add(file);
+  }
+  lessonMeta.sort((a, b) => a.file.localeCompare(b.file));
+}
+
+function nativeModuleRelPath(moduleId) {
+  const phase = MODULE_PHASE[moduleId].phase;
+  const dirs = fs.readdirSync(path.join(DOCS, phase)).filter((d) => d.startsWith(`${moduleId}-`));
+  if (dirs.length === 0) return null;
+  return `${phase}/${dirs[0]}`;
+}
+
+function registerNativeModule(mod, navByPhase, learningPathRows, counters) {
+  const relPath = nativeModuleRelPath(mod.id);
+  if (!relPath) return;
+  const lessons = countLessonsInDir(path.join(DOCS, relPath));
+  counters.totalLessons += lessons;
+  navByPhase[mod.meta.phase].push({
+    label: moduleLabel(mod),
+    path: `${relPath}/index.md`,
+  });
+  learningPathRows.push({
+    phase: PHASE_META[mod.meta.phase].label,
+    num: mod.id.replace('module-', '').padStart(2, '0'),
+    title: mod.title,
+    lessons,
+    hours: Math.round(lessons * 0.6 * 10) / 10,
+    path: `${relPath}/index.md`,
+    partial: false,
+  });
+}
+
 function buildNavYaml(navByPhase) {
   const lines = [
     'nav:',
     '  - Home: index.md',
+    '  - Getting Started: getting-started.md',
+    '  - Topic Map: topic-map.md',
     '  - Learning Path: learning-path.md',
+    '  - Glossary: glossary.md',
+    '  - Agentic AI: agentic-ai/index.md',
+    '  - Evals & Observability: evals-observability/index.md',
   ];
   for (const phase of PHASE_ORDER) {
     lines.push(`  - ${PHASE_META[phase].label}:`);
@@ -301,10 +438,17 @@ function buildNavYaml(navByPhase) {
   }
   lines.push('  - Resources:');
   lines.push('      - Overview: resources/index.md');
-  lines.push('      - Papers: resources/papers.md');
-  lines.push('      - Videos: resources/videos.md');
+  lines.push('      - Essential Papers: resources/essential-papers.md');
+  lines.push('      - Essential Videos: resources/essential-videos.md');
+  lines.push('      - Open Source Hubs: resources/open-source-hubs.md');
+  lines.push('      - Courses & Communities: resources/courses-and-communities.md');
+  lines.push('      - All Papers: resources/papers.md');
+  lines.push('      - All Videos: resources/videos.md');
   lines.push('      - Tools & Libraries: resources/tools-and-libraries.md');
+  lines.push('  - Exercises: exercises/index.md');
   lines.push('  - Projects: projects/index.md');
+  lines.push('  - Roadmap: roadmap.md');
+  lines.push('  - Contribute: contribute.md');
   return lines.join('\n');
 }
 
@@ -353,13 +497,25 @@ plugins:
 markdown_extensions:
   - admonition
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
   - tables
   - toc:
       permalink: true
+
+extra_javascript:
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
+
+validation:
+  omitted_files: ignore
+  absolute_links: ignore
+  unrecognized_links: ignore
 
 `;
   fs.writeFileSync(path.join(ROOT, 'mkdocs.yml'), `${base}${navYaml}\n`);

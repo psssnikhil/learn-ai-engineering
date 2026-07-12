@@ -1,7 +1,7 @@
 ---
 title: Build
 ---
-RAG, agents, vector search, and prompts.
+RAG, agents, harness, tools, and prompts.
 
 | # | Module |
 |---|--------|
@@ -10,3 +10,4 @@ RAG, agents, vector search, and prompts.
 | 3 | [M12 · Multi-Agent Systems](module-12-multi-agent-systems/index.md) |
 | 4 | [M13 · Vector Databases Deep Dive](module-13-vector-databases-deep-dive/index.md) |
 | 5 | [M14 · Prompt Engineering Mastery](module-14-prompt-engineering-mastery/index.md) |
+| 6 | [M18 · Agent Harness, Tools & Runtime](module-18-agent-harness-tools-runtime/index.md) |

@@ -1,665 +1,725 @@
 ---
 title: Training Best Practices & Optimization
 description: >-
-  Master techniques to train neural networks effectively - learning rates,
-  initialization, normalization, and debugging
-duration: 40 min
+  Master the full toolkit for training neural networks effectively — weight
+  initialization, learning rate schedules, gradient clipping, AdamW, mixed
+  precision, and a systematic debugging protocol.
+duration: 60 min
 difficulty: intermediate
 has_code: true
 module: module-05
 youtube: 'https://www.youtube.com/watch?v=pZEHXsizR7I'
 objectives:
-  - Choose appropriate learning rate schedules
-  - Implement weight initialization strategies
-  - Use batch normalization
-  - Debug training issues
+  - Derive the correct variance for Xavier and He initialization
+  - Implement cosine warmup and cyclical learning rate schedules
+  - Apply gradient clipping correctly and understand why it works
+  - Use PyTorch AMP (automatic mixed precision) for 2× speedup
+  - Systematically debug common training failures
 ---
+
 # Training Best Practices & Optimization
 
-## The Art of Training Neural Networks
+## Prerequisites
 
-Building a network is easy. **Training it well** is hard!
+- [Lesson 04: Gradient Descent](./04-gradient-descent.md) — SGD, momentum, Adam
+- [Lesson 06: Overfitting & Regularization](./06-overfitting-regularization.md) — weight decay, dropout
+- [Lesson 05: Backpropagation](./05-backpropagation.md) — gradient flow analysis
 
-This lesson covers battle-tested techniques to:
-- ✅ Train faster
-- ✅ Achieve better accuracy
-- ✅ Debug problems
-- ✅ Avoid common pitfalls
+## What You'll Learn
+
+| Technique | What it fixes | When to use |
+|-----------|-------------|-------------|
+| He/Xavier init | Vanishing/exploding activations at start | Always |
+| Warmup LR schedule | Early instability | Transformers, large LR |
+| Cosine decay | Final convergence | Default for most models |
+| Gradient clipping | Exploding gradients | RNNs, Transformers |
+| AdamW | L2 regularization + Adam interaction | Default optimizer |
+| Mixed precision | 2× speed, 2× memory | CUDA GPU training |
+
+---
+
+## Intuition: Why Training Fails
+
+Most training failures have identifiable causes:
+
+```
+Loss NaN from step 1    → initialization or LR too high
+Loss plateaus at random → wrong architecture or bad data  
+Train good, val bad     → overfitting (add regularization)
+Both losses plateau     → LR too low or schedule too aggressive
+Loss spikes then recovers → LR on the edge; lower it
+Loss spikes and stays   → LR too high; use warmup next time
+```
+
+A systematic debugging protocol is more effective than random hyperparameter search.
 
 ---
 
 ## 1. Weight Initialization
 
-**Wrong initialization → Network won't train!**
+Proper initialization ensures that the **variance of activations and gradients is consistent** across layers at the start of training.
 
-### ❌ All Zeros
+### The Signal Propagation Problem
 
-```python
-W = np.zeros((100, 100))
-```
-
-**Problem**: All neurons learn the same thing (symmetry problem).
-
----
-
-### ❌ Too Large
-
-```python
-W = np.random.randn(100, 100) * 10  # Too big!
-```
-
-**Problem**: Activations explode or saturate.
-
----
-
-### ✅ Xavier/Glorot Initialization
-
-**For Tanh/Sigmoid**:
-
-```python
-def xavier_init(n_in, n_out):
-    """Xavier initialization"""
-    limit = np.sqrt(6 / (n_in + n_out))
-    return np.random.uniform(-limit, limit, (n_in, n_out))
-
-W = xavier_init(input_size, hidden_size)
-```
-
-**Why**: Keeps variance consistent across layers.
-
----
-
-### ✅ He Initialization
-
-**For ReLU**:
-
-```python
-def he_init(n_in, n_out):
-    """He initialization (for ReLU)"""
-    std = np.sqrt(2 / n_in)
-    return np.random.randn(n_in, n_out) * std
-
-W = he_init(input_size, hidden_size)
-```
-
-**Rule of thumb**:
-- ReLU → He initialization
-- Tanh/Sigmoid → Xavier initialization
-
----
-
-## 2. Batch Normalization
-
-**Problem**: Internal covariate shift - distribution of layer inputs changes during training.
-
-**Solution**: Normalize activations!
-
-### How It Works:
+For a linear layer with weight `W ∈ ℝ^{n_out × n_in}` and input `x` where `Var(x_i) = 1`:
 
 ```
-For each mini-batch:
-1. Calculate mean μ and variance σ²
-2. Normalize: x̂ = (x - μ) / √(σ² + ε)
-3. Scale and shift: y = γx̂ + β
+y = W x     (n_out outputs)
+
+Var(y_j) = Var(Σ_i W_{j,i} · x_i)
+         = n_in · Var(W_{j,i}) · Var(x_i)    (assuming independence)
+         = n_in · Var(W_{j,i})
 ```
 
-Where γ and β are learnable parameters.
-
-### Implementation:
-
-```python
-class BatchNorm:
-    """Batch Normalization layer"""
-    
-    def __init__(self, num_features, epsilon=1e-5, momentum=0.9):
-        self.epsilon = epsilon
-        self.momentum = momentum
-        
-        # Learnable parameters
-        self.gamma = np.ones((1, num_features))
-        self.beta = np.zeros((1, num_features))
-        
-        # Running statistics (for inference)
-        self.running_mean = np.zeros((1, num_features))
-        self.running_var = np.ones((1, num_features))
-    
-    def forward(self, X, training=True):
-        """
-        Forward pass
-        
-        Args:
-            X: Input (batch_size, num_features)
-            training: Whether in training mode
-        
-        Returns:
-            Normalized output
-        """
-        if training:
-            # Calculate batch statistics
-            batch_mean = np.mean(X, axis=0, keepdims=True)
-            batch_var = np.var(X, axis=0, keepdims=True)
-            
-            # Normalize
-            X_norm = (X - batch_mean) / np.sqrt(batch_var + self.epsilon)
-            
-            # Update running statistics
-            self.running_mean = (self.momentum * self.running_mean + 
-                               (1 - self.momentum) * batch_mean)
-            self.running_var = (self.momentum * self.running_var + 
-                              (1 - self.momentum) * batch_var)
-            
-            # Cache for backprop
-            self.cache = (X, X_norm, batch_mean, batch_var)
-        else:
-            # Use running statistics at inference
-            X_norm = (X - self.running_mean) / np.sqrt(self.running_var + self.epsilon)
-        
-        # Scale and shift
-        out = self.gamma * X_norm + self.beta
-        
-        return out
-
-
-# Usage in network
-class NetworkWithBatchNorm:
-    def __init__(self):
-        self.W1 = he_init(784, 256)
-        self.bn1 = BatchNorm(256)
-        self.W2 = he_init(256, 10)
-    
-    def forward(self, X, training=True):
-        # Layer 1
-        Z1 = X @ self.W1
-        Z1_norm = self.bn1.forward(Z1, training=training)
-        A1 = np.maximum(0, Z1_norm)  # ReLU
-        
-        # Layer 2
-        Z2 = A1 @ self.W2
-        
-        return Z2
-```
-
-### Benefits:
-- ✅ Faster training (higher learning rates)
-- ✅ Less sensitive to initialization
-- ✅ Acts as regularization
-- ✅ Improved gradient flow
-
----
-
-## 3. Learning Rate Schedules
-
-**Fixed learning rate** often suboptimal.
-
-### Step Decay
-
-Reduce LR by factor every N epochs:
-
-```python
-def step_decay(initial_lr, epoch, drop_every=10, drop_rate=0.5):
-    """
-    Example: 0.1 → 0.05 → 0.025 → 0.0125
-    """
-    return initial_lr * (drop_rate ** (epoch // drop_every))
-
-# Usage
-for epoch in range(100):
-    lr = step_decay(initial_lr=0.1, epoch=epoch)
-    # Train with this learning rate
-```
-
----
-
-### Exponential Decay
-
-Smooth exponential decrease:
-
-```python
-def exp_decay(initial_lr, epoch, decay_rate=0.95):
-    """
-    lr = initial_lr * decay_rate^epoch
-    """
-    return initial_lr * (decay_rate ** epoch)
-```
-
----
-
-### Cosine Annealing
-
-Smooth cosine curve:
-
-```python
-def cosine_annealing(initial_lr, epoch, total_epochs):
-    """
-    Follows cosine curve from initial_lr to 0
-    """
-    return initial_lr * 0.5 * (1 + np.cos(np.pi * epoch / total_epochs))
-```
-
----
-
-### Warm Restarts
-
-Periodically reset to high LR:
-
-```python
-def cosine_with_restarts(initial_lr, epoch, restart_period=50):
-    """
-    Cosine annealing with periodic restarts
-    """
-    epoch_in_cycle = epoch % restart_period
-    return cosine_annealing(initial_lr, epoch_in_cycle, restart_period)
-```
-
-**Why**: Helps escape local minima!
-
----
-
-### 🔥 One Cycle Policy (Popular!)
-
-Used by fast.ai, Jeremy Howard:
-
-```
-Phase 1 (50%): Increase LR from low → high
-Phase 2 (50%): Decrease LR from high → very low
-```
-
-```python
-class OneCycleLR:
-    def __init__(self, max_lr, total_steps):
-        self.max_lr = max_lr
-        self.total_steps = total_steps
-    
-    def get_lr(self, step):
-        if step < self.total_steps / 2:
-            # Increasing phase
-            return (self.max_lr / 10) + (step / (self.total_steps / 2)) * (self.max_lr * 0.9)
-        else:
-            # Decreasing phase
-            progress = (step - self.total_steps / 2) / (self.total_steps / 2)
-            return self.max_lr * (1 - 0.9 * progress)
-
-# Usage
-scheduler = OneCycleLR(max_lr=0.1, total_steps=1000)
-
-for step in range(1000):
-    lr = scheduler.get_lr(step)
-    # Train with this LR
-```
-
----
-
-## 4. Advanced Optimizers
-
-### Adam (Default Choice 2024)
-
-Combines momentum + adaptive learning rates:
-
-```python
-class AdamOptimizer:
-    """Adam optimizer"""
-    
-    def __init__(self, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8):
-        self.lr = learning_rate
-        self.beta1 = beta1
-        self.beta2 = beta2
-        self.epsilon = epsilon
-        
-        self.m = {}  # First moment
-        self.v = {}  # Second moment
-        self.t = 0   # Time step
-    
-    def update(self, params, grads):
-        """
-        Update parameters
-        
-        Args:
-            params: Dictionary of parameters
-            grads: Dictionary of gradients
-        """
-        self.t += 1
-        
-        for key in params:
-            if key not in self.m:
-                self.m[key] = np.zeros_like(params[key])
-                self.v[key] = np.zeros_like(params[key])
-            
-            # Update biased first moment estimate
-            self.m[key] = self.beta1 * self.m[key] + (1 - self.beta1) * grads[key]
-            
-            # Update biased second moment estimate
-            self.v[key] = self.beta2 * self.v[key] + (1 - self.beta2) * (grads[key] ** 2)
-            
-            # Bias correction
-            m_hat = self.m[key] / (1 - self.beta1 ** self.t)
-            v_hat = self.v[key] / (1 - self.beta2 ** self.t)
-            
-            # Update parameters
-            params[key] -= self.lr * m_hat / (np.sqrt(v_hat) + self.epsilon)
-
-
-# Usage
-optimizer = AdamOptimizer(learning_rate=0.001)
-
-for epoch in range(100):
-    # Forward + backward pass
-    grads = compute_gradients()
-    
-    # Update with Adam
-    optimizer.update(params, grads)
-```
-
----
-
-### AdamW (Adam with Weight Decay)
-
-**Better regularization**:
-
-```python
-# In update step, add weight decay:
-params[key] -= learning_rate * weight_decay * params[key]
-```
-
-**Recommended**: Use AdamW instead of Adam + L2 regularization!
-
----
-
-## 5. Gradient Clipping
-
-Prevent exploding gradients (especially in RNNs):
-
-```python
-def clip_gradients(gradients, max_norm=5.0):
-    """
-    Clip gradients by global norm
-    
-    Args:
-        gradients: Dictionary of gradients
-        max_norm: Maximum allowed norm
-    
-    Returns:
-        Clipped gradients
-    """
-    # Calculate global norm
-    total_norm = 0
-    for grad in gradients.values():
-        total_norm += np.sum(grad ** 2)
-    total_norm = np.sqrt(total_norm)
-    
-    # Clip if necessary
-    clip_coef = max_norm / (total_norm + 1e-6)
-    if clip_coef < 1:
-        for key in gradients:
-            gradients[key] *= clip_coef
-    
-    return gradients
-
-
-# Usage
-grads = compute_gradients()
-grads = clip_gradients(grads, max_norm=5.0)
-optimizer.update(params, grads)
-```
-
----
-
-## 6. Debugging Training
-
-### Problem: Loss Not Decreasing
-
-**Possible causes**:
-
-1. **Learning rate too high**
-   - Solution: Reduce by 10x
-
-2. **Learning rate too low**
-   - Solution: Increase by 10x
-
-3. **Bad initialization**
-   - Solution: Use He/Xavier init
-
-4. **Wrong loss function**
-   - Solution: Check your task
-
-5. **Bug in code**
-   - Solution: Start simple, add complexity gradually
-
----
-
-### Problem: Loss Exploding (NaN)
-
-**Causes**:
-- Learning rate too high
-- Gradient explosion
-- Numerical instability
-
-**Solutions**:
-```python
-# 1. Lower learning rate
-lr = lr / 10
-
-# 2. Gradient clipping
-grads = clip_gradients(grads, max_norm=1.0)
-
-# 3. Check for NaN
-if np.isnan(loss):
-    print("NaN detected! Stopping...")
-    break
-```
-
----
-
-### Problem: Overfitting
-
-**Signs**:
-- Train accuracy >> Val accuracy
-- Train loss << Val loss
-
-**Solutions**:
-1. More data
-2. Data augmentation
-3. Dropout
-4. L2 regularization
-5. Early stopping
-6. Smaller network
-
----
-
-### Problem: Underfitting
-
-**Signs**:
-- Both train and val accuracy low
-- Loss not decreasing
-
-**Solutions**:
-1. Larger network
-2. Train longer
-3. Better features
-4. Reduce regularization
-
----
-
-## 7. Complete Training Pipeline
+If `Var(W) = 1`, then `Var(y) = n_in` — variance grows with layer width!
+If `Var(W) = 1/n_in`, then `Var(y) = 1` — variance preserved.
 
 ```python
 import numpy as np
 
-class Trainer:
-    """Complete training pipeline"""
-    
-    def __init__(self, model, optimizer, scheduler=None):
-        self.model = model
-        self.optimizer = optimizer
-        self.scheduler = scheduler
-        
-        self.train_losses = []
-        self.val_losses = []
-        self.train_accs = []
-        self.val_accs = []
-    
-    def train_epoch(self, X_train, y_train, batch_size=32):
-        """Train for one epoch"""
-        num_samples = X_train.shape[0]
-        indices = np.random.permutation(num_samples)
-        
-        epoch_loss = 0
-        epoch_correct = 0
-        
-        for start_idx in range(0, num_samples, batch_size):
-            # Get batch
-            batch_indices = indices[start_idx:start_idx + batch_size]
-            X_batch = X_train[batch_indices]
-            y_batch = y_train[batch_indices]
-            
-            # Forward pass
-            predictions = self.model.forward(X_batch, training=True)
-            loss = self.model.compute_loss(y_batch, predictions)
-            
-            # Backward pass
-            grads = self.model.backward(X_batch, y_batch)
-            
-            # Clip gradients
-            grads = clip_gradients(grads, max_norm=5.0)
-            
-            # Update
-            self.optimizer.update(self.model.params, grads)
-            
-            # Track metrics
-            epoch_loss += loss * len(X_batch)
-            epoch_correct += np.sum(np.argmax(predictions, axis=1) == y_batch)
-        
-        epoch_loss /= num_samples
-        epoch_acc = epoch_correct / num_samples
-        
-        return epoch_loss, epoch_acc
-    
-    def validate(self, X_val, y_val):
-        """Validation"""
-        predictions = self.model.forward(X_val, training=False)
-        loss = self.model.compute_loss(y_val, predictions)
-        acc = np.mean(np.argmax(predictions, axis=1) == y_val)
-        return loss, acc
-    
-    def train(self, X_train, y_train, X_val, y_val, epochs=100):
-        """Full training loop"""
-        best_val_loss = float('inf')
-        patience = 10
-        patience_counter = 0
-        
-        for epoch in range(epochs):
-            # Train
-            train_loss, train_acc = self.train_epoch(X_train, y_train)
-            
-            # Validate
-            val_loss, val_acc = self.validate(X_val, y_val)
-            
-            # Update learning rate
-            if self.scheduler:
-                self.scheduler.step(epoch)
-            
-            # Track history
-            self.train_losses.append(train_loss)
-            self.val_losses.append(val_loss)
-            self.train_accs.append(train_acc)
-            self.val_accs.append(val_acc)
-            
-            # Print progress
-            if epoch % 10 == 0:
-                print(f"Epoch {epoch:3d} | "
-                      f"Train: {train_loss:.4f} ({train_acc:.4f}) | "
-                      f"Val: {val_loss:.4f} ({val_acc:.4f})")
-            
-            # Early stopping
-            if val_loss < best_val_loss:
-                best_val_loss = val_loss
-                patience_counter = 0
-            else:
-                patience_counter += 1
-            
-            if patience_counter >= patience:
-                print(f"
-Early stopping at epoch {epoch}")
-                break
-        
-        print("
-✅ Training complete!")
+
+def analyze_activation_variance(
+    n_in:      int,
+    n_layers:  int,
+    init_std:  float,
+    activation: str = "relu",
+) -> None:
+    """
+    Simulate forward pass variance through n_layers to see signal propagation.
+    """
+    np.random.seed(42)
+    x = np.random.randn(1000, n_in)   # batch of 1000 inputs
+
+    print(f"Init std={init_std:.4f}, activation={activation}")
+    print(f"Layer  0: var(x) = {x.var():.4f}")
+
+    for i in range(n_layers):
+        W = np.random.randn(n_in, n_in) * init_std
+        x = x @ W
+
+        # Apply activation
+        if activation == "relu":
+            x = np.maximum(0, x)
+        elif activation == "tanh":
+            x = np.tanh(x)
+
+        print(f"Layer {i+1:2d}: var(x) = {x.var():.6f}")
+
+        if x.var() < 1e-10:
+            print("  → Signal VANISHED (all zeros)")
+            break
+        if x.var() > 1e10:
+            print("  → Signal EXPLODED (overflowing)")
+            break
+
+
+# Bad initialization: std=1
+analyze_activation_variance(n_in=512, n_layers=5, init_std=1.0, activation="relu")
+# Output: 1.0, 256.0, 65536.0, ... (explodes)
+
+print()
+# He initialization for ReLU: std = sqrt(2/n_in)
+he_std = np.sqrt(2 / 512)
+analyze_activation_variance(n_in=512, n_layers=5, init_std=he_std, activation="relu")
+# Output: ~1.0, ~1.0, ~1.0, ~1.0 (stable!)
+
+
+def he_init(n_in: int, n_out: int) -> np.ndarray:
+    """
+    He initialization for ReLU layers.
+
+    Var(W) = 2/n_in
+    The factor of 2 compensates for ReLU zeroing half the inputs.
+
+    Derivation: ReLU halves the effective input variance,
+    so we need 2× the variance to compensate.
+    """
+    std = np.sqrt(2.0 / n_in)
+    return np.random.randn(n_in, n_out) * std   # (n_in, n_out)
+
+
+def xavier_init(n_in: int, n_out: int) -> np.ndarray:
+    """
+    Xavier/Glorot initialization for tanh/sigmoid layers.
+
+    Var(W) = 2/(n_in + n_out) — compromise between forward and backward
+    Uniform variant: W ~ U[-√(6/(n_in+n_out)), √(6/(n_in+n_out))]
+    """
+    limit = np.sqrt(6.0 / (n_in + n_out))
+    return np.random.uniform(-limit, limit, (n_in, n_out))
+
+
+# PyTorch uses these by default in nn.Linear
+import torch.nn as nn
+
+# nn.Linear uses Kaiming (He) initialization for weights by default
+linear = nn.Linear(512, 256)
+print(f"PyTorch Linear weight std: {linear.weight.data.std().item():.4f}")
+# ≈ sqrt(1/512) = 0.044 (Kaiming uniform variant)
 ```
 
 ---
 
-## 🎯 Best Practices Checklist
+## 2. Learning Rate Schedules
 
-- ✅ Use **He initialization** for ReLU
-- ✅ Use **Batch Normalization** for deep networks
-- ✅ Start with **Adam optimizer** (lr=0.001)
-- ✅ Use **learning rate scheduling**
-- ✅ Apply **gradient clipping** for RNNs
-- ✅ Monitor **train vs val metrics**
-- ✅ Use **early stopping**
-- ✅ **Save best model** during training
-- ✅ **Standardize inputs** (mean=0, std=1)
-- ✅ Start simple, add complexity gradually
+### The Warmup-Decay Pattern
+
+For Transformer models, the standard schedule is:
+
+```
+LR = d_model^{-0.5} × min(step^{-0.5}, step × warmup_steps^{-1.5})
+
+- Phase 1 (steps < warmup): LR increases linearly
+- Phase 2 (steps > warmup): LR decays as 1/√step
+```
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def noam_schedule(
+    step:          int,
+    d_model:       int   = 512,
+    warmup_steps:  int   = 4000,
+) -> float:
+    """
+    Noam schedule from "Attention Is All You Need" (Vaswani 2017).
+
+    Peak LR ≈ 0.002 for d_model=512, warmup=4000
+    """
+    step = max(step, 1)
+    return d_model ** (-0.5) * min(step ** (-0.5), step * warmup_steps ** (-1.5))
+
+
+def cosine_warmup_schedule(
+    step:          int,
+    total_steps:   int,
+    warmup_steps:  int,
+    peak_lr:       float = 1e-3,
+    min_lr:        float = 1e-5,
+) -> float:
+    """
+    Cosine decay with linear warmup — standard for modern models.
+
+    Used by: GPT-2, LLaMA, BERT, most recent models.
+
+    Phase 1: linear warmup  (0 → peak_lr)
+    Phase 2: cosine decay   (peak_lr → min_lr)
+    """
+    if step < warmup_steps:
+        # Linear warmup
+        return peak_lr * step / warmup_steps
+
+    # Cosine decay after warmup
+    progress = (step - warmup_steps) / (total_steps - warmup_steps)
+    cosine   = 0.5 * (1 + np.cos(np.pi * progress))
+    return min_lr + (peak_lr - min_lr) * cosine
+
+
+# Visualize schedules
+steps = np.arange(1, 10001)
+noam_lrs   = [noam_schedule(s)               for s in steps]
+cosine_lrs = [cosine_warmup_schedule(s, 10000, 500) for s in steps]
+
+print("Noam schedule (first 10 steps):")
+for s in [1, 100, 500, 1000, 4000, 10000]:
+    print(f"  Step {s:5d}: LR = {noam_schedule(s):.6f}")
+
+print("\nCosine warmup (first 10 steps):")
+for s in [1, 100, 500, 1000, 5000, 10000]:
+    print(f"  Step {s:5d}: LR = {cosine_warmup_schedule(s, 10000, 500):.6f}")
+
+
+# PyTorch implementation
+import torch.optim as optim
+from torch.optim.lr_scheduler import CosineAnnealingLR, LambdaLR
+
+
+def get_cosine_schedule_with_warmup(
+    optimizer,
+    warmup_steps:  int,
+    total_steps:   int,
+    min_lr_ratio:  float = 0.1,
+):
+    """Hugging Face-style cosine schedule with warmup."""
+
+    def lr_lambda(current_step: int) -> float:
+        if current_step < warmup_steps:
+            return current_step / max(1, warmup_steps)
+
+        progress = (current_step - warmup_steps) / max(1, total_steps - warmup_steps)
+        return max(min_lr_ratio, 0.5 * (1.0 + np.cos(np.pi * progress)))
+
+    return LambdaLR(optimizer, lr_lambda)
+```
 
 ---
 
-## 📹 Recommended Resources
+## 3. Gradient Clipping
 
-- [CS231n: Training Neural Networks](https://www.youtube.com/watch?v=wEoyxE0GP2M)
-- [fast.ai: Practical Deep Learning](https://www.youtube.com/watch?v=0oyCUWLL_fU)
-- [Papers: Adam, BatchNorm, ResNet](https://paperswithcode.com/)
+Gradient clipping prevents exploding gradients by rescaling the gradient vector when its norm exceeds a threshold:
+
+```python
+import torch
+import torch.nn as nn
+
+
+def manual_gradient_clip(
+    parameters,
+    max_norm: float = 1.0,
+) -> float:
+    """
+    Clip gradients by global L2 norm.
+
+    Algorithm:
+    1. Compute global norm: ‖g‖ = √(Σ_i ‖g_i‖²)
+    2. If ‖g‖ > max_norm: scale all gradients by max_norm / ‖g‖
+    3. Otherwise: leave unchanged
+
+    This preserves the direction of the gradient while bounding its magnitude.
+    """
+    total_norm_sq = sum(
+        p.grad.data.norm(2).item() ** 2
+        for p in parameters
+        if p.grad is not None
+    )
+    total_norm = total_norm_sq ** 0.5
+
+    clip_coef = max_norm / (total_norm + 1e-6)
+
+    if clip_coef < 1:
+        for p in parameters:
+            if p.grad is not None:
+                p.grad.data.mul_(clip_coef)
+
+    return total_norm   # return pre-clip norm for logging
+
+
+# PyTorch built-in (use this in practice)
+model = nn.Linear(100, 10)
+optimizer = optim.Adam(model.parameters(), lr=1e-3)
+
+# In training loop:
+# loss.backward()
+# grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+# optimizer.step()
+
+
+def training_step_with_clip(
+    model,
+    batch,
+    optimizer,
+    max_grad_norm: float = 1.0,
+    log_freq:      int   = 100,
+    step:          int   = 0,
+) -> dict:
+    """
+    Standard training step with gradient clipping.
+
+    Healthy gradient norm range: 0.1 – 5.0
+    Always clip before optimizer.step() — never after!
+    """
+    import torch.nn.functional as F
+
+    optimizer.zero_grad()
+    x, y = batch
+    loss = F.cross_entropy(model(x), y)
+    loss.backward()
+
+    # Clip gradients
+    grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
+
+    # Log if suspicious
+    if step % log_freq == 0:
+        status = "OK" if grad_norm < max_grad_norm else "CLIPPED"
+        print(f"Step {step}: grad_norm={grad_norm:.4f} [{status}]")
+
+    optimizer.step()
+
+    return {"loss": loss.item(), "grad_norm": float(grad_norm)}
+```
+
+**Why clipping works**: during backprop, if any layer produces a very large activation, the gradient can cascade into a huge update that moves the weights far from the optimum. Clipping limits the update size while preserving gradient direction.
 
 ---
 
-## 🎯 Key Takeaways
+## 4. AdamW: The Correct Way to Apply Weight Decay
 
-1. **Initialization matters**: Use He for ReLU, Xavier for Tanh
-2. **Batch Norm** speeds training and improves accuracy
-3. **Learning rate schedules** crucial for best performance
-4. **Adam** is the default optimizer (2024)
-5. **Gradient clipping** prevents explosions
-6. **Monitor metrics** to debug issues
-7. **Early stopping** prevents overfitting
-8. Start simple, iterate, measure!
+Vanilla Adam with L2 regularization has a subtle bug: the L2 penalty is scaled by the adaptive learning rate, making effective weight decay different per parameter. AdamW decouples them:
 
----
+```python
+def adamw_update_step(
+    params: dict[str, np.ndarray],
+    grads:  dict[str, np.ndarray],
+    m:      dict[str, np.ndarray],   # first moment (momentum)
+    v:      dict[str, np.ndarray],   # second moment (adaptive learning rate)
+    t:      int,                     # time step (for bias correction)
+    lr:            float = 1e-3,
+    beta1:         float = 0.9,
+    beta2:         float = 0.999,
+    eps:           float = 1e-8,
+    weight_decay:  float = 0.01,
+) -> None:
+    """
+    AdamW update (Loshchilov & Hutter, 2019).
 
-## 🎉 Module 01 Complete!
+    Key difference from Adam + L2:
+    - Adam + L2:  g_t ← g_t + λ·w    (weight decay scaled by v)
+    - AdamW:      w  ← w - lr·λ·w   (weight decay applied directly)
 
-**Congratulations!** You've mastered:
-- Neural network fundamentals
-- Forward & backward propagation
-- Activation functions & loss functions
-- Gradient descent & backpropagation
-- Regularization techniques
-- CNNs for images
-- RNNs/LSTMs for sequences
-- Training best practices
+    AdamW is what you want. Most frameworks implement it correctly.
+    """
+    t_float = float(t)
+    bias_correction1 = 1 - beta1 ** t_float
+    bias_correction2 = 1 - beta2 ** t_float
 
----
+    for key in params.keys():
+        # Standard Adam moment updates
+        m[key] = beta1 * m[key] + (1 - beta1) * grads[key]
+        v[key] = beta2 * v[key] + (1 - beta2) * grads[key] ** 2
 
-## 🚀 Next Module
+        # Bias-corrected estimates
+        m_hat = m[key] / bias_correction1
+        v_hat = v[key] / bias_correction2
 
-**Module 02: Large Language Models (LLMs)**
-- Transformer architecture
-- Attention mechanisms
-- Pre-training & fine-tuning
-- GPT, BERT, and beyond
-- Building your own LLM applications
-
-**Keep learning!** 💪
-
----
-
-## 📹 Recommended Videos
-
-- [How to Train Neural Networks](https://www.youtube.com/watch?v=pZEHXsizR7I) — Practical tips from fast.ai
-- [Learning Rate Schedules Explained](https://www.youtube.com/watch?v=DE150MslZE0) — Cosine annealing, warm restarts
-- [Batch Normalization Explained](https://www.youtube.com/watch?v=yXOMHOpbon8) — Visual intuition for batch norm
+        # AdamW: apply weight decay BEFORE the adaptive update
+        params[key] *= (1 - lr * weight_decay)          # L: decoupled decay
+        params[key] -= lr * m_hat / (np.sqrt(v_hat) + eps)  # L: adaptive update
+```
 
 ---
 
-## 📚 Additional Resources
+## 5. Mixed Precision Training
+
+Training with BF16 (Brain Float 16) or FP16 gives ~2× speedup and ~2× memory reduction on modern GPUs (A100, H100, RTX 3090+):
+
+```python
+import torch
+import torch.nn as nn
+from torch.cuda.amp import autocast, GradScaler
+
+
+def mixed_precision_training_loop(
+    model:      nn.Module,
+    optimizer,
+    dataloader,
+    n_epochs:   int   = 10,
+    grad_clip:  float = 1.0,
+    use_bf16:   bool  = True,     # True for A100/H100, False for older GPUs (use fp16)
+) -> list[float]:
+    """
+    Automatic Mixed Precision (AMP) training loop.
+
+    BF16 (Brain Float 16):
+    - Same exponent range as FP32
+    - Fewer mantissa bits (7 vs 23)
+    - Cannot overflow → no loss scaling needed
+    - Best for: A100, H100, RTX 4090+
+
+    FP16:
+    - Smaller exponent range → can overflow
+    - Requires GradScaler to detect and recover from overflows
+    - Best for: V100, RTX 3080, T4
+
+    Rule of thumb: use BF16 if available, FP16 otherwise.
+    """
+    model = model.cuda()
+    dtype = torch.bfloat16 if use_bf16 else torch.float16
+
+    # GradScaler only needed for FP16 (BF16 doesn't overflow)
+    scaler = GradScaler() if not use_bf16 else None
+
+    losses = []
+
+    for epoch in range(n_epochs):
+        epoch_loss = 0.0
+
+        for batch_idx, (x, y) in enumerate(dataloader):
+            x, y = x.cuda(), y.cuda()
+            optimizer.zero_grad()
+
+            # Forward pass in reduced precision
+            with autocast(dtype=dtype):
+                output = model(x)
+                loss   = nn.CrossEntropyLoss()(output, y)
+
+            # Backward pass
+            if scaler is not None:
+                # FP16: scale loss to prevent underflow, unscale before clip
+                scaler.scale(loss).backward()
+                scaler.unscale_(optimizer)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
+                scaler.step(optimizer)
+                scaler.update()
+            else:
+                # BF16: no scaling needed
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
+                optimizer.step()
+
+            epoch_loss += loss.item()
+
+        avg_loss = epoch_loss / len(dataloader)
+        losses.append(avg_loss)
+        print(f"Epoch {epoch+1}: loss={avg_loss:.4f}")
+
+    return losses
+```
+
+**Memory comparison** for a 7B model (approximate):
+| Precision | Memory per param | 7B model |
+|---|---|---|
+| FP32 | 4 bytes | 28 GB |
+| FP16 | 2 bytes | 14 GB |
+| BF16 | 2 bytes | 14 GB |
+| INT8 | 1 byte  | 7 GB |
+| NF4  | 0.5 byte | 3.5 GB |
+
+---
+
+## 6. Systematic Training Debugging Protocol
+
+```python
+def debug_training_run(
+    model:    nn.Module,
+    dataset,
+    optimizer,
+) -> None:
+    """
+    Karpathy's 6-step training debugging protocol.
+
+    Always start with simpler cases and work up to full complexity.
+    """
+
+    print("Step 1: Overfit a single batch")
+    # If the model can't memorize 1 batch, there's a fundamental bug
+    single_batch = next(iter(torch.utils.data.DataLoader(dataset, batch_size=8)))
+    for step in range(200):
+        loss = training_step(model, single_batch, optimizer)
+        if step % 50 == 0:
+            print(f"  Step {step}: loss={loss:.6f}")
+    # Expected: loss → near 0 (not exactly 0 if using label smoothing)
+    # If loss doesn't decrease: check architecture, loss function, gradients
+
+    print("\nStep 2: Check gradient flow")
+    # After one backward pass, all parameters should have non-zero gradients
+    loss = compute_loss(model, single_batch)
+    loss.backward()
+
+    for name, param in model.named_parameters():
+        if param.grad is None:
+            print(f"  ⚠ No gradient: {name}")
+        elif param.grad.abs().max() < 1e-10:
+            print(f"  ⚠ Near-zero gradient: {name}: {param.grad.abs().max():.2e}")
+
+    print("\nStep 3: Verify output distribution")
+    # At initialization, output should be approximately uniform
+    with torch.no_grad():
+        logits = model(single_batch[0])
+        probs  = torch.softmax(logits, dim=-1)
+        print(f"  Initial output entropy: {-(probs * probs.log()).sum(-1).mean():.3f}")
+        print(f"  Expected for uniform:   {np.log(logits.shape[-1]):.3f}")
+        # If entropy << expected, model is already biased → bad initialization
+
+    print("\nStep 4: Check loss at initialization")
+    # For N-class classification, expected initial loss = log(N)
+    N = logits.shape[-1]
+    print(f"  Expected initial loss: {np.log(N):.4f}")
+    with torch.no_grad():
+        initial_loss = compute_loss(model, single_batch)
+        print(f"  Actual initial loss:   {initial_loss:.4f}")
+    # If actual >> expected: initialization too large
+    # If actual << expected: model is somehow already predicting correctly
+
+    print("\nStep 5: Train for a few epochs")
+    # Loss should decrease monotonically in the first 10-20 steps
+    # then may fluctuate due to stochasticity
+
+    print("\nStep 6: Scale up and monitor")
+    # Now run the full training loop, monitoring:
+    # - train loss: should decrease
+    # - val loss: should decrease then plateau (not blow up)
+    # - grad norm: should be < max_norm most of the time
+    # - LR: should follow schedule
+
+
+def compute_loss(model, batch):
+    x, y = batch
+    return nn.CrossEntropyLoss()(model(x), y)
+
+
+def training_step(model, batch, optimizer):
+    optimizer.zero_grad()
+    loss = compute_loss(model, batch)
+    loss.backward()
+    optimizer.step()
+    return loss.item()
+```
+
+---
+
+## Complete Training Loop
+
+```python
+def production_training_loop(
+    model:         nn.Module,
+    train_loader,
+    val_loader,
+    total_steps:   int   = 10000,
+    warmup_steps:  int   = 500,
+    peak_lr:       float = 3e-4,
+    weight_decay:  float = 0.1,
+    max_grad_norm: float = 1.0,
+    eval_every:    int   = 500,
+) -> dict:
+    """
+    Production training loop with all best practices:
+    - AdamW optimizer
+    - Cosine schedule with warmup
+    - Gradient clipping
+    - Mixed precision
+    - Evaluation + checkpointing
+    """
+    import copy, torch
+
+    model = model.cuda()
+    optimizer = optim.AdamW(
+        model.parameters(),
+        lr=peak_lr,
+        betas=(0.9, 0.95),         # LLM defaults: β₂=0.95 (vs 0.999)
+        weight_decay=weight_decay,
+        eps=1e-8,
+    )
+
+    scheduler = get_cosine_schedule_with_warmup(optimizer, warmup_steps, total_steps)
+    scaler    = GradScaler()   # for FP16
+
+    best_val_loss = float("inf")
+    best_state    = None
+    history       = {"train_loss": [], "val_loss": [], "grad_norm": [], "lr": []}
+
+    step = 0
+    for epoch in range(1000):  # outer loop; inner is controlled by total_steps
+        for x, y in train_loader:
+            if step >= total_steps:
+                break
+
+            x, y = x.cuda(), y.cuda()
+            optimizer.zero_grad()
+
+            with autocast(dtype=torch.bfloat16):
+                loss = nn.CrossEntropyLoss()(model(x), y)
+
+            loss.backward()
+            grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
+            optimizer.step()
+            scheduler.step()
+
+            history["train_loss"].append(loss.item())
+            history["grad_norm"].append(float(grad_norm))
+            history["lr"].append(optimizer.param_groups[0]["lr"])
+
+            if step % eval_every == 0:
+                # Evaluate on validation
+                model.eval()
+                val_losses = []
+                with torch.no_grad():
+                    for x_v, y_v in val_loader:
+                        vl = nn.CrossEntropyLoss()(model(x_v.cuda()), y_v.cuda())
+                        val_losses.append(vl.item())
+
+                val_loss = np.mean(val_losses)
+                history["val_loss"].append(val_loss)
+
+                if val_loss < best_val_loss:
+                    best_val_loss = val_loss
+                    best_state    = copy.deepcopy(model.state_dict())
+
+                print(f"Step {step:5d}: train={loss.item():.4f}, val={val_loss:.4f}, "
+                      f"lr={optimizer.param_groups[0]['lr']:.6f}, grad_norm={grad_norm:.2f}")
+                model.train()
+
+            step += 1
+
+        if step >= total_steps:
+            break
+
+    # Restore best checkpoint
+    if best_state is not None:
+        model.load_state_dict(best_state)
+
+    return history
+```
+
+---
+
+## Best Practices Checklist
+
+| Category | Practice | Default value |
+|---|---|---|
+| Initialization | He for ReLU, Xavier for tanh | — |
+| Optimizer | AdamW | lr=1e-3, wd=0.01 |
+| LR schedule | Cosine with linear warmup | warmup=5% of steps |
+| Gradient clipping | Global norm clip | max_norm=1.0 |
+| Mixed precision | BF16 on A100+, FP16 on V100 | — |
+| Batch size | Largest that fits in memory | — |
+| Data | Standardize (mean=0, std=1) | — |
+| Debugging | Overfit 1 batch first | — |
+
+---
+
+## Edge Cases & Misconceptions
+
+!!! warning "Misconception: More epochs = better"
+    Training beyond the point of minimum validation loss causes overfitting. Use early stopping or train for a fixed compute budget and select the best checkpoint. The final epoch checkpoint is rarely the best.
+
+!!! note "AdamW betas for LLMs"
+    For language model training, `β₂=0.95` (not the PyTorch default 0.999) is commonly used. Lower β₂ makes the adaptive learning rate respond faster to gradient changes — important when gradient magnitudes shift significantly across training.
+
+!!! warning "Misconception: BF16 is always safe"
+    BF16 has 7 mantissa bits vs FP32's 23. Operations requiring high precision (e.g., loss computation, final softmax) should be done in FP32. PyTorch's `autocast` handles this automatically by keeping certain operations in FP32.
+
+---
+
+## Production Connection
+
+**LLaMA training setup**: Meta trained LLaMA-3 with AdamW (β₁=0.9, β₂=0.95, wd=0.1), cosine schedule with 2000 warmup steps, gradient clipping at 1.0, and 4M token batch size. The training loss curve had several "spikes" where they rolled back to earlier checkpoints and continued.
+
+**Gradient accumulation**: when the GPU can't fit the desired batch size, use gradient accumulation — run N mini-batches, accumulate gradients, then step. Clip gradients *after* accumulation, not per-mini-batch.
+
+---
+
+## Key Takeaways
+
+1. **He initialization** (`std = √(2/n_in)`) keeps activation variance stable for ReLU networks; **Xavier** (`std = √(2/(n_in+n_out))`) for tanh/sigmoid.
+2. **Warmup + cosine decay** is the standard LR schedule for Transformers: ramp up linearly for 1–5% of steps, then decay as cosine to ~10% of peak LR.
+3. **Gradient clipping** rescales the full gradient vector when its global norm exceeds `max_norm`, preserving direction while bounding step size.
+4. **AdamW** applies weight decay directly to parameters (`w ← w·(1-lr·λ)`) rather than adding it to the gradient — this is mathematically correct for L2 regularization with adaptive optimizers.
+5. **Mixed precision** (BF16/FP16) halves memory and doubles throughput on modern GPUs with negligible quality loss.
+6. **Debug systematically**: overfit one batch first, check gradient flow, verify initial loss equals log(N).
+
+---
+
+## Further Reading
 
 - [A Recipe for Training Neural Networks](https://karpathy.github.io/2019/04/25/recipe/) — Andrej Karpathy's practical guide
-- [PyTorch Training Best Practices](https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html) — Official tuning guide
-- [Weight Initialization Strategies](https://machinelearningmastery.com/weight-initialization-for-deep-learning-neural-networks/) — Machine Learning Mastery
+- [AdamW paper](https://arxiv.org/abs/1711.05101) — Loshchilov & Hutter 2019: Decoupled Weight Decay Regularization
+- [Mixed precision training](https://arxiv.org/abs/1710.03740) — Micikevicius et al. 2018
+- [PyTorch AMP tutorial](https://pytorch.org/docs/stable/amp.html) — official automatic mixed precision documentation
+- [nanoGPT](https://github.com/karpathy/nanoGPT) — complete GPT training in ~300 lines
+
+---
+
+## Module 05 Complete
+
+You have now mastered the neural networks fundamentals:
+
+- Neuron architecture, activation functions, loss functions
+- Gradient descent, backpropagation, optimization
+- Overfitting, regularization, dropout
+- Building networks from scratch in NumPy
+- Convolutional, recurrent, and feed-forward architectures
+- Professional training practices
+
+**[Module 06: Transformers & Attention →](../../module-06-transformers-attention-mechanisms/index.md)**

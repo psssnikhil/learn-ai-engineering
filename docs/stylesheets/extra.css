@@ -1,0 +1,214 @@
+/* ============================================================
+   AI Engineering Handbook — custom styles
+   ============================================================ */
+
+/* ── Typography & reading width ─────────────────────────── */
+.md-content {
+  max-width: 860px;
+}
+
+.md-typeset h1 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.md-typeset h2 {
+  font-weight: 600;
+  border-bottom: 2px solid var(--md-primary-fg-color--light);
+  padding-bottom: 0.2em;
+  margin-top: 2em;
+}
+
+/* ── Navigation tabs ─────────────────────────────────────── */
+.md-tabs__link {
+  font-weight: 500;
+}
+
+/* ── Lesson metadata badges ─────────────────────────────── */
+.lesson-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.78rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2em 0.65em;
+  border-radius: 99px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge--module {
+  background: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+}
+
+.badge--difficulty-beginner {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge--difficulty-intermediate {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge--difficulty-advanced {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+[data-md-color-scheme="slate"] .badge--difficulty-beginner {
+  background: #064e3b;
+  color: #a7f3d0;
+}
+
+[data-md-color-scheme="slate"] .badge--difficulty-intermediate {
+  background: #78350f;
+  color: #fde68a;
+}
+
+[data-md-color-scheme="slate"] .badge--difficulty-advanced {
+  background: #7f1d1d;
+  color: #fca5a5;
+}
+
+/* ── Callout / tip boxes ─────────────────────────────────── */
+.callout {
+  border-left: 4px solid var(--md-primary-fg-color);
+  background: var(--md-code-bg-color);
+  padding: 0.8rem 1rem;
+  border-radius: 0 6px 6px 0;
+  margin: 1rem 0;
+}
+
+.callout-title {
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--md-primary-fg-color);
+  margin-bottom: 0.3rem;
+}
+
+.callout--depth {
+  border-left-color: #7c3aed;
+}
+
+.callout--depth .callout-title {
+  color: #7c3aed;
+}
+
+[data-md-color-scheme="slate"] .callout--depth .callout-title {
+  color: #c4b5fd;
+}
+
+/* ── Persona cards on homepage ──────────────────────────── */
+.persona-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.persona-card {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  background: var(--md-code-bg-color);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.persona-card:hover {
+  border-color: var(--md-primary-fg-color);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.persona-card__title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
+  color: var(--md-primary-fg-color);
+}
+
+.persona-card__desc {
+  font-size: 0.85rem;
+  color: var(--md-default-fg-color--light);
+  margin-bottom: 0.6rem;
+}
+
+/* ── Module stat pills on homepage ──────────────────────── */
+.stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35em 0.9em;
+  border-radius: 99px;
+  border: 1.5px solid var(--md-primary-fg-color--light);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--md-default-fg-color);
+}
+
+.stat-pill__value {
+  color: var(--md-primary-fg-color);
+  font-size: 1rem;
+}
+
+/* ── Phase table improvements ───────────────────────────── */
+.md-typeset table:not([class]) th {
+  background: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+}
+
+/* ── Mermaid diagram centering ──────────────────────────── */
+.mermaid {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+/* ── "Back to top" button polish ───────────────────────── */
+.md-top {
+  background: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Announcement banner ─────────────────────────────────── */
+.md-banner {
+  background: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+  font-size: 0.82rem;
+}
+
+/* ── Code block improvements ───────────────────────────── */
+.md-typeset pre {
+  border-radius: 6px;
+}
+
+/* ── Lesson table inside module index ───────────────────── */
+.lesson-table td:first-child {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── Search highlight ───────────────────────────────────── */
+.md-search-result mark {
+  background: rgba(var(--md-primary-fg-color--rgb), 0.15);
+  color: inherit;
+  padding: 0 2px;
+  border-radius: 3px;
+}

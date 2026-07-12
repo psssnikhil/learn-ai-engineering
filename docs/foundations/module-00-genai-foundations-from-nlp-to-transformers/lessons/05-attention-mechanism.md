@@ -1,236 +1,395 @@
 ---
 title: The Attention Mechanism — "Attention Is All You Need"
 description: >-
-  Understand the revolutionary Attention mechanism that replaced sequential
-  processing, and how the landmark 2017 paper changed AI forever
-duration: 40 min
+  Master the attention mechanism with full numerical walkthroughs on a 4-word
+  sentence — from Q/K/V projections through score computation, scaling, softmax,
+  and the final weighted sum
+duration: 75 min
 difficulty: intermediate
 has_code: true
 module: module-00
 ---
 # The Attention Mechanism — "Attention Is All You Need"
 
+## Prerequisites
+
+- [Lesson 03: NLP Fundamentals](03-nlp-fundamentals.md) — tokenization, embeddings, dot product for similarity
+- [Lesson 04: Contextual Embeddings](04-contextual-embeddings.md) — why sequential models failed and what we need instead
+- [Lesson 02: Math Foundations](02-math-foundations.md) — softmax, gradient descent
+
 ## What You'll Learn
 
-| Objective | Time | Difficulty |
-|-----------|------|------------|
-| Understand the intuition behind Attention | 40 min | Intermediate |
-| Learn how Attention scores are computed | | |
-| Understand the significance of the 2017 paper | | |
-| See why Attention replaced recurrence entirely | | |
+| Objective | Why It Matters |
+|-----------|---------------|
+| Understand attention's intuition before the math | Makes the formulas feel like inevitable choices, not magic |
+| Trace Q, K, V projections with actual numbers | You will recognize this pattern in every Transformer implementation |
+| Walk through a 4-word attention computation by hand | The most effective way to internalize the mechanism |
+| Understand the scaling factor and why it matters | Connects to numerical stability in production training |
+| Understand why attention replaces sequential processing | The key insight of the 2017 paper |
 
 ---
 
 ## The Paper That Changed Everything
 
-In June 2017, a team at Google published a paper titled **"Attention Is All You Need"** (Vaswani et al.). The title itself was a bold claim — it said that the Attention mechanism alone, without any recurrence or convolution, was sufficient to build state-of-the-art language models.
+In June 2017, Vaswani et al. published "Attention Is All You Need." The title itself was provocative — it claimed that the attention mechanism alone, without any recurrence or convolution, was sufficient for state-of-the-art sequence modeling.
 
-This paper introduced the **Transformer architecture**, which became the foundation for:
-- **GPT** (Generative Pre-trained Transformer) — OpenAI
-- **BERT** (Bidirectional Encoder Representations from Transformers) — Google
-- **Claude** — Anthropic
-- **LLaMA** — Meta
-- Every major large language model since 2018
+They were right. Every major language model since 2018 — GPT, BERT, Claude, LLaMA, Gemini — is built on this foundation.
 
-Before we look at the full Transformer, we need to deeply understand its core innovation: **Attention**.
+!!! note "Before Reading the Math"
+    The attention mechanism is elegant but requires careful reading. Work through the numerical example in Section 4 slowly. Once you see the numbers flow through the computation, the formula clicks permanently.
 
 ---
 
-## The Intuition Behind Attention
+## Intuition: Selective Focus
 
-When you read a sentence, you do not give equal weight to every word. Your brain focuses on the most relevant words for understanding each part:
+When you read "The animal didn't cross the street because **it** was too tired," you instinctively know "it" refers to "animal" and not "street." You do this by attending to the surrounding words differently — "animal" and "tired" get high weight; "the" and "because" get low weight.
+
+Attention is a mechanism that lets a model **learn** which words to focus on when processing each position. Instead of reading left-to-right and hoping context accumulates in a hidden state, attention asks: "For each word I am processing, which other words in this sentence are most relevant to me right now?"
 
 ```
-"The cat, which had been sleeping on the warm mat all afternoon, finally stretched"
+Processing "it" in "The animal didn't cross the street because it was too tired":
 
-When understanding "stretched":
-  - HIGH attention: "cat" (what stretched?)
-  - HIGH attention: "sleeping" (what was it doing before?)
-  - LOW attention: "warm", "afternoon", "mat" (less relevant to the action)
+  Word      Raw Score   Attention Weight (after softmax)
+  ----      ---------   --------------------------------
+  The         0.32          0.02
+  animal      2.14          0.43    ← high! (likely referent)
+  didn't      0.18          0.01
+  cross       0.55          0.04
+  the         0.28          0.02
+  street      1.02          0.12    ← moderate (other candidate)
+  because     0.21          0.02
+  it          1.15          0.15    ← self-attention
+  was         0.41          0.03
+  too         0.38          0.03
+  tired       1.08          0.13    ← relevant (supports "animal")
+
+  Weighted output for "it" = 0.02×V_The + 0.43×V_animal + ... + 0.13×V_tired
+  This output now encodes: "it is the animal (because it was tired)"
 ```
-
-Attention is a mechanism that lets the model **learn which words to focus on** when processing each word in the sequence.
 
 ---
 
-## How Attention Works — Step by Step
+## The Q, K, V Framework
 
-### Step 1: Create Three Vectors for Each Word
+### Where the Metaphor Comes From
 
-For each word, we create three vectors by multiplying the word's embedding by three learned weight matrices:
+The Query-Key-Value framework is borrowed from information retrieval:
 
-```
-Query (Q): "What am I looking for?"
-Key (K):   "What do I contain?"
-Value (V): "What information do I provide?"
-```
+- In a database: you submit a **query**, it matches against stored **keys**, and returns **values**
+- In attention: each word asks a **query** ("what am I looking for?"), every word offers a **key** ("what can I be found for?"), and the retrieved **value** is the actual information
 
-```python
-import numpy as np
+The insight: Q, K, and V are all derived from the **same** input sequence through different learned linear projections. Each word simultaneously acts as a query (asking about other words), a key (being asked about by other words), and a value (providing information when selected).
 
-# Simplified example: 4-dimensional embeddings
-embedding_dim = 4
+### The Three Projections
 
-# Word embeddings (normally from a learned embedding layer)
-the  = np.array([0.1, 0.2, 0.3, 0.4])
-cat  = np.array([0.5, 0.1, 0.8, 0.2])
-sat  = np.array([0.3, 0.7, 0.2, 0.6])
+For each token embedding \(x_i\), we create three vectors via learned weight matrices:
 
-# Learned weight matrices (normally trained via gradient descent)
-W_Q = np.random.randn(4, 4) * 0.1  # Query weights
-W_K = np.random.randn(4, 4) * 0.1  # Key weights
-W_V = np.random.randn(4, 4) * 0.1  # Value weights
+\[
+q_i = x_i W^Q, \quad k_i = x_i W^K, \quad v_i = x_i W^V
+\]
 
-# Create Q, K, V for each word
-Q_cat = cat @ W_Q  # "What is 'cat' looking for?"
-K_cat = cat @ W_K  # "What does 'cat' contain?"
-V_cat = cat @ W_V  # "What information does 'cat' provide?"
+where \(W^Q, W^K \in \mathbb{R}^{d_\text{model} \times d_k}\) and \(W^V \in \mathbb{R}^{d_\text{model} \times d_v}\).
 
-Q_sat = sat @ W_Q
-K_sat = sat @ W_K
-V_sat = sat @ W_V
-```
-
-### Step 2: Compute Attention Scores
-
-The attention score between two words is the **dot product** of the Query of one word with the Key of another. This measures: "How relevant is word B when processing word A?"
-
-```python
-# How much should "sat" attend to "cat"?
-score = np.dot(Q_sat, K_cat)
-# Higher score = "cat" is more relevant when processing "sat"
-```
-
-### Step 3: Scale and Softmax
-
-We scale the scores (to prevent very large values) and apply softmax to get probabilities:
-
-```python
-def softmax(x):
-    exp_x = np.exp(x - np.max(x))
-    return exp_x / exp_x.sum()
-
-d_k = embedding_dim  # dimension of key vectors
-
-# Scores for "sat" attending to all words
-scores = np.array([
-    np.dot(Q_sat, K_the),
-    np.dot(Q_sat, K_cat),
-    np.dot(Q_sat, K_sat)
-])
-
-# Scale by sqrt(d_k) to stabilize gradients
-scaled_scores = scores / np.sqrt(d_k)
-
-# Softmax to get attention weights (probabilities that sum to 1)
-attention_weights = softmax(scaled_scores)
-print(attention_weights)
-# Example: [0.15, 0.65, 0.20]
-# "sat" pays 65% attention to "cat", 20% to itself, 15% to "the"
-```
-
-### Step 4: Weighted Sum of Values
-
-The final output is a weighted sum of Value vectors, using the attention weights:
-
-```python
-# Output for "sat" = weighted combination of all Value vectors
-output_sat = (attention_weights[0] * V_the +
-              attention_weights[1] * V_cat +
-              attention_weights[2] * V_sat)
-
-# This output is a NEW vector for "sat" that incorporates
-# context from the words it attended to most
-```
+!!! note "What the Projections Learn"
+    The Q and K projections are trained to make the dot product Q_i · K_j large when position j is semantically relevant to position i. This is what "learning attention patterns" means — the W^Q and W^K matrices are learned such that their projections capture useful notions of relevance for the task at hand.
 
 ---
 
 ## The Attention Formula
 
-The entire process is captured in one elegant equation:
+\[
+\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right) V
+\]
 
-```
-Attention(Q, K, V) = softmax(Q · K^T / √d_k) · V
-```
+Let us unpack each piece before the numerical example:
 
-Where:
-- `Q · K^T` computes all pairwise attention scores at once (matrix multiplication)
-- `√d_k` is the scaling factor (d_k = dimension of key vectors)
-- `softmax` normalizes scores to probabilities
-- Multiplying by `V` produces the weighted output
+| Component | Shape | Purpose |
+|-----------|-------|---------|
+| Q | (seq_len, d_k) | Queries — what each position is looking for |
+| K | (seq_len, d_k) | Keys — what each position offers |
+| Q K^T | (seq_len, seq_len) | Pairwise relevance scores |
+| / √d_k | scalar | Scaling — prevents softmax saturation |
+| softmax(…) | (seq_len, seq_len) | Attention weights — rows sum to 1 |
+| × V | (seq_len, d_v) | Weighted combination of value vectors |
+
+---
+
+## Numerical Walkthrough: 4-Word Sentence
+
+Let us compute attention from scratch on "The cat sat on" with 4-dimensional embeddings and d_k = 3.
+
+### Setup
 
 ```python
-def attention(Q, K, V):
+import numpy as np
+
+np.random.seed(42)
+
+# Word embeddings — shape (4, 4)
+# Each row is one word's embedding vector
+X = np.array([
+    [0.1, 0.2, 0.3, 0.4],   # "The"
+    [0.5, 0.1, 0.8, 0.2],   # "cat"
+    [0.3, 0.7, 0.2, 0.6],   # "sat"
+    [0.4, 0.3, 0.5, 0.1],   # "on"
+])
+# X.shape: (4, 4)  — 4 words × 4-dim embeddings
+
+d_model = 4   # embedding dimension
+d_k     = 3   # key/query dimension
+d_v     = 3   # value dimension
+
+# Learned projection matrices (normally trained; here we set fixed values)
+W_Q = np.array([
+    [0.1, 0.0, 0.2],
+    [0.0, 0.3, 0.1],
+    [0.2, 0.1, 0.0],
+    [0.1, 0.2, 0.3],
+])   # shape (d_model, d_k) = (4, 3)
+
+W_K = np.array([
+    [0.3, 0.1, 0.0],
+    [0.1, 0.2, 0.1],
+    [0.0, 0.1, 0.3],
+    [0.2, 0.0, 0.2],
+])   # shape (4, 3)
+
+W_V = np.array([
+    [0.2, 0.1, 0.3],
+    [0.1, 0.3, 0.1],
+    [0.3, 0.0, 0.2],
+    [0.0, 0.2, 0.1],
+])   # shape (4, 3)
+
+print(f"X.shape   = {X.shape}")    # (4, 4)
+print(f"W_Q.shape = {W_Q.shape}")  # (4, 3)
+```
+
+### Step 1: Project to Q, K, V
+
+```python
+# Q = X @ W_Q:  (4,4) @ (4,3) → (4,3)
+Q = X @ W_Q
+K = X @ W_K
+V = X @ W_V
+
+print("\nQ (queries):")
+print(Q.round(3))
+# Each ROW is one word's query vector
+# Q[0] = "The" asking: "what should I attend to?"
+# Q[2] = "sat" asking: "what should I attend to?"
+
+print("\nK (keys):")
+print(K.round(3))
+# Each ROW is one word's key vector
+# K[1] = "cat" announcing: "I am available as context"
+
+print("\nV (values):")
+print(V.round(3))
+# Each ROW is one word's value vector
+# V[1] = "cat" saying: "here is my actual information"
+```
+
+### Step 2: Compute Raw Attention Scores
+
+```python
+# Scores = Q @ K^T:  (4,3) @ (3,4) → (4,4)
+scores = Q @ K.T
+
+print("\nRaw attention scores (Q @ K^T):")
+print(scores.round(3))
+# scores[i, j] = how much word i wants to attend to word j
+# scores[2, 1] = how much "sat" wants to attend to "cat"
+
+# The scores matrix is 4×4: every word × every word
+print(f"\nScores shape: {scores.shape}")  # (4, 4)
+```
+
+### Step 3: Scale by √d_k
+
+```python
+scale_factor = np.sqrt(d_k)   # √3 ≈ 1.732
+scaled_scores = scores / scale_factor
+
+print(f"\nScaling factor: √{d_k} = {scale_factor:.3f}")
+print("\nScaled scores:")
+print(scaled_scores.round(3))
+```
+
+**Why scale?** Without scaling, for large d_k, the dot products grow large in magnitude (their variance is proportional to d_k). Large inputs to softmax push outputs toward 0 or 1, making gradients vanishingly small. Dividing by √d_k normalizes the variance:
+
+```python
+# Demonstration: why large scores hurt training
+
+def saturated_softmax(scores):
+    """Demonstrates softmax saturation."""
+    probs = np.exp(scores) / np.exp(scores).sum()
+    return probs
+
+small_scores = np.array([0.5, 0.3, 0.1, 0.2])
+large_scores = small_scores * 10.0   # what happens without scaling
+
+print("Small scores:", saturated_softmax(small_scores).round(3))
+# [0.357, 0.293, 0.254, 0.281] — gradients can flow (no saturation)
+
+print("Large scores:", saturated_softmax(large_scores).round(3))
+# [0.999, 0.000, 0.000, 0.000] — gradient ≈ 0 for non-max (vanished!)
+```
+
+### Step 4: Apply Softmax Row-Wise
+
+```python
+def softmax_2d(x: np.ndarray) -> np.ndarray:
+    """Row-wise softmax: each row becomes a probability distribution."""
+    exp_x = np.exp(x - x.max(axis=1, keepdims=True))
+    return exp_x / exp_x.sum(axis=1, keepdims=True)
+
+attention_weights = softmax_2d(scaled_scores)
+
+print("\nAttention weights (each row sums to 1.0):")
+print(attention_weights.round(3))
+print("\nRow sums:", attention_weights.sum(axis=1).round(4))  # all ≈ 1.0
+
+# Each row is the attention distribution for one word
+# Row 0 = "The" attention pattern over all 4 words
+# Row 2 = "sat" attention pattern over all 4 words
+print(f"\n'sat' attends to each word: {dict(zip(['The','cat','sat','on'], attention_weights[2].round(3)))}")
+```
+
+### Step 5: Weighted Sum of Values
+
+```python
+# Output = attention_weights @ V:  (4,4) @ (4,3) → (4,3)
+output = attention_weights @ V
+
+print("\nAttention output:")
+print(output.round(3))
+print(f"\nOutput shape: {output.shape}")  # (4, 3)
+
+# output[2] is the new context-aware representation for "sat"
+# It is a weighted combination of all word values, weighted by attention
+# High attention to "cat" → "sat" representation absorbs information about "cat"
+print(f"\nNew 'sat' representation: {output[2].round(3)}")
+```
+
+### The Full Function
+
+```python
+def scaled_dot_product_attention(Q: np.ndarray, K: np.ndarray,
+                                  V: np.ndarray,
+                                  mask: np.ndarray = None):
     """
     Scaled dot-product attention.
-    Q, K, V: matrices where each row is a word's query/key/value vector
+
+    Q: (seq_len, d_k) or (batch, heads, seq_len, d_k)
+    K: (seq_len, d_k)
+    V: (seq_len, d_v)
+    mask: optional (seq_len, seq_len) — set to -1e9 to mask out positions
+
+    Returns: (seq_len, d_v) context-aware representations
     """
-    d_k = K.shape[-1]
-    scores = Q @ K.T / np.sqrt(d_k)     # Pairwise similarity scores
-    weights = softmax_matrix(scores)      # Normalize each row
-    output = weights @ V                  # Weighted sum of values
-    return output, weights
+    d_k     = K.shape[-1]
+    scores  = Q @ K.T / np.sqrt(d_k)          # (seq_len, seq_len)
+
+    if mask is not None:
+        scores = scores + mask                 # mask out future tokens (causal)
+
+    weights = softmax_2d(scores)               # (seq_len, seq_len)
+    return weights @ V, weights               # (seq_len, d_v), weights for visualization
+
+# Use the function
+ctx, attn = scaled_dot_product_attention(Q, K, V)
+print("Output shape:", ctx.shape)   # (4, 3)
 ```
 
 ---
 
 ## Why Attention Solves the Sequential Bottleneck
 
-| Property | RNN/LSTM | Attention |
-|----------|----------|-----------|
-| **Processing** | One word at a time | All words simultaneously |
-| **Long-range deps** | Information degrades over distance | Direct connection between any two words |
-| **Parallelization** | Cannot parallelize | Fully parallelizable (matrix ops) |
-| **Computation** | O(n) sequential steps | O(1) parallel steps (O(n²) total ops) |
+Compare how RNNs and Attention handle the relationship between word 1 and word 100 in a sequence:
 
-The key insight: Attention computes relationships between **every pair of words** in a single matrix multiplication. Word 1 and word 1000 have a direct connection — no information needs to travel through 999 intermediate states.
+```
+RNN: word 1 → h₁ → h₂ → ... → h₉₉ → h₁₀₀
+     gradient must flow through 99 weight matrices → vanishes
+
+Attention: word 1 directly attends to word 100 in one matrix multiply
+           gradient flows directly from the loss to both words — no intermediate steps!
+```
+
+| Property | RNN/LSTM | Self-Attention |
+|----------|----------|----------------|
+| Distance between word i and word j | O(|i-j|) steps | O(1) — direct connection |
+| Gradient path length | O(|i-j|) multiplications | O(1) |
+| Parallelization | None (step n+1 needs step n) | Fully parallel (all rows of Q computed independently) |
+| Total computation | O(n) sequential steps | O(n²) but fully parallelizable |
+| Memory bottleneck | Hidden state size | O(n²) attention matrix |
+
+The trade-off: attention requires O(n²) memory and compute, while RNNs require O(n) sequential time. For n < 100K, attention wins massively because of GPU parallelism. For extreme context lengths (millions of tokens), this quadratic cost becomes a bottleneck — active research area (Flash Attention, linear attention, etc.).
 
 ---
 
-## Visualizing Attention
+## Visualizing Attention: Coreference Resolution
 
-When a Transformer processes text, the attention weights reveal which words the model considers related:
+One of the most informative ways to understand what trained attention learns:
 
 ```
 Input: "The animal didn't cross the street because it was too tired"
 
-When processing "it":
-  "The"      ░░░░░░░░░░  (0.02)
-  "animal"   ████████░░  (0.45)  ← high attention!
-  "didn't"   ░░░░░░░░░░  (0.01)
-  "cross"    ░░░░░░░░░░  (0.03)
-  "the"      ░░░░░░░░░░  (0.01)
-  "street"   ██░░░░░░░░  (0.12)
-  "because"  ░░░░░░░░░░  (0.02)
-  "it"       ██░░░░░░░░  (0.15)
-  "was"      ░░░░░░░░░░  (0.04)
-  "too"      ░░░░░░░░░░  (0.03)
-  "tired"    ██░░░░░░░░  (0.12)
+Attention weights when processing "it" (row = "it", columns = all words):
 
-The model correctly identifies that "it" refers to "animal" (not "street")
-because "tired" is a property of animals, not streets.
+                The  animal  didn't  cross  the  street  because  it  was  too  tired
+Attention:     0.02  0.43    0.01   0.04  0.02   0.12    0.02   0.15  0.03  0.03  0.13
+
+The model assigns 43% attention to "animal" and 12% to "street".
+"animal" wins because "tired" (another high-attention word) collocates with "animal",
+not "street" (streets don't get tired).
 ```
 
-This ability to resolve references across long distances is something RNNs and LSTMs struggled with fundamentally.
+This pattern — attention learning to resolve pronouns to their referents — emerges *automatically* from next-token prediction training. The model never receives an explicit label saying "it → animal."
+
+---
+
+## Edge Cases and Misconceptions
+
+**"Q, K, V are three separate inputs."** In self-attention, Q, K, and V are all computed from the *same* input sequence X via three separate projection matrices. Cross-attention (used in encoder-decoder models and in RAG) uses the query from one sequence and the keys/values from another.
+
+**"Attention weights tell you what the model is 'thinking about'."** Attention weights are one signal, but they do not have a simple interpretation as "importance." Research has shown that models can ignore high-attention positions and vice versa. Attention is a mechanism, not an explanation.
+
+**"The d_k in the scaling formula is the model dimension d_model."** No — d_k is the dimension of the query and key vectors, which is typically d_model / num_heads. In GPT-3: d_model = 12288, num_heads = 96, so d_k = 128.
+
+**"Attention is expensive, so it should be used sparingly."** Modern hardware (A100/H100 GPUs with FlashAttention) makes attention highly efficient. The quadratic cost in sequence length is the real bottleneck, not attention per se.
+
+---
+
+## Production Connection
+
+| Concept | Production Relevance |
+|---------|---------------------|
+| **Attention matrix** | At inference time, the KV cache stores K and V for all previous tokens — this is why long context is expensive |
+| **Scaling** | The √d_k factor is what makes training stable at large model sizes |
+| **Causal mask** | Every autoregressive LLM uses this — it is what makes generation possible |
+| **O(n²) cost** | The reason context windows cost more per token at longer lengths; 128K tokens costs ≈ 1000x more attention compute than 128 tokens |
 
 ---
 
 ## Key Takeaways
 
-- Attention computes relevance between every pair of words simultaneously
-- Each word produces Query, Key, and Value vectors from learned weight matrices
-- Attention scores = dot product of Queries and Keys, scaled and softmaxed
-- The output for each word is a weighted sum of Value vectors from all other words
-- This replaces sequential processing entirely — enabling massive parallelization
-- The "Attention Is All You Need" paper (2017) showed this mechanism alone was sufficient for state-of-the-art results
-
-## Resources
-
-- [Attention Is All You Need — Original Paper](https://arxiv.org/abs/1706.03762) -- The landmark 2017 paper by Vaswani et al. that introduced the Transformer
-- [YouTube: Attention Mechanism Explained](https://www.youtube.com/watch?v=PSs6nxngL6k) -- StatQuest's clear walkthrough of attention
-- [YouTube: Illustrated Guide to Transformers — Attention](https://www.youtube.com/watch?v=4Bdc55j80l8) -- Visual explanation of how attention works
-- [Jay Alammar: Visualizing Attention](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/) -- Interactive visualizations of attention in sequence-to-sequence models
+- Attention lets each token directly access information from any other token in one step — no sequential propagation
+- **Q** (query): what this token is looking for; **K** (key): what this token offers; **V** (value): the actual information this token provides
+- Attention score = dot product of Q and K, scaled by 1/√d_k, then softmaxed
+- Output = weighted sum of Value vectors using the attention weights
+- The scaling by √d_k prevents softmax saturation, which would kill gradients during training
+- The entire computation is one matrix multiply (Q @ K^T), parallelizable across all token pairs simultaneously
 
 ---
 
-Next: Self-Attention and Multi-Head Attention
+## Further Reading
+
+- [Vaswani et al. (2017): Attention Is All You Need](https://arxiv.org/abs/1706.03762) — the original paper; read the architecture section after this lesson
+- [Jay Alammar: Visualizing A Neural Machine Translation Model](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/) — the predecessor paper with the first visual attention explanations
+- [3Blue1Brown: Attention in Transformers, Visually Explained](https://www.youtube.com/watch?v=eMlx5fFNoYc) — the best visual walkthrough of attention mechanics (26 min)
+- [Lilian Weng: The Attention Mechanism Family](https://lilianweng.github.io/posts/2018-06-24-attention/) — comprehensive survey of attention variants
+
+---
+
+**Next:** [Self-Attention and Multi-Head Attention](06-self-attention-multi-head.md)
