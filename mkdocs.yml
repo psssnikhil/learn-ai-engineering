@@ -22,11 +22,12 @@ theme:
   features:
     - navigation.instant
     - navigation.tracking
-    - navigation.expand
     - navigation.sections
+    - navigation.indexes
     - search.suggest
     - search.highlight
     - content.code.copy
+    - toc.integrate
 
 plugins:
   - search
@@ -45,167 +46,31 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Learning Path: learning-path.md
+  - Foundations:
+      - Overview: foundations/index.md
+      - "M00 · GenAI Foundations: From NLP to Transformers": foundations/module-00-genai-foundations-from-nlp-to-transformers/index.md
+      - M01 · AI Engineering Essentials: foundations/module-01-ai-engineering-essentials/index.md
+      - "M05 · Neural Networks & Deep Learning Fundamentals": foundations/module-05-neural-networks-deep-learning-fundamentals/index.md
+      - "M06 · Transformers & Attention Mechanisms": foundations/module-06-transformers-attention-mechanisms/index.md
+      - M07 · Large Language Models (LLMs): foundations/module-07-large-language-models-llms/index.md
+  - Build:
+      - Overview: build/index.md
+      - "M09 · RAG: Retrieval Augmented Generation": build/module-09-rag-retrieval-augmented-generation/index.md
+      - M11 · AI Agents Fundamentals: build/module-11-ai-agents-fundamentals/index.md
+      - M12 · Multi-Agent Systems: build/module-12-multi-agent-systems/index.md
+      - M13 · Vector Databases Deep Dive: build/module-13-vector-databases-deep-dive/index.md
+      - M14 · Prompt Engineering Mastery: build/module-14-prompt-engineering-mastery/index.md
+  - Production:
+      - Overview: production/index.md
+      - "M10 · LLMOps & Production Systems": production/module-10-llmops-production-systems/index.md
+      - "M16 · AI Safety & Ethics": production/module-16-ai-safety-ethics/index.md
+  - Advanced:
+      - Overview: advanced/index.md
+      - "M15 · Fine-Tuning & Custom Models": advanced/module-15-fine-tuning-custom-models/index.md
+      - M17 · Capstone Projects: advanced/module-17-capstone-projects/index.md
   - Resources:
       - Overview: resources/index.md
       - Papers: resources/papers.md
       - Videos: resources/videos.md
       - Tools & Libraries: resources/tools-and-libraries.md
   - Projects: projects/index.md
-  - Foundations:
-      - "GenAI Foundations: From NLP to Transformers":
-          - Overview: foundations/00-genai-foundations-from-nlp-to-transformers/index.md
-          - Prerequisites — What You Need Before Starting: foundations/00-genai-foundations-from-nlp-to-transformers/01-prerequisites.md
-          - Mathematical Foundations for Deep Learning: foundations/00-genai-foundations-from-nlp-to-transformers/02-math-foundations.md
-          - NLP Fundamentals — How Computers Process Language: foundations/00-genai-foundations-from-nlp-to-transformers/03-nlp-fundamentals.md
-          - From Word2Vec to Contextual Embeddings: foundations/00-genai-foundations-from-nlp-to-transformers/04-contextual-embeddings.md
-          - "The Attention Mechanism — \"Attention Is All You Need\"": foundations/00-genai-foundations-from-nlp-to-transformers/05-attention-mechanism.md
-          - Self-Attention and Multi-Head Attention: foundations/00-genai-foundations-from-nlp-to-transformers/06-self-attention-multi-head.md
-          - The Complete Transformer Architecture: foundations/00-genai-foundations-from-nlp-to-transformers/07-transformer-architecture.md
-          - From Transformers to Large Language Models: foundations/00-genai-foundations-from-nlp-to-transformers/08-transformers-to-llms.md
-      - AI Engineering Essentials:
-          - Overview: foundations/01-ai-engineering-essentials/index.md
-          - What is AI Engineering?: foundations/01-ai-engineering-essentials/01-what-is-ai-engineering.md
-          - Your First AI Application: foundations/01-ai-engineering-essentials/02-first-ai-application.md
-          - Understanding Tokens and Cost Optimization: foundations/01-ai-engineering-essentials/03-tokens-and-costs.md
-          - Prompt Engineering Fundamentals: foundations/01-ai-engineering-essentials/04-prompt-engineering.md
-          - Working with LLM APIs - OpenAI, Anthropic, and More: foundations/01-ai-engineering-essentials/05-working-with-apis.md
-      - "Neural Networks & Deep Learning Fundamentals":
-          - Overview: foundations/02-neural-networks-deep-learning-fundamentals/index.md
-          - "Introduction to Neural Networks & Deep Learning": foundations/02-neural-networks-deep-learning-fundamentals/01-introduction-to-neural-networks.md
-          - "Neurons, Activation Functions & Forward Propagation": foundations/02-neural-networks-deep-learning-fundamentals/02-neurons-activation-functions.md
-          - "Loss Functions & Measuring Performance": foundations/02-neural-networks-deep-learning-fundamentals/03-loss-functions.md
-          - Gradient Descent - The Learning Algorithm: foundations/02-neural-networks-deep-learning-fundamentals/04-gradient-descent.md
-          - Backpropagation - How Networks Learn: foundations/02-neural-networks-deep-learning-fundamentals/05-backpropagation.md
-          - "Overfitting, Regularization & Dropout": foundations/02-neural-networks-deep-learning-fundamentals/06-overfitting-regularization.md
-          - Building a Neural Network from Scratch: foundations/02-neural-networks-deep-learning-fundamentals/07-building-nn-from-scratch.md
-          - Convolutional Neural Networks (CNNs): foundations/02-neural-networks-deep-learning-fundamentals/08-cnns-intro.md
-          - "Recurrent Neural Networks (RNNs) & LSTMs": foundations/02-neural-networks-deep-learning-fundamentals/09-rnns-lstms.md
-          - "Training Best Practices & Optimization": foundations/02-neural-networks-deep-learning-fundamentals/10-training-best-practices.md
-      - "Transformers & Attention Mechanisms":
-          - Overview: foundations/03-transformers-attention-mechanisms/index.md
-          - Introduction to Attention Mechanisms: foundations/03-transformers-attention-mechanisms/01-introduction-to-attention.md
-          - Self-Attention Mechanism: foundations/03-transformers-attention-mechanisms/02-self-attention.md
-          - Multi-Head Attention: foundations/03-transformers-attention-mechanisms/03-multi-head-attention.md
-          - Positional Encoding: foundations/03-transformers-attention-mechanisms/04-positional-encoding.md
-          - The Complete Transformer Architecture: foundations/03-transformers-attention-mechanisms/05-transformer-architecture.md
-          - Encoder-Decoder Architecture: foundations/03-transformers-attention-mechanisms/06-encoder-decoder.md
-          - Training Transformers: foundations/03-transformers-attention-mechanisms/07-training-transformers.md
-          - Transformer Variants: foundations/03-transformers-attention-mechanisms/08-transformer-variants.md
-          - Implementing Attention from Scratch: foundations/03-transformers-attention-mechanisms/09-implementing-attention.md
-          - "Scaling Laws & Efficient Transformers": foundations/03-transformers-attention-mechanisms/10-scaling-laws.md
-      - Large Language Models (LLMs):
-          - Overview: foundations/04-large-language-models-llms/index.md
-          - Introduction to Large Language Models: foundations/04-large-language-models-llms/01-introduction-to-llms.md
-          - From Transformers to LLMs: foundations/04-large-language-models-llms/02-transformers-to-llms.md
-          - Pre-training Strategies: foundations/04-large-language-models-llms/03-pretraining-strategies.md
-          - Tokenization Deep Dive: foundations/04-large-language-models-llms/04-tokenization.md
-          - "Embeddings & Representations": foundations/04-large-language-models-llms/05-embeddings.md
-          - Fine-Tuning Techniques: foundations/04-large-language-models-llms/06-fine-tuning.md
-          - Instruction Tuning: foundations/04-large-language-models-llms/07-instruction-tuning.md
-          - RLHF (Reinforcement Learning from Human Feedback): foundations/04-large-language-models-llms/08-rlhf.md
-          - Model Architectures - GPT, BERT, T5, LLaMA: foundations/04-large-language-models-llms/09-model-architectures.md
-          - Working with LLM APIs: foundations/04-large-language-models-llms/10-working-with-apis.md
-  - Build:
-      - "RAG: Retrieval Augmented Generation":
-          - Overview: build/05-rag-retrieval-augmented-generation/index.md
-          - Introduction to RAG Systems: build/05-rag-retrieval-augmented-generation/01-introduction-to-rag.md
-          - "Vector Databases & Embeddings": build/05-rag-retrieval-augmented-generation/02-vector-databases.md
-          - Chunking Strategies: build/05-rag-retrieval-augmented-generation/03-chunking-strategies.md
-          - Retrieval Methods: build/05-rag-retrieval-augmented-generation/04-Retrieval-Methods.md
-          - Building a Basic RAG System: build/05-rag-retrieval-augmented-generation/05-Building-a-Basic-RAG-System.md
-          - Advanced RAG Techniques: build/05-rag-retrieval-augmented-generation/06-Advanced-RAG-Techniques.md
-          - Hybrid Search: build/05-rag-retrieval-augmented-generation/07-Hybrid-Search.md
-          - RAG Evaluation Metrics: build/05-rag-retrieval-augmented-generation/08-RAG-Evaluation-Metrics.md
-          - Agentic RAG: build/05-rag-retrieval-augmented-generation/09-Agentic-RAG.md
-          - RAG in Production: build/05-rag-retrieval-augmented-generation/10-RAG-in-Production.md
-      - AI Agents Fundamentals:
-          - Overview: build/06-ai-agents-fundamentals/index.md
-          - Introduction to AI Agents: build/06-ai-agents-fundamentals/01-Introduction-to-Agents.md
-          - Agent Architectures: build/06-ai-agents-fundamentals/02-Agent-Architectures.md
-          - The ReAct Pattern - Reasoning and Acting: build/06-ai-agents-fundamentals/03-ReAct-Pattern.md
-          - "Tool Use & Function Calling": build/06-ai-agents-fundamentals/04-Tool-Use.md
-          - Agent Memory Systems: build/06-ai-agents-fundamentals/05-Agent-Memory.md
-          - "Planning & Reasoning": build/06-ai-agents-fundamentals/06-Planning-and-Reasoning.md
-          - Building an Agent from Scratch: build/06-ai-agents-fundamentals/07-Building-an-Agent.md
-          - Agent Frameworks (LangGraph, CrewAI): build/06-ai-agents-fundamentals/08-Agent-Frameworks.md
-          - "Agent Types & Patterns": build/06-ai-agents-fundamentals/09-Agent-Types.md
-          - Workflow vs Agent Design: build/06-ai-agents-fundamentals/10-Workflow-vs-Agent.md
-      - Multi-Agent Systems:
-          - Overview: build/07-multi-agent-systems/index.md
-          - Introduction to Multi-Agent Systems: build/07-multi-agent-systems/01-introduction-to-multi-agent-systems.md
-          - "Agent Communication & Coordination": build/07-multi-agent-systems/02-agent-communication-coordination.md
-          - Orchestrator-Worker Pattern: build/07-multi-agent-systems/03-orchestrator-worker-pattern.md
-      - Vector Databases Deep Dive:
-          - Overview: build/08-vector-databases-deep-dive/index.md
-          - Introduction to Vector Databases: build/08-vector-databases-deep-dive/01-lesson-01.md
-          - Embeddings and Vector Representations: build/08-vector-databases-deep-dive/02-lesson-02.md
-          - Indexing Strategies for Vector Search: build/08-vector-databases-deep-dive/03-lesson-03.md
-          - Working with Pinecone: build/08-vector-databases-deep-dive/04-lesson-04.md
-          - ChromaDB and Open-Source Vector Databases: build/08-vector-databases-deep-dive/05-lesson-05.md
-          - Vector Database Schema Design: build/08-vector-databases-deep-dive/06-lesson-06.md
-          - Scaling Vector Search: build/08-vector-databases-deep-dive/07-lesson-07.md
-          - Hybrid Search with Vector Databases: build/08-vector-databases-deep-dive/08-lesson-08.md
-          - Vector Database Evaluation and Testing: build/08-vector-databases-deep-dive/09-lesson-09.md
-          - Production Vector Database Patterns: build/08-vector-databases-deep-dive/10-lesson-10.md
-      - Prompt Engineering Mastery:
-          - Overview: build/09-prompt-engineering-mastery/index.md
-          - Foundations of Prompt Engineering: build/09-prompt-engineering-mastery/01-lesson-01.md
-          - Few-Shot and Chain-of-Thought Prompting: build/09-prompt-engineering-mastery/02-lesson-02.md
-          - System Prompts and Role Design: build/09-prompt-engineering-mastery/03-lesson-03.md
-          - Structured Output and JSON Mode: build/09-prompt-engineering-mastery/04-lesson-04.md
-          - Prompt Templates and Variables: build/09-prompt-engineering-mastery/05-lesson-05.md
-          - Prompt Chaining and Pipelines: build/09-prompt-engineering-mastery/06-lesson-06.md
-          - Prompt Optimization and Iteration: build/09-prompt-engineering-mastery/07-lesson-07.md
-          - Handling Edge Cases and Guardrails: build/09-prompt-engineering-mastery/08-lesson-08.md
-          - Prompt Engineering for Different Models: build/09-prompt-engineering-mastery/09-lesson-09.md
-          - Production Prompt Engineering: build/09-prompt-engineering-mastery/10-lesson-10.md
-  - Production:
-      - "LLMOps & Production Systems":
-          - Overview: production/10-llmops-production-systems/index.md
-          - Introduction to LLMOps: production/10-llmops-production-systems/01-Introduction-to-LLMOps.md
-          - "Observability & Monitoring for LLM Applications": production/10-llmops-production-systems/02-Observability-and-Monitoring.md
-          - "Prompt Versioning & Management": production/10-llmops-production-systems/03-Prompt-Versioning.md
-          - Caching Strategies for LLM Applications: production/10-llmops-production-systems/04-Caching-Strategies.md
-          - A/B Testing for AI Applications: production/10-llmops-production-systems/05-AB-Testing-for-AI.md
-          - Cost Optimization for LLM Applications: production/10-llmops-production-systems/06-Cost-Optimization.md
-          - Model Deployment Patterns: production/10-llmops-production-systems/07-Model-Deployment.md
-          - API Design for AI Services: production/10-llmops-production-systems/08-API-Design.md
-          - "Security & Privacy for LLM Applications": production/10-llmops-production-systems/09-Security-and-Privacy.md
-          - Scaling AI Applications: production/10-llmops-production-systems/10-Scaling-AI-Apps.md
-      - "AI Safety & Ethics":
-          - Overview: production/11-ai-safety-ethics/index.md
-          - Foundations of AI Safety and Responsible Development: production/11-ai-safety-ethics/01-lesson-01.md
-          - Bias Detection and Mitigation in AI Systems: production/11-ai-safety-ethics/02-lesson-02.md
-          - Hallucination and Factual Accuracy: production/11-ai-safety-ethics/03-lesson-03.md
-          - Prompt Injection and LLM Security: production/11-ai-safety-ethics/04-lesson-04.md
-          - Privacy and Data Protection in AI Applications: production/11-ai-safety-ethics/05-lesson-05.md
-          - Transparency, Explainability, and Interpretability: production/11-ai-safety-ethics/06-lesson-06.md
-          - AI Governance and Regulation: production/11-ai-safety-ethics/07-lesson-07.md
-          - Red Teaming and Adversarial Testing for AI: production/11-ai-safety-ethics/08-lesson-08.md
-          - Responsible Deployment Practices: production/11-ai-safety-ethics/09-lesson-09.md
-          - AI Safety Audit — Putting It All Together: production/11-ai-safety-ethics/10-lesson-10.md
-  - Advanced:
-      - "Fine-Tuning & Custom Models":
-          - Overview: advanced/12-fine-tuning-custom-models/index.md
-          - When and Why to Fine-Tune LLMs: advanced/12-fine-tuning-custom-models/01-lesson-01.md
-          - Preparing Training Data for Fine-Tuning: advanced/12-fine-tuning-custom-models/02-lesson-02.md
-          - Fine-Tuning with the OpenAI API: advanced/12-fine-tuning-custom-models/03-lesson-03.md
-          - Fine-Tuning Open-Source Models with Hugging Face: advanced/12-fine-tuning-custom-models/04-lesson-04.md
-          - LoRA and Parameter-Efficient Fine-Tuning (PEFT): advanced/12-fine-tuning-custom-models/05-lesson-05.md
-          - Evaluation and Benchmarking Fine-Tuned Models: advanced/12-fine-tuning-custom-models/06-lesson-06.md
-          - RLHF and Preference Tuning: advanced/12-fine-tuning-custom-models/07-lesson-07.md
-          - Deploying Fine-Tuned Models: advanced/12-fine-tuning-custom-models/08-lesson-08.md
-          - Model Distillation and Compression: advanced/12-fine-tuning-custom-models/09-lesson-09.md
-          - Fine-Tuning Best Practices and Case Studies: advanced/12-fine-tuning-custom-models/10-lesson-10.md
-      - Capstone Projects:
-          - Overview: advanced/13-capstone-projects/index.md
-          - "Capstone Overview: Building Production AI Applications": advanced/13-capstone-projects/01-lesson-01.md
-          - "Project 1: RAG Knowledge Assistant": advanced/13-capstone-projects/02-lesson-02.md
-          - "Project 2: Autonomous Coding Agent": advanced/13-capstone-projects/03-lesson-03.md
-          - "Project 3: Multi-Agent Research System": advanced/13-capstone-projects/04-lesson-04.md
-          - "Project 4: AI-Powered Content Platform": advanced/13-capstone-projects/05-lesson-05.md
-          - "Project 6: Semantic Search Engine": advanced/13-capstone-projects/06-lesson-06.md
-          - "Project 7: LLM-Powered Data Extraction Pipeline": advanced/13-capstone-projects/07-lesson-07.md
-          - "Project 8: Chatbot with Long-Term Memory": advanced/13-capstone-projects/08-lesson-08.md
-          - "Project 9: AI Safety Evaluation Suite": advanced/13-capstone-projects/09-lesson-09.md
-          - "Project 10: Deploy Your AI Application": advanced/13-capstone-projects/10-lesson-10.md

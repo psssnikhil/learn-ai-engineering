@@ -1,74 +1,47 @@
 # AI Engineering Handbook
 
-Open-source knowledge base for learning **AI engineering** — from transformers and LLMs to RAG, agents, multi-agent systems, and production LLMOps.
+Open-source knowledge base for learning **AI engineering** — agents, RAG, LLMOps, and more.
 
-Read it on the web, clone it for offline study, or contribute new lessons and resources.
+**Live site:** https://psssnikhil.github.io/learn-ai-engineering/
 
-## What is this?
+## Structure
 
-A **lightweight, growing repository** of:
+```
+docs/
+  foundations/     module-00, 01, 05, 06, 07
+  build/           module-09, 11, 12, 13, 14
+  production/      module-10, 16
+  advanced/        module-15, 17
 
-- **Markdown lessons** — structured learning path across 4 phases
-- **Python exercises** — `starter.py` / `solution.py` pairs where hands-on practice matters
-- **Jupyter notebooks** — added incrementally for interactive sections
-- **Curated resources** — papers, videos, tools, and links in `/resources`
+  Each module/
+    index.md       overview + lesson table
+    lessons/       markdown lessons
+    exercises/     Python starter/solution files
+```
 
-This is the **content layer**. The [AI Engineering Mastery](https://github.com/psssnikhil/ai-for-all) platform is a separate product that can consume this corpus over time.
+Module folder names use **canonical IDs** (`module-09-rag-...`) so content stays aligned with the [AI Engineering Mastery](https://github.com/psssnikhil/ai-for-all) platform.
 
 ## Quick start
-
-### Read online
-
-GitHub Pages (after deploy): `https://psssnikhil.github.io/learn-ai-engineering/`
-
-### Browse locally
 
 ```bash
 git clone https://github.com/psssnikhil/learn-ai-engineering.git
 cd learn-ai-engineering
 pip install -r requirements.txt
-mkdocs serve
-# Open http://127.0.0.1:8000
+mkdocs serve   # http://127.0.0.1:8000
 ```
-
-### Run exercises
-
-```bash
-cd docs/foundations/01-ai-engineering-essentials/exercises
-python 04-starter.py
-```
-
-## Learning path
-
-| Phase | Topics |
-|-------|--------|
-| **Foundations** | GenAI basics, neural nets, transformers, LLMs |
-| **Build** | RAG, agents, multi-agent, vector DBs, prompts |
-| **Production** | LLMOps, monitoring, safety & ethics |
-| **Advanced** | Fine-tuning, capstone projects |
-
-See [docs/learning-path.md](docs/learning-path.md) for the full module list.
-
-## Contributing
-
-We welcome PRs for:
-
-- Lesson fixes and clarifications
-- New resources in `resources/`
-- Python exercises and notebooks
-- Filling gaps (e.g. Multi-Agent Systems module)
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## License
-
-MIT — see [LICENSE](LICENSE). External links and third-party resources remain property of their respective authors.
 
 ## Sync from platform
 
-Content is migrated from the `ai-learning` platform with:
-
 ```bash
 npm install
-npm run migrate
+npm run migrate            # re-import lessons from ai-learning
+npm run extract-resources  # refresh paper/video indexes
 ```
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Known gaps: [GAPS.md](GAPS.md).
+
+## License
+
+MIT — see [LICENSE](LICENSE).

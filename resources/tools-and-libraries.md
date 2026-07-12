@@ -39,6 +39,7 @@ _Auto-generated from lesson content. Edit freely and re-run `npm run extract-res
 - https://github.com/openai/tiktoken
 - https://github.com/pinecone-io/examples
 - https://github.com/psssnikhil/learn-ai-engineering/blob/main/CONTRIBUTING.md
+- https://github.com/psssnikhil/learn-ai-engineering/blob/main/GAPS.md
 - https://github.com/psssnikhil/learn-ai-engineering/blob/main/projects/README.md
 - https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
 - https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety

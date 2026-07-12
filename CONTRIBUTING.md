@@ -29,15 +29,18 @@ objectives:           # optional
 
 ```
 docs/
-  {phase}/                    # foundations | build | production | advanced
-    {NN}-{module-slug}/
-      index.md                # module overview
-      01-lesson-slug.md
-      exercises/
+  {phase}/                         # foundations | build | production | advanced
+    index.md                       # phase overview
+    module-{NN}-{slug}/
+      index.md                     # module overview + lesson table
+      lessons/
+        01-lesson-slug.md
+      exercises/                   # optional
         01-starter.py
         01-solution.py
-        01-lesson.ipynb       # optional
 ```
+
+Module IDs (`module-00`, `module-09`, etc.) match the AI Engineering Mastery platform.
 
 ## Pull request checklist
 

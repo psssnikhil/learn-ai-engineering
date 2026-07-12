@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 /**
- * One-time import from ai-learning platform content.
- * Source: ../ai-learning/website/content/modules
+ * Import from ai-learning platform into organized handbook structure.
+ *
+ * Layout:
+ *   docs/{phase}/module-{NN}-{slug}/
+ *     index.md          — module overview + lesson table
+ *     lessons/*.md      — lesson content
+ *     exercises/*       — starter/solution py (+ ipynb)
  */
 import fs from 'fs';
 import path from 'path';
@@ -14,39 +19,47 @@ const SOURCE = path.resolve(ROOT, '../ai-learning/website/content/modules');
 const DOCS = path.join(ROOT, 'docs');
 
 const MODULE_PHASE = {
-  'module-00': 'foundations',
-  'module-01': 'foundations',
-  'module-05': 'foundations',
-  'module-06': 'foundations',
-  'module-07': 'foundations',
-  'module-09': 'build',
-  'module-11': 'build',
-  'module-12': 'build',
-  'module-13': 'build',
-  'module-14': 'build',
-  'module-10': 'production',
-  'module-16': 'production',
-  'module-15': 'advanced',
-  'module-17': 'advanced',
+  'module-00': { phase: 'foundations', order: 1 },
+  'module-01': { phase: 'foundations', order: 2 },
+  'module-05': { phase: 'foundations', order: 3 },
+  'module-06': { phase: 'foundations', order: 4 },
+  'module-07': { phase: 'foundations', order: 5 },
+  'module-09': { phase: 'build', order: 1 },
+  'module-11': { phase: 'build', order: 2 },
+  'module-12': { phase: 'build', order: 3 },
+  'module-13': { phase: 'build', order: 4 },
+  'module-14': { phase: 'build', order: 5 },
+  'module-10': { phase: 'production', order: 1 },
+  'module-16': { phase: 'production', order: 2 },
+  'module-15': { phase: 'advanced', order: 1 },
+  'module-17': { phase: 'advanced', order: 2 },
 };
 
-const PHASE_LABELS = {
-  foundations: 'Foundations',
-  build: 'Build',
-  production: 'Production',
-  advanced: 'Advanced',
+const PHASE_META = {
+  foundations: { label: 'Foundations', summary: 'Core ML, transformers, and LLMs.' },
+  build: { label: 'Build', summary: 'RAG, agents, vector search, and prompts.' },
+  production: { label: 'Production', summary: 'LLMOps, deployment, and safety.' },
+  advanced: { label: 'Advanced', summary: 'Fine-tuning and capstone projects.' },
 };
+
+const PHASE_ORDER = ['foundations', 'build', 'production', 'advanced'];
 
 function slugify(text) {
   return text
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
-    .slice(0, 48);
+    .slice(0, 55);
 }
 
-function lessonFileName(file) {
-  return file.replace(/\.md$/, '').replace(/^\d+-/, '') || file;
+function moduleFolderName(mod) {
+  const num = mod.id.replace('module-', '');
+  return `module-${num}-${slugify(mod.title)}`;
+}
+
+function moduleLabel(mod) {
+  const num = mod.id.replace('module-', '').padStart(2, '0');
+  return `M${num} · ${mod.title}`;
 }
 
 function readModule(moduleId) {
@@ -56,16 +69,13 @@ function readModule(moduleId) {
   const data = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
   if (data.listed === false) return null;
   if (!MODULE_PHASE[moduleId]) return null;
-  return { ...data, modulePath };
+  return { ...data, modulePath, meta: MODULE_PHASE[moduleId] };
 }
 
 function listLessons(modulePath) {
   const lessonsDir = path.join(modulePath, 'lessons');
   if (!fs.existsSync(lessonsDir)) return [];
-  return fs
-    .readdirSync(lessonsDir)
-    .filter((f) => f.endsWith('.md'))
-    .sort();
+  return fs.readdirSync(lessonsDir).filter((f) => f.endsWith('.md')).sort();
 }
 
 function copyExercise(lessonsDir, lessonId, destExercises) {
@@ -77,12 +87,8 @@ function copyExercise(lessonsDir, lessonId, destExercises) {
 
   fs.mkdirSync(destExercises, { recursive: true });
   const base = lessonId.replace(/^lesson-/, '');
-  if (fs.existsSync(starter)) {
-    fs.copyFileSync(starter, path.join(destExercises, `${base}-starter.py`));
-  }
-  if (fs.existsSync(solution)) {
-    fs.copyFileSync(solution, path.join(destExercises, `${base}-solution.py`));
-  }
+  if (fs.existsSync(starter)) fs.copyFileSync(starter, path.join(destExercises, `${base}-starter.py`));
+  if (fs.existsSync(solution)) fs.copyFileSync(solution, path.join(destExercises, `${base}-solution.py`));
   return true;
 }
 
@@ -94,21 +100,31 @@ function transformLesson(content, moduleMeta) {
     duration: parsed.data.duration || '',
     difficulty: parsed.data.difficulty || 'beginner',
     has_code: parsed.data.hasCode ?? false,
+    module: moduleMeta.id,
   };
   if (parsed.data.youtubeUrl) fm.youtube = parsed.data.youtubeUrl;
   if (parsed.data.tests?.length) fm.objectives = parsed.data.tests;
-
-  const header = `> **Module:** ${moduleMeta.title} · **Phase:** ${moduleMeta.phaseLabel}\n\n`;
   return matter.stringify(parsed.content.trim(), fm);
 }
 
-function clearGeneratedDocs() {
-  for (const phase of Object.keys(PHASE_LABELS)) {
-    const phaseDir = path.join(DOCS, phase);
-    if (fs.existsSync(phaseDir)) {
-      fs.rmSync(phaseDir, { recursive: true });
-    }
+function clearPhaseDirs() {
+  for (const phase of PHASE_ORDER) {
+    const dir = path.join(DOCS, phase);
+    if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true });
   }
+}
+
+function buildLessonTable(lessons) {
+  const rows = lessons.map((l, i) => {
+    const link = `lessons/${l.file}`;
+    return `| ${i + 1} | [${l.title}](${link}) | ${l.duration || '—'} | ${l.difficulty || '—'} |`;
+  });
+  return [
+    '| # | Lesson | Duration | Level |',
+    '|---|--------|----------|-------|',
+    ...rows,
+    '',
+  ].join('\n');
 }
 
 function main() {
@@ -117,100 +133,178 @@ function main() {
     process.exit(1);
   }
 
-  clearGeneratedDocs();
+  clearPhaseDirs();
 
   const modules = Object.keys(MODULE_PHASE)
     .map(readModule)
     .filter(Boolean)
-    .sort((a, b) => a.order - b.order);
+    .sort((a, b) => {
+      const phaseDiff = PHASE_ORDER.indexOf(a.meta.phase) - PHASE_ORDER.indexOf(b.meta.phase);
+      if (phaseDiff !== 0) return phaseDiff;
+      return a.meta.order - b.meta.order;
+    });
 
-  const nav = {
-    Home: 'index.md',
-    'Learning Path': 'learning-path.md',
-    Resources: 'resources/index.md',
-    Projects: 'projects/index.md',
-  };
-
+  const navByPhase = Object.fromEntries(PHASE_ORDER.map((p) => [p, []]));
+  const learningPathRows = [];
   let totalLessons = 0;
   let totalExercises = 0;
 
   for (const mod of modules) {
-    const phase = MODULE_PHASE[mod.id];
-    const phaseLabel = PHASE_LABELS[phase];
-    const folderName = `${String(mod.order).padStart(2, '0')}-${slugify(mod.title)}`;
-    const moduleDir = path.join(DOCS, phase, folderName);
+    const phase = mod.meta.phase;
+    const folder = moduleFolderName(mod);
+    const relPath = `${phase}/${folder}`;
+    const moduleDir = path.join(DOCS, relPath);
+    const lessonsDir = path.join(moduleDir, 'lessons');
     const exercisesDir = path.join(moduleDir, 'exercises');
-    const lessonsDir = path.join(mod.modulePath, 'lessons');
+    const srcLessonsDir = path.join(mod.modulePath, 'lessons');
 
-    fs.mkdirSync(moduleDir, { recursive: true });
+    fs.mkdirSync(lessonsDir, { recursive: true });
 
-    const indexMd = matter.stringify(
-      `${mod.description}\n\n## Lessons\n\nBrowse the lessons in the sidebar, or open the first lesson to begin.\n`,
-      {
-        title: mod.title,
-        phase: phaseLabel,
-        estimated_hours: mod.estimatedHours,
-        module_order: mod.order,
-        status: mod.status || 'active',
-      },
-    );
-    fs.writeFileSync(path.join(moduleDir, 'index.md'), indexMd);
-
-    const lessonNav = [];
-    const lessonFiles = listLessons(mod.modulePath);
-
-    for (const file of lessonFiles) {
-      const raw = fs.readFileSync(path.join(lessonsDir, file), 'utf-8');
+    const lessonMeta = [];
+    for (const file of listLessons(mod.modulePath)) {
+      const raw = fs.readFileSync(path.join(srcLessonsDir, file), 'utf-8');
       const parsed = matter(raw);
-      const lessonId = parsed.data.id || lessonFileName(file);
-      const outName = `${file}`;
-      const outPath = path.join(moduleDir, outName);
+      const lessonId = parsed.data.id || file.replace('.md', '');
 
       fs.writeFileSync(
-        outPath,
-        transformLesson(raw, { title: mod.title, phaseLabel }),
+        path.join(lessonsDir, file),
+        transformLesson(raw, { id: mod.id, title: mod.title, phaseLabel: PHASE_META[phase].label }),
       );
 
-      if (copyExercise(lessonsDir, lessonId, exercisesDir)) {
-        totalExercises++;
-      }
+      if (copyExercise(srcLessonsDir, lessonId, exercisesDir)) totalExercises++;
 
-      lessonNav.push({ title: parsed.data.title || lessonId, path: `${phase}/${folderName}/${outName}` });
+      lessonMeta.push({
+        file,
+        title: parsed.data.title || lessonId,
+        duration: parsed.data.duration,
+        difficulty: parsed.data.difficulty,
+      });
       totalLessons++;
     }
 
-    if (!nav[phaseLabel]) nav[phaseLabel] = [];
-    const moduleEntry = {
+    const lessonTable = buildLessonTable(lessonMeta);
+    const indexBody = [
+      mod.description,
+      '',
+      `| | |`,
+      `|---|---|`,
+      `| **Module ID** | \`${mod.id}\` |`,
+      `| **Phase** | ${PHASE_META[phase].label} |`,
+      `| **Lessons** | ${lessonMeta.length} |`,
+      `| **Est. hours** | ~${mod.estimatedHours}h |`,
+      mod.id === 'module-12' ? `| **Status** | Partial — see [GAPS.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/GAPS.md) |` : '',
+      '',
+      '## Lessons',
+      '',
+      lessonTable,
+      lessonMeta.length > 0
+        ? `\n**Start here:** [${lessonMeta[0].title}](lessons/${lessonMeta[0].file})\n`
+        : '',
+      exercisesDir && fs.existsSync(exercisesDir)
+        ? '## Exercises\n\nPython files are in the [`exercises/`](exercises/) folder (`*-starter.py` and `*-solution.py`).\n'
+        : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    fs.writeFileSync(
+      path.join(moduleDir, 'index.md'),
+      matter.stringify(indexBody, {
+        title: mod.title,
+        module_id: mod.id,
+        phase: PHASE_META[phase].label,
+      }),
+    );
+
+    navByPhase[phase].push({
+      label: moduleLabel(mod),
+      path: `${relPath}/index.md`,
+    });
+
+    learningPathRows.push({
+      phase: PHASE_META[phase].label,
+      num: mod.id.replace('module-', '').padStart(2, '0'),
       title: mod.title,
-      overview: `${phase}/${folderName}/index.md`,
-      lessons: lessonNav,
-    };
-    nav[phaseLabel].push(moduleEntry);
+      lessons: lessonMeta.length,
+      hours: mod.estimatedHours,
+      path: `${relPath}/index.md`,
+      partial: mod.id === 'module-12',
+    });
   }
 
-  const navYaml = buildNavYaml(nav);
-  updateMkdocs(navYaml);
+  writePhaseIndexes(navByPhase);
+  writeLearningPath(learningPathRows);
+  updateMkdocs(buildNavYaml(navByPhase));
 
   console.log(`Migrated ${modules.length} modules, ${totalLessons} lessons, ${totalExercises} exercise sets.`);
 }
 
-function buildNavYaml(nav) {
-  const lines = ['nav:'];
-  for (const [key, value] of Object.entries(nav)) {
-    if (typeof value === 'string') {
-      lines.push(`  - ${escapeYaml(key)}: ${value}`);
-      continue;
+function writePhaseIndexes(navByPhase) {
+  for (const phase of PHASE_ORDER) {
+    const meta = PHASE_META[phase];
+    const modules = navByPhase[phase];
+    const rows = modules.map(
+      (m, i) => `| ${i + 1} | [${m.label}](${m.path.replace(/^[^/]+\//, '')}) |`,
+    );
+    const body = [
+      meta.summary,
+      '',
+      '| # | Module |',
+      '|---|--------|',
+      ...rows,
+      '',
+    ].join('\n');
+    fs.writeFileSync(
+      path.join(DOCS, phase, 'index.md'),
+      matter.stringify(body, { title: meta.label }),
+    );
+  }
+}
+
+function writeLearningPath(rows) {
+  let currentPhase = '';
+  const lines = [
+    'Four phases · Fourteen modules · Follow in order',
+    '',
+  ];
+  for (const row of rows) {
+    if (row.phase !== currentPhase) {
+      currentPhase = row.phase;
+      lines.push(`## ${currentPhase}`, '', '| Module | Title | Lessons | Hours |', '|---|-------|---------|-------|');
     }
-    if (!Array.isArray(value)) continue;
-    lines.push(`  - ${escapeYaml(key)}:`);
-    for (const mod of value) {
-      lines.push(`      - ${escapeYaml(mod.title)}:`);
-      lines.push(`          - Overview: ${mod.overview}`);
-      for (const lesson of mod.lessons) {
-        lines.push(`          - ${escapeYaml(lesson.title)}: ${lesson.path}`);
-      }
+    const partial = row.partial ? ' *(partial)*' : '';
+    lines.push(`| [M${row.num}](${row.path}) | ${row.title}${partial} | ${row.lessons} | ~${row.hours}h |`);
+  }
+  lines.push('', '---', '', 'Use phase overviews:', '');
+  for (const phase of PHASE_ORDER) {
+    lines.push(`- [${PHASE_META[phase].label}](${phase}/index.md)`);
+  }
+
+  fs.writeFileSync(
+    path.join(DOCS, 'learning-path.md'),
+    matter.stringify(lines.join('\n'), { title: 'Learning Path' }),
+  );
+}
+
+function buildNavYaml(navByPhase) {
+  const lines = [
+    'nav:',
+    '  - Home: index.md',
+    '  - Learning Path: learning-path.md',
+  ];
+  for (const phase of PHASE_ORDER) {
+    lines.push(`  - ${PHASE_META[phase].label}:`);
+    lines.push(`      - Overview: ${phase}/index.md`);
+    for (const mod of navByPhase[phase]) {
+      lines.push(`      - ${escapeYaml(mod.label)}: ${mod.path}`);
     }
   }
+  lines.push('  - Resources:');
+  lines.push('      - Overview: resources/index.md');
+  lines.push('      - Papers: resources/papers.md');
+  lines.push('      - Videos: resources/videos.md');
+  lines.push('      - Tools & Libraries: resources/tools-and-libraries.md');
+  lines.push('  - Projects: projects/index.md');
   return lines.join('\n');
 }
 
@@ -222,7 +316,6 @@ function escapeYaml(s) {
 }
 
 function updateMkdocs(navYaml) {
-  const mkdocsPath = path.join(ROOT, 'mkdocs.yml');
   const base = `site_name: AI Engineering Handbook
 site_description: Open-source knowledge base for learning AI engineering — agents, RAG, LLMOps, and more.
 site_url: https://psssnikhil.github.io/learn-ai-engineering/
@@ -247,11 +340,12 @@ theme:
   features:
     - navigation.instant
     - navigation.tracking
-    - navigation.expand
     - navigation.sections
+    - navigation.indexes
     - search.suggest
     - search.highlight
     - content.code.copy
+    - toc.integrate
 
 plugins:
   - search
@@ -268,7 +362,7 @@ markdown_extensions:
       permalink: true
 
 `;
-  fs.writeFileSync(mkdocsPath, `${base}${navYaml}\n`);
+  fs.writeFileSync(path.join(ROOT, 'mkdocs.yml'), `${base}${navYaml}\n`);
 }
 
 main();

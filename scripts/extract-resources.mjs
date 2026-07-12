@@ -65,29 +65,12 @@ function main() {
   fs.copyFileSync(path.join(RESOURCES, 'videos.md'), path.join(docsResources, 'videos.md'));
   fs.copyFileSync(path.join(RESOURCES, 'tools-and-libraries.md'), path.join(docsResources, 'tools-and-libraries.md'));
 
-  patchMkdocsResourcesNav();
   fs.writeFileSync(
     path.join(docsResources, 'index.md'),
     fs.readFileSync(path.join(RESOURCES, 'README.md'), 'utf-8'),
   );
 
   console.log(`Extracted: ${buckets.papers.length} papers, ${buckets.videos.length} videos, ${buckets.tools.length} tools.`);
-}
-
-function patchMkdocsResourcesNav() {
-  const mkdocsPath = path.join(__dirname, '../mkdocs.yml');
-  if (!fs.existsSync(mkdocsPath)) return;
-  let yml = fs.readFileSync(mkdocsPath, 'utf-8');
-  if (yml.includes('Tools & Libraries: resources/tools-and-libraries.md')) return;
-  yml = yml.replace(
-    '  - Resources: resources/index.md',
-    `  - Resources:
-      - Overview: resources/index.md
-      - Papers: resources/papers.md
-      - Videos: resources/videos.md
-      - Tools & Libraries: resources/tools-and-libraries.md`,
-  );
-  fs.writeFileSync(mkdocsPath, yml);
 }
 
 function writeList(filePath, title, urls, intro) {

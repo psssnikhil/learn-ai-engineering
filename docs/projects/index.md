@@ -6,7 +6,7 @@ title: Capstone Projects
 
 Apply everything you've learned by building end-to-end systems for your portfolio.
 
-See [module 17](../advanced/13-capstone-projects/index.md) for full lesson content, or the [projects README](https://github.com/psssnikhil/learn-ai-engineering/blob/main/projects/README.md) on GitHub.
+See [module 17](../advanced/module-17-capstone-projects/index.md) for full lesson content.
 
 ## What you'll build
 

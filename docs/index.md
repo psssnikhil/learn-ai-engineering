@@ -5,32 +5,43 @@ description: Open-source knowledge base for learning AI engineering
 
 # AI Engineering Handbook
 
-Learn to build **production AI systems** — RAG pipelines, agents, tool use, and LLMOps — through structured lessons and hands-on exercises.
+Learn to build **production AI systems** — RAG, agents, tool use, and LLMOps.
 
-This repository is **free and open source**. Clone it, read it offline, fork it, or contribute back.
+## Start learning
 
-## Start here
-
-1. Read the **[Learning Path](learning-path.md)** — four phases, fourteen modules
-2. Begin with **[GenAI Foundations](foundations/00-genai-foundations-from-nlp-to-transformers/index.md)** (module 00)
-3. Browse **[Resources](resources/index.md)** for papers, videos, and tools
-4. Explore **[Capstone Projects](projects/index.md)** when you reach the advanced phase
+| Step | Where to go |
+|------|-------------|
+| 1 | [Learning Path](learning-path.md) — full module order |
+| 2 | [M00 · GenAI Foundations](foundations/module-00-genai-foundations-from-nlp-to-transformers/index.md) — first module |
+| 3 | [Resources](resources/index.md) — papers, videos, tools |
 
 ## Four phases
 
-| Phase | What you'll learn |
-|-------|-------------------|
-| [Foundations](foundations/00-genai-foundations-from-nlp-to-transformers/index.md) | NLP, attention, transformers, LLMs |
-| [Build](build/05-rag-retrieval-augmented-generation/index.md) | RAG, agents, vector search, prompts |
-| [Production](production/10-llmops-production-systems/index.md) | Deploy, monitor, safety |
-| [Advanced](advanced/12-fine-tuning-custom-models/index.md) | Fine-tuning, capstone builds |
+| Phase | Overview | Topics |
+|-------|----------|--------|
+| [Foundations](foundations/index.md) | 5 modules | NLP, neural nets, transformers, LLMs |
+| [Build](build/index.md) | 5 modules | RAG, agents, vector DBs, prompts |
+| [Production](production/index.md) | 2 modules | LLMOps, safety & ethics |
+| [Advanced](advanced/index.md) | 2 modules | Fine-tuning, capstones |
 
-## How to use this handbook
+## How this repo is organized
 
-- **Read** — use the sidebar or GitHub
-- **Practice** — run Python files in each module's `exercises/` folder
-- **Go deeper** — follow resource links at the end of lessons
-- **Contribute** — see [CONTRIBUTING.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/CONTRIBUTING.md) on GitHub
+```
+docs/
+  foundations/     → module-00, 01, 05, 06, 07
+  build/           → module-09, 11, 12, 13, 14
+  production/      → module-10, 16
+  advanced/        → module-15, 17
 
-!!! tip "No install required to read"
-    Everything is plain Markdown. Exercises need Python 3.10+ and common ML libraries as noted in each lesson.
+  Each module/
+    index.md       → overview + lesson table
+    lessons/       → markdown lessons
+    exercises/     → Python files (where available)
+```
+
+!!! tip "Module numbers match the platform"
+    Folder names use canonical IDs (`module-09-rag-...`) so content stays in sync with the AI Engineering Mastery course.
+
+## Contribute
+
+See [CONTRIBUTING.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/CONTRIBUTING.md) on GitHub.
