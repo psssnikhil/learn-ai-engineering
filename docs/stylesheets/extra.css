@@ -142,6 +142,47 @@
   margin-bottom: 0.6rem;
 }
 
+.persona-card__cta {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--md-primary-fg-color);
+  text-decoration: none;
+  margin-right: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.persona-card__cta:hover {
+  text-decoration: underline;
+}
+
+/* ── Quick-nav pills (homepage, topic map) ──────────────── */
+.quick-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.quick-nav__item {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4em 0.9em;
+  border-radius: 6px;
+  border: 1.5px solid var(--md-primary-fg-color--light);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--md-primary-fg-color);
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.quick-nav__item:hover {
+  background: var(--md-primary-fg-color--light);
+  border-color: var(--md-primary-fg-color);
+  color: var(--md-primary-fg-color);
+}
+
 /* ── Module stat pills on homepage ──────────────────────── */
 .stat-row {
   display: flex;

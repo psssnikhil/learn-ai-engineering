@@ -7,6 +7,34 @@ description: Perceive, reason, act, observe — the core cycle every agent imple
 
 Every AI agent — from a simple ReAct tool-caller to Claude Code — implements the same **iterative loop**.
 
+## Prerequisites
+
+- [M01 · First AI Application](../foundations/module-01-ai-engineering-essentials/lessons/02-first-ai-application.md) — calling an LLM API
+- [M01 · Tokens and Costs](../foundations/module-01-ai-engineering-essentials/lessons/03-tokens-and-costs.md) — why loops multiply spend
+- Basic Python — the minimal loop example below
+
+## What You'll Learn
+
+| Concept | Why it matters |
+|---------|---------------|
+| Perceive → reason → act → observe | The universal agent cycle |
+| ReAct pattern | Explicit thoughts improve tool selection |
+| Chatbot vs agent | When a loop is worth the complexity |
+| Termination conditions | Prevent infinite loops and runaway cost |
+| Harness boundaries | What the bare loop is missing for production |
+
+---
+
+## Intuition: a robot in a room with tools
+
+Picture an agent as a robot in a room. It **perceives** notes on a whiteboard (context), **reasons** about what to do next, **acts** by using a tool, then **observes** the result written back on the board. It repeats until the goal is done or someone pulls the plug.
+
+A chatbot is a robot that can only speak once and leave. An agent can open doors (APIs), read files, and try again when the first attempt fails.
+
+The loop is simple; the engineering is hard — permissions, budgets, tracing, and evals wrap the loop in a **harness** (covered in [Harness Engineering](04-harness-engineering.md)).
+
+---
+
 ## The cycle
 
 ```mermaid
@@ -92,12 +120,108 @@ def agent_loop(goal: str, llm, tools: dict) -> str:
 | "Agents replace workflows" | Many tasks are better as **deterministic workflows** ([M11 L10](../build/module-11-ai-agents-fundamentals/lessons/10-Workflow-vs-Agent.md)) |
 | "The LLM is the agent" | The **harness + loop** is the agent; the LLM is the reasoner |
 
+---
+
+## Worked example: book the cheapest flight
+
+**Goal:** `"Find the cheapest round-trip flight to NYC departing Friday, returning Sunday."`
+
+### Step-by-step trace
+
+| Step | Phase | What happens | Context size |
+|------|-------|--------------|--------------|
+| 0 | Perceive | User goal loaded; tools: `search_flights`, `book_flight` | 1,200 tokens |
+| 1 | Reason | Model decides to search first | — |
+| 1 | Act | `search_flights(origin="SFO", dest="NYC", depart="Fri", return="Sun")` | — |
+| 1 | Observe | 3 results: $750, $890, $1,200 | +400 tokens |
+| 2 | Reason | Compare prices; $750 is cheapest | — |
+| 2 | Act | `book_flight(flight_id="UA447", price=750)` | — |
+| 2 | Observe | `{"status": "confirmed", "pnr": "ABC123"}` | +80 tokens |
+| 3 | Reason | Goal met | — |
+| 3 | Act | Final answer (no tool) | — |
+
+**Total:** 3 loop iterations, 2 tool calls, ~2,500 tokens cumulative input (each step re-reads history).
+
+### Cost estimate
+
+| Item | Value |
+|------|-------|
+| Model | $3 / 1M input tokens |
+| Input tokens (sum across steps) | ~6,800 |
+| Output tokens | ~450 |
+| **Estimated cost** | **~$0.02** |
+
+Ten steps with bloated tool output (50K tokens each) → dollars per run. Termination and truncation are economic necessities.
+
+### What goes wrong without a harness
+
+| Failure | Symptom | Harness fix |
+|---------|---------|-------------|
+| No max steps | Searches flights forever | `max_steps=10` |
+| No budget | $50 API bill on one user query | `cost_cap_usd=0.25` |
+| Raw 2MB JSON in observe | Model hallucinates on step 4 | Truncate + summarize tool output |
+| Wrong tool args | `dest="New York"` → API 400 | Schema validation + retry hint |
+
+---
+
+## Production connection
+
+Every production agent loop should emit:
+
+1. **Span per step** — `agent.step`, tokens, latency (see [Observability](06-observability-and-tracing.md))
+2. **Checkpoint every N steps** — resume after rate limit or crash
+3. **Identical-tool-call detector** — if same `(tool, args)` repeats 3×, break loop
+4. **Eval hook** — record trajectory for golden regression
+
+### When to use a loop vs single shot
+
+| Single LLM call | Agent loop |
+|-----------------|------------|
+| Summarize this paragraph | Research + compare + act across 5 sources |
+| Classify intent | Book travel, file ticket, run multi-step code change |
+| Fixed input → fixed output | Outcome depends on external world state |
+
+If your task graph is fixed (always step A → B → C), use a **workflow** instead of LLM-routed loops. See [M11 L10 · Workflow vs Agent](../build/module-11-ai-agents-fundamentals/lessons/10-Workflow-vs-Agent.md).
+
+---
+
 ## Key takeaways
 
 - The agent loop is perceive → reason → act → observe, repeated
 - ReAct makes reasoning and tool calls explicit
 - Termination and budgets belong in the **harness**, not ad hoc
 - Every production agent needs observability on each loop iteration
+
+### Further reading in this handbook
+
+- [M11 · ReAct Pattern](../build/module-11-ai-agents-fundamentals/lessons/03-ReAct-Pattern.md) — full ReAct lesson with exercises
+- [M18 · Agent Loop and State](../build/module-18-agent-harness-tools-runtime/lessons/02-agent-loop-and-state.md) — stateful loops
+- [Deep Dive · Attention](../deep-dives/attention-math.md) — if you want to understand what happens inside the reasoner
+
+### Design review checklist (single-agent)
+
+Before shipping any agent loop, confirm:
+
+- [ ] `max_steps` and `cost_cap` configured in harness, not prompt
+- [ ] Tool output truncation with re-fetch path for full data
+- [ ] Trace span per step with token counts
+- [ ] At least 5 golden trajectories in CI
+- [ ] Documented when **not** to use an agent (workflow alternative)
+
+### Practice exercise (45 min)
+
+Implement the minimal `agent_loop` from this page in Python against any chat-completions API with one mock tool (`search` returning fixed JSON). Log each phase to stdout. Run with `MAX_STEPS=3` on a query that needs more steps — observe termination. Add a duplicate-call detector. This is your harness seed.
+
+### Why workflows still win for fixed pipelines
+
+Order-status lookup is always: `authenticate → fetch_order → format_reply`. An LLM choosing those steps adds latency, cost, and failure modes. Use an agent loop when the **sequence is not known in advance** — open-ended research, debugging, multi-file refactors. The decision is economic: if you can draw the graph without an LLM, draw the graph.
+
+!!! note "Starter project"
+    After this page, implement the loop with one tool and wire [Observability](06-observability-and-tracing.md) before adding a second tool — you will debug tool choice errors on day one.
+
+### State you must track per run
+
+At minimum: `messages`, `step`, `cumulative_cost_usd`, `tool_call_history` (for stuck detection), and `status`. Optional but valuable: `plan` scratchpad and `parent_trace_id` when nested. Serialize to JSON at checkpoints so resume after 429 does not replay expensive reads.
 
 **Next:** [Memory Systems →](02-memory.md)
 

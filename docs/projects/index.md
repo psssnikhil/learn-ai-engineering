@@ -6,18 +6,45 @@ title: Capstone Projects
 
 Apply everything you've learned by building end-to-end systems for your portfolio.
 
-See [module 17](../advanced/module-17-capstone-projects/index.md) for full lesson content.
+---
 
-## What you'll build
+## Start here
 
-| Project | Focus |
-|---------|-------|
-| Enterprise RAG | Hybrid search, citations, production API |
-| Code Review Agent | Multi-agent, GitHub, LangGraph |
-| Research Assistant | MCP, RAG, structured reports |
-| Support Bot | RAG, routing, knowledge base |
-| Content Pipeline | Multi-agent authoring workflow |
-| Personal Assistant | Memory, tools, personality |
+| Resource | Best for |
+|----------|----------|
+| **[Build These First](build-these.md)** | 10 scoped projects with module maps and checklists — **start here** |
+| **[M17 Capstones](../advanced/module-17-capstone-projects/index.md)** | Full lesson briefs with acceptance criteria |
+| **[Exercises](../exercises/index.md)** | Skill drills before big builds |
 
-!!! tip "Start after Build phase"
-    Finish RAG (module 09) and Agents (module 11) before capstones for the best experience.
+!!! tip "Not sure which project?"
+    See [Build These — suggested order by persona](build-these.md#suggested-build-order-by-persona).
+
+---
+
+## What you'll build (M17 overview)
+
+| Project | Focus | Build These equivalent |
+|---------|-------|------------------------|
+| RAG Knowledge Assistant | Hybrid search, citations, production API | [#2 Enterprise RAG](build-these.md#2-enterprise-rag-with-citations) |
+| Autonomous Coding Agent | Multi-agent, GitHub, LangGraph | [#4 Tool-using agent](build-these.md#4-tool-using-research-agent) |
+| Multi-Agent Research System | MCP, RAG, structured reports | [#5 Multi-agent research](build-these.md#5-multi-agent-research-system) |
+| AI-Powered Content Platform | Multi-agent authoring workflow | [#6 Support bot](build-these.md#6-support-bot-with-routing) (routing pattern) |
+| Semantic Search Engine | Embeddings, filters, eval | [#3 Semantic search](build-these.md#3-semantic-search-engine) |
+| Data Extraction Pipeline | Structured JSON at scale | [#7 Data extraction](build-these.md#7-llm-data-extraction-pipeline) |
+| Chatbot with Long-Term Memory | Memory, tools, personality | [#4 + M11 L5](../build/module-11-ai-agents-fundamentals/lessons/05-Agent-Memory.md) |
+| AI Safety Evaluation Suite | Red team, hallucination tests | [#9 Eval suite](build-these.md#9-ai-quality-eval-suite) |
+| Deploy Your AI Application | Docker, monitoring, cost | [#10 Deploy](build-these.md#10-deploy-your-ai-app) |
+
+---
+
+## Prerequisites
+
+Finish before capstones for the best experience:
+
+| Minimum | Recommended |
+|---------|-------------|
+| [M09 RAG](../build/module-09-rag-retrieval-augmented-generation/index.md) | + [M13 Vector DBs](../build/module-13-vector-databases-deep-dive/index.md) |
+| [M11 Agents](../build/module-11-ai-agents-fundamentals/index.md) | + [M18 Harness](../build/module-18-agent-harness-tools-runtime/index.md) |
+| [M01 APIs](../foundations/module-01-ai-engineering-essentials/index.md) | + [M19 Evals](../production/module-19-llm-evaluation-quality/index.md) |
+
+Full path: [Start Here](../start-here.md) · [Learning Path](../learning-path.md)

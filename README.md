@@ -4,6 +4,8 @@ A **free, open-source, one-stop curriculum** for learning AI/ML engineering — 
 
 **Live site:** https://psssnikhil.github.io/learn-ai-engineering/
 
+**New here?** → [Start Here](docs/start-here.md) · [How to Learn](docs/learn/index.md) · [FAQ](docs/faq.md)
+
 ---
 
 ## What you get

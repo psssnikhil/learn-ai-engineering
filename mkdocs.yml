@@ -65,8 +65,11 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Start Here: start-here.md
+  - How to Learn: learn/index.md
   - Getting Started: getting-started.md
   - Learning Path: learning-path.md
+  - Topic Map: topic-map.md
   - Agent Engineering:
       - Overview: agent-engineering/index.md
       - The Agent Loop: agent-engineering/01-agent-loop.md
@@ -272,7 +275,6 @@ nav:
           - "Project 9: AI Safety Evaluation Suite": advanced/module-17-capstone-projects/lessons/09-lesson-09.md
           - "Project 10: Deploy Your AI Application": advanced/module-17-capstone-projects/lessons/10-lesson-10.md
   - Explore:
-      - Topic Map: topic-map.md
       - Agentic AI Hub: agentic-ai/index.md
       - Evals & Observability: evals-observability/index.md
       - Glossary: glossary.md
@@ -282,6 +284,7 @@ nav:
           - Backpropagation Calculus: deep-dives/backpropagation-calculus.md
           - Tokenization Internals: deep-dives/tokenization-internals.md
       - Exercises: exercises/index.md
+      - FAQ: faq.md
   - Resources:
       - Overview: resources/index.md
       - Essential Papers: resources/essential-papers.md
@@ -289,7 +292,11 @@ nav:
       - Tools & Libraries: resources/tools-and-libraries.md
       - Open Source Hubs: resources/open-source-hubs.md
       - Courses & Communities: resources/courses-and-communities.md
-  - Projects: projects/index.md
+      - All Papers: resources/papers.md
+      - All Videos: resources/videos.md
+  - Projects:
+      - Overview: projects/index.md
+      - Build These First: projects/build-these.md
   - Contribute:
       - Contribute: contribute.md
       - Roadmap: roadmap.md

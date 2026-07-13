@@ -6,35 +6,56 @@ title: Getting Started
 
 Welcome to the **AI Engineering Handbook** — a free, open-source path from foundations to production agents.
 
+!!! tip "Not sure where to begin?"
+    **Main entry:** [Start Here](start-here.md) — persona routing, prerequisites, "I want to learn X" tables, and first projects.
+    This page covers local setup and site navigation.
+
 ## Who is this for?
 
 <div class="persona-grid">
   <div class="persona-card">
     <div class="persona-card__title">New to AI</div>
     <div class="persona-card__desc">Software engineer or student, no ML background</div>
-    <a href="foundations/module-00-genai-foundations-from-nlp-to-transformers/index.md">M00 GenAI Foundations</a> →
-    <a href="foundations/module-01-ai-engineering-essentials/index.md">M01 Essentials</a>
+    <a class="persona-card__cta" href="foundations/module-00-genai-foundations-from-nlp-to-transformers/index.md">M00 GenAI Foundations →</a>
+    <a class="persona-card__cta" href="foundations/module-01-ai-engineering-essentials/index.md">M01 Essentials →</a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Know ML, need LLMs</div>
     <div class="persona-card__desc">ML practitioner who needs to catch up on transformers and APIs</div>
-    <a href="foundations/module-07-large-language-models-llms/index.md">M07 LLMs</a> →
-    <a href="build/module-09-rag-retrieval-augmented-generation/index.md">M09 RAG</a>
+    <a class="persona-card__cta" href="foundations/module-07-large-language-models-llms/index.md">M07 LLMs →</a>
+    <a class="persona-card__cta" href="build/module-09-rag-retrieval-augmented-generation/index.md">M09 RAG →</a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Want to build agents</div>
     <div class="persona-card__desc">Engineer focusing on autonomous AI systems</div>
-    <a href="build/module-11-ai-agents-fundamentals/index.md">M11 Agents</a> →
-    <a href="build/module-18-agent-harness-tools-runtime/index.md">M18 Harness</a> →
-    <a href="build/module-12-multi-agent-systems/index.md">M12 Multi-Agent</a>
+    <a class="persona-card__cta" href="agent-engineering/index.md">Agent Engineering track →</a>
+    <a class="persona-card__cta" href="build/module-11-ai-agents-fundamentals/index.md">M11 Agents →</a>
+    <a class="persona-card__cta" href="build/module-18-agent-harness-tools-runtime/index.md">M18 Harness →</a>
+  </div>
+  <div class="persona-card">
+    <div class="persona-card__title">Using Claude Code / Cursor</div>
+    <div class="persona-card__desc">Skills files, loop engineering, context windows</div>
+    <a class="persona-card__cta" href="ai-engineering-2026/index.md">2026 Skills →</a>
+    <a class="persona-card__cta" href="ai-engineering-2026/claude-code.md">Claude Code →</a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Shipping to production</div>
     <div class="persona-card__desc">Need LLMOps, evals, monitoring, safety</div>
-    <a href="production/module-10-llmops-production-systems/index.md">M10 LLMOps</a> →
-    <a href="production/module-19-llm-evaluation-quality/index.md">M19 Evals</a>
+    <a class="persona-card__cta" href="production/module-10-llmops-production-systems/index.md">M10 LLMOps →</a>
+    <a class="persona-card__cta" href="production/module-19-llm-evaluation-quality/index.md">M19 Evals →</a>
   </div>
 </div>
+
+## How the handbook is organized
+
+| Layer | What it is | Start here |
+|-------|------------|------------|
+| **16 modules** | Full curriculum across 4 phases (Foundations → Build → Production → Advanced) | [Learning Path](learning-path.md) |
+| **Agent Engineering** | Concise 7-lesson track on loops, harness, tools, orchestration, evals | [Agent Engineering](agent-engineering/index.md) |
+| **2026 Skills** | Modern IDE-agent skills: Claude Code, skills files, loop & context engineering | [2026 Skills](ai-engineering-2026/index.md) |
+| **Hub pages** | Cross-cutting guides that link modules together | [Agentic AI](agentic-ai/index.md), [Evals & Observability](evals-observability/index.md) |
+
+Module IDs like M00, M05, M09 come from the original platform — **gaps (M02–M04, M08) are normal**, not missing lessons.
 
 ## Local setup
 
@@ -56,11 +77,18 @@ python 04-starter.py
 
 ## How to navigate
 
-1. **[Topic Map](topic-map.md)** — find any concept (RAG, harness, evals, observability)
-2. **[Learning Path](learning-path.md)** — full module order with lesson counts
-3. **Module index** — each module has a lesson table; open lessons from there
-4. **[Resources](resources/index.md)** — papers, videos, tools, open-source hubs
-5. **[Glossary](glossary.md)** — quick definitions for every key term
+Use the top tabs in this order depending on your goal:
+
+1. **[Start Here](start-here.md)** — persona, goal, prerequisite chains, first project
+2. **[Topic Map](topic-map.md)** — find any concept (RAG, harness, evals, observability)
+3. **[Learning Path](learning-path.md)** — full module order with lesson counts
+4. **[FAQ](faq.md)** — RAG vs fine-tune vs agents, troubleshooting
+5. **[Build These First](projects/build-these.md)** — 10 portfolio projects
+6. **[Exercises](exercises/index.md)** — hands-on paths by persona
+7. **[Agent Engineering](agent-engineering/index.md)** or **[2026 Skills](ai-engineering-2026/index.md)** — focused tracks
+8. **Phase tabs** (Foundations, Build, Production, Advanced) — browse modules in the sidebar
+9. **[Glossary](glossary.md)** — quick definitions
+10. **[Resources](resources/index.md)** — papers, videos, tools, OSS hubs
 
 ## Depth promise
 

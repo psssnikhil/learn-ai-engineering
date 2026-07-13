@@ -4,45 +4,61 @@ title: Roadmap
 
 # Handbook Roadmap
 
-What's shipped, what's in progress, and what's planned to make this a **complete one-stop shop** for AI/ML engineering.
+What's shipped, what's in progress, and what's planned.
 
-## Shipped (v0.4)
+## Depth status (honest)
 
-- **Foundations depth pass** — M00–M07 lessons expanded to 2,500–4,000 words each
-- **Deep Dives hub** — attention math, backprop calculus, tokenization internals
-- **Site UX** — lesson-level nav, tabs, custom CSS, mermaid init
-- 16 modules · 148+ lessons · extension lessons M07 L11, M09 L11
+| Phase | Modules | Depth | Status |
+|-------|---------|-------|--------|
+| **Foundations** | M00–M07 | 2,500–4,000 words/lesson | ✅ Complete |
+| **Build** | M09, M11 (L1–5) | 2,500–3,500 words | ✅ Complete |
+| **Build** | M09 L6–10, M12–M14, M18 | Mixed | 🔄 In progress |
+| **Production** | M10, M16, M19 | 1,000–1,500 words | 🔄 Next priority |
+| **Advanced** | M15, M17 | 600–1,300 words | 📋 Planned |
+| **Tracks** | Agent Engineering, 2026 Skills | ~1,500 words/page | ✅ Complete |
+| **Onboarding** | Start Here, FAQ, How to Learn, Build These | — | ✅ Complete |
+
+## Shipped (v0.5)
+
+- **[Start Here](start-here.md)** — single entry for all personas
+- **[How to Learn](learn/index.md)** — 20-week beginner, 12-week intermediate, 8-week agent plans
+- **[FAQ](faq.md)** — RAG vs fine-tune vs agents, troubleshooting
+- **[Build These First](projects/build-these.md)** — 10 portfolio projects mapped to modules
+- **M09 L1–5 + M11 L1–5** — deepened to production-grade depth
+- **Agent Engineering + 2026 Skills** — expanded + related papers
+- **MathJax** — formulas render correctly
+- **Topic Map** promoted to top-level tab
 
 ## In progress
 
 | Item | Status |
 |------|--------|
-| **M12 Multi-Agent** | 7 additional lessons drafted (04–10) |
-| **M18 Harness** | Core lessons live; expanding hands-on labs |
-| **M19 Evals** | Core lessons live; CI/CD eval patterns |
-| **Notebooks** | M01 ✅ done; M09, M11 next |
-| **Build phase depth** | M09–M14, M18 next priority |
+| **M09 L6–10, M12–M14** | Depth pass next |
+| **M10, M16, M19** | Production depth pass |
+| **M15, M17** | Advanced depth pass |
+| **Notebooks** | M01 ✅; M09, M11 next |
+| **M09/M11 exercises** | Lesson code exists; exercise files 🔜 |
 
 ## Planned
 
-- Model gateway deep dive (M10)
-- OpenTelemetry + Langfuse hands-on (M10)
-- DSPy / automated prompt optimization (M14)
-- Runtime agent safety (M16)
+- OpenTelemetry + Langfuse hands-on lab (M10)
+- DSPy / prompt optimization (M14)
 - Multimodal engineering module
-- More Python exercises across Build phase
-- Deep Dives: RoPE positional encodings, LoRA math, KV cache arithmetic
+- Deep Dives: RoPE, LoRA, KV cache
+- Nav consolidation (reduce tab count)
 
-## Content gaps we're closing
+## One-stop shop checklist
 
-Inspired by [Awesome Harness Engineering](https://github.com/ai-boost/awesome-harness-engineering), [Awesome Agent Evals](https://github.com/benchflow-ai/awesome-evals), and [Agents Towards Production](https://github.com/NirDiamant/agents-towards-production):
-
-1. **Harness & runtime** → M18
-2. **Unified evals** → M19
-3. **MCP & tool protocols** → M18
-4. **Multi-agent orchestration** → M12
-5. **Production observability depth** → M10 + evals-observability hub
+| Need | Where |
+|------|-------|
+| Pick my path | [Start Here](start-here.md) |
+| Week-by-week plan | [How to Learn](learn/index.md) |
+| Find any topic | [Topic Map](topic-map.md) |
+| Build agents end-to-end | [Agent Engineering](agent-engineering/index.md) |
+| 2026 tools (Claude Code, skills) | [2026 Skills](ai-engineering-2026/index.md) |
+| Portfolio projects | [Build These](projects/build-these.md) |
+| Stuck / decisions | [FAQ](faq.md) |
 
 ## Contribute
 
-Pick an item from **Planned** or improve an existing lesson. See [Contribute](contribute.md).
+Pick from **In progress** or **Planned**. See [Contribute](contribute.md).

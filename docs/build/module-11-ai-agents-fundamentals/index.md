@@ -13,11 +13,11 @@ Master AI agents from basics to building autonomous systems with tools and memor
 ## Lessons
 | # | Lesson | Duration | Level |
 |---|--------|----------|-------|
-| 1 | [Introduction to AI Agents](lessons/01-Introduction-to-Agents.md) | 40 min | intermediate |
-| 2 | [Agent Architectures](lessons/02-Agent-Architectures.md) | 40 min | advanced |
-| 3 | [The ReAct Pattern - Reasoning and Acting](lessons/03-ReAct-Pattern.md) | 45 min | advanced |
-| 4 | [Tool Use & Function Calling](lessons/04-Tool-Use.md) | 40 min | advanced |
-| 5 | [Agent Memory Systems](lessons/05-Agent-Memory.md) | 35 min | advanced |
+| 1 | [Introduction to AI Agents](lessons/01-Introduction-to-Agents.md) | 60 min | intermediate |
+| 2 | [Agent Architectures](lessons/02-Agent-Architectures.md) | 60 min | advanced |
+| 3 | [The ReAct Pattern - Reasoning and Acting](lessons/03-ReAct-Pattern.md) | 65 min | advanced |
+| 4 | [Tool Use & Function Calling](lessons/04-Tool-Use.md) | 60 min | advanced |
+| 5 | [Agent Memory Systems](lessons/05-Agent-Memory.md) | 60 min | advanced |
 | 6 | [Planning & Reasoning](lessons/06-Planning-and-Reasoning.md) | 35 min | advanced |
 | 7 | [Building an Agent from Scratch](lessons/07-Building-an-Agent.md) | 45 min | advanced |
 | 8 | [Agent Frameworks (LangGraph, CrewAI)](lessons/08-Agent-Frameworks.md) | 35 min | advanced |
