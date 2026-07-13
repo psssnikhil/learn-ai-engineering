@@ -5,7 +5,6 @@ module_id: module-16
 ---
 # AI Safety & Ethics
 Understand the critical challenges of AI safety, bias, alignment, and responsible deployment. Learn to build AI systems that are fair, transparent, and aligned with human values.
-
 **Course 14** · Production · 10 lessons · ~12h
 ## Lessons
 

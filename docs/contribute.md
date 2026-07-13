@@ -40,14 +40,6 @@ npm run build:docs    # full build + link fix (same as CI)
 2. Edit `curriculum.yml` in order
 3. Run `npm run sync-nav`
 
-See [MAINTAINING.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/MAINTAINING.md).
-
-## Sync from platform
-
-```bash
-npm run migrate
-```
-
-Handbook-native courses (Harness, Evals, Multi-Agent extensions) are preserved.
+See [MAINTAINING.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/MAINTAINING.md) for curriculum structure details.
 
 Full guide: [CONTRIBUTING.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/CONTRIBUTING.md)

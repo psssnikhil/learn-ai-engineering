@@ -5,7 +5,6 @@ module_id: module-15
 ---
 # Fine-Tuning & Custom Models
 Learn when and how to fine-tune LLMs for specialized tasks, including data preparation, training strategies, evaluation, and deploying custom models cost-effectively.
-
 **Course 15** · Advanced · 10 lessons · ~14h
 ## Lessons
 

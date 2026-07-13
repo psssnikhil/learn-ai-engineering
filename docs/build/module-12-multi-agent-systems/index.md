@@ -5,8 +5,6 @@ module_id: module-12
 ---
 # Multi-Agent Systems
 Learn to build systems where multiple AI agents collaborate, communicate, and coordinate to solve complex tasks that single agents cannot handle alone.
-!!! note "Core content ready · depth expanding"
-    All lessons are listed and ready to read. Selected lessons in this course are being deepened in v1.1 with more examples and exercises.
 **Course 09** · Build · 10 lessons · ~14h
 ## Lessons
 

@@ -41,7 +41,3 @@ Follow this order from top to bottom. Each course opens with a lesson list — w
 - [FAQ](../faq.md) — RAG vs fine-tune vs agents
 - [Build These First](../projects/build-these.md) — portfolio projects
 - [Topic Map](../topic-map.md) — find any concept
-
-## Adding new content
-
-Contributors: edit `curriculum.yml` at the repo root, add your course in order, run `npm run sync-nav`. See [CONTRIBUTING.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/CONTRIBUTING.md).

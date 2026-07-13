@@ -61,9 +61,3 @@ This is an open project. You can influence what we build next:
 3. **Pick a good first issue** — labeled tasks for new contributors on GitHub
 
 If something is missing for your learning path, say so — that is how the curriculum grows.
-
----
-
-## Maintainer notes
-
-Internal planning (content gaps, migration tooling, CI) lives in the GitHub repo: [GAPS.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/GAPS.md) and [CONTRIBUTING.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/CONTRIBUTING.md).

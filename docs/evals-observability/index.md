@@ -21,23 +21,23 @@ flowchart LR
 
 ## Learning path
 
-| Step | Module | Focus |
+| Step | Course | Focus |
 |------|--------|-------|
-| 1 | [M19 · LLM Evals](../production/module-19-llm-evaluation-quality/index.md) | Golden sets, LLM-as-judge, CI/CD gates |
-| 2 | [M10 · LLMOps](../production/module-10-llmops-production-systems/index.md) | Observability, caching, A/B tests |
-| 3 | [M18 L6](../build/module-18-agent-harness-tools-runtime/lessons/06-observability-in-the-harness.md) | Agent step tracing |
-| 4 | [M16 · Safety](../production/module-16-ai-safety-ethics/index.md) | Red teaming, adversarial evals |
-| 5 | [M09 L8](../build/module-09-rag-retrieval-augmented-generation/lessons/08-RAG-Evaluation-Metrics.md) | RAG-specific metrics |
+| 1 | [Course 13 · LLM Evals](../production/module-19-llm-evaluation-quality/index.md) | Golden sets, LLM-as-judge, CI/CD gates |
+| 2 | [Course 12 · LLMOps](../production/module-10-llmops-production-systems/index.md) | Observability, caching, A/B tests |
+| 3 | [Course 08 · Harness L6](../build/module-18-agent-harness-tools-runtime/lessons/06-observability-in-the-harness.md) | Agent step tracing |
+| 4 | [Course 14 · Safety](../production/module-16-ai-safety-ethics/index.md) | Red teaming, adversarial evals |
+| 5 | [Course 06 · RAG L8](../build/module-09-rag-retrieval-augmented-generation/lessons/08-RAG-Evaluation-Metrics.md) | RAG-specific metrics |
 
 ## Eval types
 
 | Type | When | Handbook |
 |------|------|----------|
-| **Unit / regression** | Every PR | [M19 L1, L5](../production/module-19-llm-evaluation-quality/index.md) |
-| **RAG retrieval** | Chunking / index changes | [M09 L8](../build/module-09-rag-retrieval-augmented-generation/lessons/08-RAG-Evaluation-Metrics.md) |
-| **Agent trajectory** | Tool-use agents | [M19 L4](../production/module-19-llm-evaluation-quality/lessons/04-agent-trajectory-evals.md) |
-| **Safety / red team** | Pre-release | [M16 L8](../production/module-16-ai-safety-ethics/lessons/08-lesson-08.md) |
-| **Online / drift** | Production | [M19 L6](../production/module-19-llm-evaluation-quality/lessons/06-production-monitoring-and-alerts.md) |
+| **Unit / regression** | Every PR | [Course 13](../production/module-19-llm-evaluation-quality/index.md) |
+| **RAG retrieval** | Chunking / index changes | [Course 06 · RAG eval metrics](../build/module-09-rag-retrieval-augmented-generation/lessons/08-RAG-Evaluation-Metrics.md) |
+| **Agent trajectory** | Tool-use agents | [Course 13 · Agent trajectory evals](../production/module-19-llm-evaluation-quality/lessons/04-agent-trajectory-evals.md) |
+| **Safety / red team** | Pre-release | [Course 14 · Red teaming](../production/module-16-ai-safety-ethics/lessons/08-lesson-08.md) |
+| **Online / drift** | Production | [Course 13 · Production monitoring](../production/module-19-llm-evaluation-quality/lessons/06-production-monitoring-and-alerts.md) |
 
 ## Observability pillars
 
@@ -46,7 +46,7 @@ flowchart LR
 | **Traces** | Full request path, agent steps | Langfuse, OpenTelemetry, LangSmith |
 | **Logs** | Prompts, tool I/O (redacted) | structlog, CloudWatch |
 | **Metrics** | Latency, tokens, cost, error rate | Prometheus, Grafana |
-| **Feedback** | Thumbs, edits, escalations | Custom + M19 L6 |
+| **Feedback** | Thumbs, edits, escalations | Custom + [Course 13 monitoring](../production/module-19-llm-evaluation-quality/lessons/06-production-monitoring-and-alerts.md) |
 
 ## OSS hubs
 
@@ -59,4 +59,4 @@ flowchart LR
 
 - [Agentic AI](../agentic-ai/index.md) — what you're measuring
 - [Essential Papers](../resources/essential-papers.md) — HELM, MT-Bench, etc.
-- [Roadmap](../roadmap.md) — planned observability labs
+- [Roadmap](../roadmap.md) — upcoming observability labs

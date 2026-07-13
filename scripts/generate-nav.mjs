@@ -104,10 +104,6 @@ ${trackRows.join('\n')}
 - [FAQ](../faq.md) — RAG vs fine-tune vs agents
 - [Build These First](../projects/build-these.md) — portfolio projects
 - [Topic Map](../topic-map.md) — find any concept
-
-## Adding new content
-
-Contributors: edit \`curriculum.yml\` at the repo root, add your course in order, run \`npm run sync-nav\`. See [CONTRIBUTING.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/CONTRIBUTING.md).
 `;
 
   fs.writeFileSync(
@@ -172,7 +168,7 @@ function mkdocsBase() {
 site_description: The free, open-source path from transformers to production AI — RAG, agents, harnesses, evals, and LLMOps.
 site_url: https://psssnikhil.github.io/learn-ai-engineering/
 repo_url: https://github.com/psssnikhil/learn-ai-engineering
-repo_name: Star on GitHub
+repo_name: learn-ai-engineering
 edit_uri: edit/main/docs/
 
 theme:
@@ -218,8 +214,8 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/psssnikhil/learn-ai-engineering
   announcement:
-    text: "v1.0 — Free handbook for AI engineers. Star on GitHub if this helps you ship."
-    link: https://github.com/psssnikhil/learn-ai-engineering
+    text: "Free open-source curriculum — 16 courses from foundations to production AI."
+    link: start-here/
 
 copyright: Copyright &copy; 2026 AI Engineering Handbook contributors · MIT License
 

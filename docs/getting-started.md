@@ -83,11 +83,13 @@ cd docs/foundations/module-01-ai-engineering-essentials/exercises
 python 04-prompt-engineering-starter.py
 ```
 
-### Full production build (what CI runs)
+### Full site build (optional)
 
 ```bash
 npm run build:docs
 ```
+
+Use this before opening a PR if you changed navigation or many links.
 
 ---
 

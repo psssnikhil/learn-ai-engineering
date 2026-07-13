@@ -5,7 +5,6 @@ module_id: module-14
 ---
 # Prompt Engineering Mastery
 Master advanced prompt engineering techniques including few-shot learning, chain-of-thought reasoning, structured outputs, and building reliable prompt pipelines for production.
-
 **Course 11** · Build · 10 lessons · ~12h
 ## Lessons
 

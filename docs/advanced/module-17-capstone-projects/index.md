@@ -5,7 +5,6 @@ module_id: module-17
 ---
 # Capstone Projects
 Apply everything you have learned by building end-to-end AI projects: a RAG-powered knowledge assistant, an autonomous coding agent, and a multi-agent research system.
-
 **Course 16** · Advanced · 10 lessons · ~20h
 ## Lessons
 

@@ -11,9 +11,9 @@ New primitives that didn't exist in the 2023 "just call the API" era. This secti
 
 | Background | Start here |
 |------------|------------|
-| Finished M01–M07 foundations | [Context Engineering](context-engineering.md) → [Loop Engineering](loop-engineering.md) |
-| Building agents (M11/M18) | [Claude Code](claude-code.md) + [Skills & Rules](skills-and-rules.md) |
-| Production LLMOps (M10/M19) | [Loop Engineering](loop-engineering.md) outer loop + [Agent Evals](../agent-engineering/07-agent-evals.md) |
+| Finished courses 01–05 (foundations) | [Context Engineering](context-engineering.md) → [Loop Engineering](loop-engineering.md) |
+| Building agents (courses 07–08) | [Claude Code](claude-code.md) + [Skills & Rules](skills-and-rules.md) |
+| Production LLMOps (courses 12–13) | [Loop Engineering](loop-engineering.md) outer loop + [Agent Evals](../agent-engineering/07-agent-evals.md) |
 
 These pages are **practitioner guides** — they connect 2026 tooling (Claude Code, Cursor skills, MCP) to the handbook's modules without replacing depth lessons in Foundations or Build.
 
@@ -40,19 +40,19 @@ flowchart LR
 | 2026 skill | Handbook foundation |
 |------------|---------------------|
 | Claude Code | [Agent Engineering](../agent-engineering/index.md) → [Harness](../agent-engineering/04-harness-engineering.md) |
-| Skills files | [M14 · Prompts](../build/module-14-prompt-engineering-mastery/index.md) |
-| Loop engineering | [Agent Loop](../agent-engineering/01-agent-loop.md), [M18](../build/module-18-agent-harness-tools-runtime/index.md) |
-| Context engineering | [M01 · Tokens](../foundations/module-01-ai-engineering-essentials/lessons/03-tokens-and-costs.md), [Memory](../agent-engineering/02-memory.md) |
+| Skills files | [Course 11 · Prompts](../build/module-14-prompt-engineering-mastery/index.md) |
+| Loop engineering | [Agent Loop](../agent-engineering/01-agent-loop.md), [Course 08](../build/module-18-agent-harness-tools-runtime/index.md) |
+| Context engineering | [Course 02 · Tokens](../foundations/module-01-ai-engineering-essentials/lessons/03-tokens-and-costs.md), [Memory](../agent-engineering/02-memory.md) |
 
 ## What's still evolving (2026)
 
 | Trend | Status | Handbook coverage |
 |-------|--------|-------------------|
-| Reasoning models (o3, R1) | Production | [M07 L11](../foundations/module-07-large-language-models-llms/lessons/11-reasoning-models-and-test-time-compute.md) |
-| MCP everywhere | Standardizing | [M18 L4](../build/module-18-agent-harness-tools-runtime/lessons/04-mcp-model-context-protocol.md) |
+| Reasoning models (o3, R1) | Production | [Course 05 · Reasoning models](../foundations/module-07-large-language-models-llms/lessons/11-reasoning-models-and-test-time-compute.md) |
+| MCP everywhere | Standardizing | [Course 08 · MCP](../build/module-18-agent-harness-tools-runtime/lessons/04-mcp-model-context-protocol.md) |
 | Computer use agents | Early production | Planned |
 | Agent skills marketplaces | Emerging | [Skills & Rules](skills-and-rules.md) |
-| Eval-driven development | Best practice | [M19](../production/module-19-llm-evaluation-quality/index.md) |
+| Eval-driven development | Best practice | [Course 13 · Evals](../production/module-19-llm-evaluation-quality/index.md) |
 
 ## How to study this section (2-week add-on)
 
@@ -62,10 +62,6 @@ flowchart LR
 | **2** | Loops + tooling | [Claude Code](claude-code.md), [Loop Engineering](loop-engineering.md) | Run a local agent session; add one golden eval case |
 
 Pair with [Agent Engineering](../agent-engineering/index.md) for harness, memory, and orchestration depth.
-
-## Depth standard for this section
-
-Read in order: [Claude Code](claude-code.md) → [Skills & Rules](skills-and-rules.md) → [Loop Engineering](loop-engineering.md) → [Context Engineering](context-engineering.md).
 
 ## OSS hubs to watch
 

@@ -32,9 +32,6 @@ Free and paid resources to supplement the handbook.
 | [Latent Space Discord](https://www.latent.space/) | AI engineering discourse |
 | [Hugging Face Discord](https://hf.co/join/discord) | Open-source ML |
 
-!!! tip "Premium community"
-    The AI Engineering Mastery platform (sibling to this repo) offers a paid engineer community — listed as a perk on paid tiers, not required for learning here.
-
 ## Stay current
 
 - [Latent Space newsletter](https://www.latent.space/)

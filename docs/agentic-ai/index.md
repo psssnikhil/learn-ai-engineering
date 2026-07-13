@@ -40,33 +40,33 @@ flowchart TB
 
 ## Learning path (agentic track)
 
-| Step | Module | What you'll learn |
+| Step | Course | What you'll learn |
 |------|--------|-------------------|
-| 1 | [M11 · Agents](../build/module-11-ai-agents-fundamentals/index.md) | Agent loop, ReAct, tool use, frameworks |
-| 2 | [M18 · Harness & Tools](../build/module-18-agent-harness-tools-runtime/index.md) | Runtime primitives, MCP, safety, tracing |
-| 3 | [M12 · Multi-Agent](../build/module-12-multi-agent-systems/index.md) | Orchestration, coordination, patterns |
-| 4 | [M09 · Agentic RAG](../build/module-09-rag-retrieval-augmented-generation/index.md) | Retrieval-driven agents |
-| 5 | [M17 · Capstones](../advanced/module-17-capstone-projects/index.md) | End-to-end agent projects |
+| 1 | [Course 07 · AI Agents](../build/module-11-ai-agents-fundamentals/index.md) | Agent loop, ReAct, tool use, frameworks |
+| 2 | [Course 08 · Harness & Tools](../build/module-18-agent-harness-tools-runtime/index.md) | Runtime primitives, MCP, safety, tracing |
+| 3 | [Course 09 · Multi-Agent](../build/module-12-multi-agent-systems/index.md) | Orchestration, coordination, patterns |
+| 4 | [Course 06 · RAG](../build/module-09-rag-retrieval-augmented-generation/index.md) | Retrieval-driven agents |
+| 5 | [Course 16 · Capstones](../advanced/module-17-capstone-projects/index.md) | End-to-end agent projects |
 
 ## Core concepts
 
 | Concept | Handbook | OSS inspiration |
 |---------|----------|-----------------|
-| **Agent loop** | [M11 L1](../build/module-11-ai-agents-fundamentals/lessons/01-Introduction-to-Agents.md) | [Microsoft AI Agents for Beginners](https://github.com/microsoft/ai-agents-for-beginners) |
-| **Harness** | [M18](../build/module-18-agent-harness-tools-runtime/index.md) | [Awesome Harness Engineering](https://github.com/ai-boost/awesome-harness-engineering) |
-| **Tools & MCP** | [M18 L3–4](../build/module-18-agent-harness-tools-runtime/index.md) | [Model Context Protocol](https://modelcontextprotocol.io/) |
-| **Orchestration** | [M12](../build/module-12-multi-agent-systems/index.md) | [Agents Towards Production](https://github.com/NirDiamant/agents-towards-production) |
-| **Workflow vs agent** | [M11 L10](../build/module-11-ai-agents-fundamentals/lessons/10-Workflow-vs-Agent.md) | LangGraph docs |
+| **Agent loop** | [Course 07 · Intro to agents](../build/module-11-ai-agents-fundamentals/lessons/01-Introduction-to-Agents.md) | [Microsoft AI Agents for Beginners](https://github.com/microsoft/ai-agents-for-beginners) |
+| **Harness** | [Course 08](../build/module-18-agent-harness-tools-runtime/index.md) | [Awesome Harness Engineering](https://github.com/ai-boost/awesome-harness-engineering) |
+| **Tools & MCP** | [Course 08 · Tools & MCP](../build/module-18-agent-harness-tools-runtime/index.md) | [Model Context Protocol](https://modelcontextprotocol.io/) |
+| **Orchestration** | [Course 09](../build/module-12-multi-agent-systems/index.md) | [Agents Towards Production](https://github.com/NirDiamant/agents-towards-production) |
+| **Workflow vs agent** | [Course 07 · Workflow vs agent](../build/module-11-ai-agents-fundamentals/lessons/10-Workflow-vs-Agent.md) | LangGraph docs |
 
 ## When to use what
 
-| Problem | Pattern | Module |
+| Problem | Pattern | Course |
 |---------|---------|--------|
-| Single task with tools | ReAct agent | M11 |
-| Long-running coding agent | Harness + sandbox | M18 |
-| Research across sources | Multi-agent + RAG | M12, M09 |
-| Deterministic pipeline | Workflow (not agent) | M11 L10 |
-| Customer support | Orchestrator + specialists | M12 L3 |
+| Single task with tools | ReAct agent | 07 |
+| Long-running coding agent | Harness + sandbox | 08 |
+| Research across sources | Multi-agent + RAG | 09, 06 |
+| Deterministic pipeline | Workflow (not agent) | 07 |
+| Customer support | Orchestrator + specialists | 09 |
 
 ## Visual references
 

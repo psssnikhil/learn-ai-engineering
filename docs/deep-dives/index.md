@@ -12,11 +12,7 @@ These pages go **below the lesson level**. Each one takes a single mechanism,
 derives it from first principles, and walks through it with real numbers or
 runnable code. Read them when a lesson leaves you asking "but *why* does that work?"
 
-!!! note "Site navigation"
-    The site agent will add these pages to the navigation sidebar in `mkdocs.yml`.
-    For now, navigate directly from lesson "Further Reading" links or this hub.
-
----
+Find deep dives from lesson **Further Reading** links or the list below.
 
 ## Available Deep Dives
 

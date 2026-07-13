@@ -5,7 +5,6 @@ module_id: module-13
 ---
 # Vector Databases Deep Dive
 Master vector databases from fundamentals to production: embeddings, indexing strategies, similarity search algorithms, and building scalable semantic search systems.
-
 **Course 10** · Build · 10 lessons · ~12h
 ## Lessons
 
