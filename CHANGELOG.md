@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.0] - 2026-07-13
+
+### Content depth expansion
+
+- **Course 10** (Vector DBs) — all 10 lessons expanded with prerequisites, hands-on benchmarks, HNSW/IVF tuning, hybrid search, and production patterns
+- **Course 11** (Prompt Engineering) — all 10 lessons expanded with production versioning, A/B testing, eval loops, and runnable examples
+- **Course 09** (Multi-Agent) — orchestrator-worker and lessons 4, 6–8 expanded with prerequisites, runnable examples, failure modes, and production notes
+- **Course 14** (AI Safety) — transparency and governance lessons deepened with compliance mapping
+- **Course 15** (Fine-Tuning) — OpenAI API, Hugging Face PEFT, and deployment lessons expanded
+- **Course 16** (Capstones) — projects 1 and 6–9 expanded to full step-by-step build guides with testing and deployment
+
+### Fixed
+
+- Broken cross-module links in vector DB lessons
+- Removed "depth expanding" notices from course indexes
+
 ## [1.0.0] - 2026-07-13
 
 ### Launch
@@ -19,10 +35,5 @@
 - Exercise folder 404s (exercises/index.md pages)
 - Homepage button typography and contrast
 
-### Known v1.1 work
-
-- Depth expansion for courses 09–11, 14–16
-- RAG and agent exercise notebooks
-- Custom domain (optional)
-
+[1.1.0]: https://github.com/psssnikhil/learn-ai-engineering/releases/tag/v1.1.0
 [1.0.0]: https://github.com/psssnikhil/learn-ai-engineering/releases/tag/v1.0.0

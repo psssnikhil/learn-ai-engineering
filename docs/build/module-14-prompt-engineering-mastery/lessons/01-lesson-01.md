@@ -5,54 +5,88 @@ description: >-
   specificity, and structured instructions
 duration: 40 min
 difficulty: intermediate
-has_code: false
+has_code: true
 module: module-14
 ---
 # Foundations of Prompt Engineering
+
+## Prerequisites
+
+Before this lesson you should be comfortable with:
+
+- **LLM basics** — what a language model is and how chat APIs work (Modules 01–02)
+- **Python fundamentals** — enough to read and run the code examples below
+- **Basic API usage** — calling `client.chat.completions.create()` with messages
+
+You do not need prior prompt engineering experience. This lesson establishes the vocabulary and patterns used throughout the module.
+
+---
 
 ## What You'll Learn
 
 | Objective | Time | Difficulty |
 |-----------|------|------------|
-| Understand what prompt engineering is and why it matters | 40 min | Intermediate |
-| Learn the anatomy of an effective prompt | | |
-| Master the core principles: clarity, specificity, structure | | |
-| Practice writing prompts for different use cases | | |
+| Explain what prompt engineering is and why it matters in production | 10 min | Intermediate |
+| Decompose any prompt into six structural components | 10 min | Intermediate |
+| Apply clarity, specificity, and structure principles to real tasks | 10 min | Intermediate |
+| Run a minimal prompt comparison in Python | 10 min | Intermediate |
 
 ---
 
-## What is Prompt Engineering?
+## Intuition First: The Briefing Room Analogy
+
+Imagine you walk into a briefing room and tell a brilliant analyst: "Tell me about Python." They might talk about the snake, the programming language, or Monty Python — you gave them no constraints.
+
+Now imagine you say: "You are a senior data engineer briefing a Java developer who is evaluating Python for a new ETL pipeline. Give me three concrete advantages of Python for data science, each with a five-line code example. Keep each advantage under 80 words."
+
+Same analyst, radically different output. The second briefing specifies **who they are**, **who the audience is**, **what to deliver**, and **how to format it**.
+
+That is prompt engineering. You are not programming the model's weights — you are programming its **context window**. Every token you add shifts the probability distribution over what comes next. Good prompts narrow that distribution to the output you actually need.
+
+---
+
+## What Is Prompt Engineering?
 
 **Prompt engineering** is the practice of designing inputs to language models that reliably produce high-quality, accurate outputs. It sits at the intersection of communication, programming, and understanding how LLMs process language.
 
-### Why It Matters
-
-The same model can produce wildly different outputs depending on how you ask:
+Unlike traditional software where logic is explicit, LLM behavior is **probabilistic**. The same model can produce wildly different outputs depending on how you ask:
 
 ```python
-# Vague prompt - unpredictable output
-response = client.chat.completions.create(
-    model="gpt-4.1",
-    messages=[{"role": "user", "content": "Tell me about Python"}]
-)
-# Could be about the snake, the programming language, or Monty Python!
+from openai import OpenAI
 
-# Specific prompt - targeted output
-response = client.chat.completions.create(
-    model="gpt-4.1",
-    messages=[{"role": "user", "content": 
-        "Explain 3 key advantages of Python for data science, "
-        "with a brief code example for each. Target audience: "
-        "developers switching from Java."}]
+client = OpenAI()
+
+# Vague prompt — unpredictable output
+vague = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": "Tell me about Python"}],
 )
+print(vague.choices[0].message.content[:200])
+# Could be about the snake, the programming language, or Monty Python
+
+# Specific prompt — targeted output
+specific = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{
+        "role": "user",
+        "content": (
+            "Explain 3 key advantages of Python for data science, "
+            "with a brief code example for each. Target audience: "
+            "developers switching from Java."
+        ),
+    }],
+)
+print(specific.choices[0].message.content[:200])
 # Focused, actionable, audience-appropriate response
 ```
+
+In production, prompt quality is often the difference between a feature that ships and one that gets rolled back. A 200-token prompt change can move classification accuracy from 72% to 91% without touching model weights.
 
 ---
 
 ## The Anatomy of a Great Prompt
 
-Every effective prompt contains some or all of these components:
+Every effective prompt contains some or all of these six components:
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -76,26 +110,28 @@ Every effective prompt contains some or all of these components:
 └─────────────────────────────────────────────┘
 ```
 
-### Example: All Components Together
+### All Components Together
 
 ```python
-prompt = """
-You are a senior Python developer who specializes in code review.  # ROLE
+def build_code_review_prompt(code: str) -> str:
+    return f"""You are a senior Python developer who specializes in code review.
 
-I have a Flask API endpoint that handles user registration.         # CONTEXT
+Context:
+I have a Flask API endpoint that handles user registration.
 The code works but I'm concerned about security and best practices.
 
-Review this code and provide:                                       # TASK
+Task:
+Review this code and provide:
 1. Security vulnerabilities found
 2. Performance improvements
 3. A refactored version with fixes applied
 
-Format your response as:                                            # FORMAT
+Format:
 - Use markdown headers for each section
 - Include severity ratings (Critical/High/Medium/Low)
 - Add inline code comments in the refactored version
 
-Constraints:                                                        # CONSTRAINTS
+Constraints:
 - Keep the same API contract (don't change endpoint paths)
 - Use only standard library + Flask (no new dependencies)
 - Assume Python 3.11+
@@ -103,31 +139,42 @@ Constraints:                                                        # CONSTRAINT
 Here is the code:
 {code}
 """
+
+# Usage
+prompt = build_code_review_prompt("""
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.json
+    query = f"INSERT INTO users (email) VALUES ('{data['email']}')"
+    db.execute(query)
+    return {"status": "ok"}
+""")
 ```
+
+When a prompt fails in production, the fix usually maps to one of these six slots. "The model is too verbose" → tighten **constraints**. "It ignores my format" → strengthen **format** or add **examples**. Diagnose by component, not by guessing.
 
 ---
 
 ## Core Principle 1: Be Specific
 
-The biggest mistake in prompt engineering is being too vague.
-
-### Bad vs Good
+The biggest mistake in prompt engineering is being too vague. Specificity beats brevity.
 
 | Bad Prompt | Good Prompt |
 |-----------|------------|
-| "Summarize this" | "Summarize this article in 3 bullet points, each under 20 words, focusing on the business impact" |
+| "Summarize this" | "Summarize this article in 3 bullet points, each under 20 words, focusing on business impact" |
 | "Write code" | "Write a Python function that validates email addresses using regex, returns True/False, and handles edge cases like '+' aliases" |
-| "Explain AI" | "Explain how transformer attention mechanisms work to a computer science undergrad who understands matrix multiplication" |
+| "Explain AI" | "Explain how transformer attention mechanisms work to a CS undergrad who understands matrix multiplication" |
+
+Specificity reduces the model's search space. Instead of generating from all possible "summaries," it generates from summaries that are exactly three bullets, each under 20 words, focused on business impact.
 
 ---
 
 ## Core Principle 2: Provide Structure
 
-LLMs follow structure remarkably well. Use it to your advantage.
+LLMs follow structure remarkably well. Use XML tags, markdown headers, or numbered lists to separate concerns:
 
 ```python
-# Using XML-style tags for clear separation
-prompt = """
+debug_prompt = """
 <context>
 You are helping a user debug a React application.
 The app uses Next.js 15 with the App Router.
@@ -150,34 +197,35 @@ Use markdown. Start with a one-line diagnosis, then details.
 """
 ```
 
+Structure also makes prompts **testable**. You can assert that rendered templates contain required sections before sending them to the API.
+
 ---
 
 ## Core Principle 3: Use the System Message
 
-Most APIs support a system message that sets persistent behavior:
+Most chat APIs support a system message that sets persistent behavior across the conversation:
 
 ```python
-from openai import OpenAI
-client = OpenAI()
-
 response = client.chat.completions.create(
-    model="gpt-4.1",
+    model="gpt-4o-mini",
     messages=[
         {
             "role": "system",
             "content": (
-                "You are a database expert. Always suggest "
-                "the most performant query. When writing SQL, "
-                "include EXPLAIN ANALYZE output estimates. "
-                "If the user's approach has a better alternative, "
-                "mention it proactively."
-            )
+                "You are a database expert. Always suggest the most "
+                "performant query. When writing SQL, include EXPLAIN "
+                "ANALYZE output estimates. If the user's approach has "
+                "a better alternative, mention it proactively."
+            ),
         },
         {
             "role": "user",
-            "content": "How do I find duplicate emails in a users table with 10M rows?"
-        }
-    ]
+            "content": (
+                "How do I find duplicate emails in a users table "
+                "with 10M rows?"
+            ),
+        },
+    ],
 )
 ```
 
@@ -190,18 +238,20 @@ response = client.chat.completions.create(
 | Specify constraints and boundaries | Make it extremely long (wastes tokens) |
 | Include domain-specific instructions | Contradict the system message in user messages |
 
+The system message is your **persistent contract** with the model. User messages carry the variable data; the system message carries the rules that should not change turn to turn.
+
 ---
 
 ## Core Principle 4: Iterate and Refine
 
-Prompt engineering is iterative. Start simple, then refine based on output quality.
+Prompt engineering is iterative. Start simple, measure output quality, then refine.
 
 ```
 Iteration 1: "Translate this to Spanish"
   Problem: Too formal for a casual chat app
 
 Iteration 2: "Translate this to casual Latin American Spanish"
-  Problem: Sometimes uses slang that's region-specific
+  Problem: Sometimes uses region-specific slang
 
 Iteration 3: "Translate this to casual Spanish suitable for a
   general Latin American audience. Avoid country-specific slang.
@@ -209,50 +259,107 @@ Iteration 3: "Translate this to casual Spanish suitable for a
   Result: Consistent, appropriate translations
 ```
 
+Treat prompts like code: version them, test them, and review failures systematically. Later lessons cover eval sets and A/B testing; the mindset starts here.
+
 ---
 
-## Practice Exercise
-
-Write prompts for each of these scenarios. Aim to include role, context, task, format, and constraints:
-
-1. **Code Review**: You want the model to review a pull request for a Node.js microservice
-2. **Data Analysis**: You have a CSV of sales data and want insights
-3. **Content Writing**: You need a technical blog post about WebSockets
-4. **Debugging**: You have a Python script that runs slowly and need optimization advice
+## Runnable Example: Prompt Builder
 
 ```python
-# Template to get started
-def create_prompt(role, context, task, format_spec, constraints):
-    return f"""
-Role: {role}
-Context: {context}
-Task: {task}
-Output Format: {format_spec}
-Constraints: {constraints}
+from dataclasses import dataclass
+from openai import OpenAI
+
+client = OpenAI()
+
+@dataclass
+class PromptParts:
+    role: str
+    context: str
+    task: str
+    format_spec: str
+    constraints: str
+
+def render_prompt(parts: PromptParts) -> str:
+    return f"""Role: {parts.role}
+
+Context: {parts.context}
+
+Task: {parts.task}
+
+Output Format: {parts.format_spec}
+
+Constraints: {parts.constraints}
 """
 
-# Try it:
-review_prompt = create_prompt(
+def call_llm(prompt: str, system: str = "") -> str:
+    messages = []
+    if system:
+        messages.append({"role": "system", "content": system})
+    messages.append({"role": "user", "content": prompt})
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=messages,
+        temperature=0.2,
+    )
+    return response.choices[0].message.content
+
+# Build a structured PR review prompt
+review = PromptParts(
     role="Senior Node.js developer and security expert",
     context="Reviewing a PR for an authentication microservice using Express.js",
     task="Identify bugs, security issues, and suggest improvements",
     format_spec="Markdown table with columns: Issue, Severity, Line, Fix",
-    constraints="Focus on OWASP Top 10 vulnerabilities. Max 10 findings."
+    constraints="Focus on OWASP Top 10 vulnerabilities. Max 10 findings.",
 )
+
+prompt = render_prompt(review)
+# print(call_llm(prompt))  # Uncomment with API key configured
 ```
+
+---
+
+## Production Connection
+
+In production, prompt anatomy directly affects reliability and cost:
+
+- **Version every prompt** — store prompts as named artifacts (`summarize_v3`), not inline strings. When output quality shifts, you need to know which prompt version was live.
+- **Log prompt hash + version** with every LLM call so you can correlate failures to prompt changes.
+- **A/B test structural changes** — adding a constraint section vs. adding examples often produces different accuracy/cost tradeoffs. Measure both.
+- **Failure recovery** — when output violates format constraints, retry with a stricter format instruction before falling back to a simpler model or default response.
+
+Teams that treat prompts as first-class configuration — with the same rigor as database schemas — ship faster and debug less.
+
+---
+
+## Edge Cases & Common Misconceptions
+
+**Misconception 1: Longer prompts are always better.**
+Extra tokens cost money and can dilute key instructions. A focused 150-token prompt often beats a rambling 800-token one. Put the most important constraints first.
+
+**Misconception 2: The model "understands" implied requirements.**
+If you need JSON, say JSON. If you need three bullets, say three bullets. Implicit expectations become production bugs.
+
+**Misconception 3: Prompt engineering replaces eval.**
+Good structure helps, but you still need test cases. A prompt that works on five examples may fail on edge cases you never considered.
+
+**Misconception 4: One prompt fits all models.**
+The anatomy stays the same, but optimal phrasing varies by provider. Lesson 9 covers model-specific adaptations.
 
 ---
 
 ## Key Takeaways
 
-- Specificity beats brevity: the more precise your prompt, the better the output
-- Structure your prompts with clear sections (role, context, task, format, constraints)
-- Use the system message for persistent behavior settings
-- Iterate: treat prompts like code - test, evaluate, refine
-- Different tasks need different prompt strategies (covered in upcoming lessons)
+- Prompt engineering programs the context window, not the model weights — specificity narrows the output distribution.
+- Every effective prompt has up to six components: role, context, task, format, constraints, and optional examples.
+- Specificity beats brevity; vague prompts produce vague (or wrong) outputs.
+- Structure (XML tags, headers, numbered lists) makes prompts easier for models to follow and for engineers to debug.
+- Use the system message for persistent rules; use the user message for variable task data.
+- Prompt engineering is iterative — start simple, identify failure patterns, refine by component.
+- In production, version prompts, log which version ran, and retry with stricter instructions on format failures.
+- Diagnose prompt failures by asking which anatomy component is missing or weak.
 
 ---
 
 ## Next Lesson
 
-**Lesson 2: Few-Shot and Chain-of-Thought Prompting** - Learn advanced techniques that dramatically improve model reasoning and output quality.
+**[Lesson 2: Few-Shot and Chain-of-Thought Prompting](02-lesson-02.md)** — Learn how examples and step-by-step reasoning dramatically improve model output on classification and logic tasks.

@@ -27,9 +27,24 @@ objectives:
 
 ---
 
-## The Regulatory Landscape (2025)
+## Prerequisites
 
-AI regulation is evolving rapidly. As an AI engineer, you need to understand what is required — even if you are not a lawyer.
+| Requirement | Details |
+|-------------|---------|
+| **Module 16, Lessons 1-6** | Safety, bias, privacy, transparency fundamentals |
+| **Basic understanding** | Of your organization's AI use cases |
+| **No legal expertise required** | This lesson maps regulations to engineering — consult legal for compliance |
+
+**Courses required:**
+- Module 16: AI Safety & Ethics (full module recommended)
+- Module 13: LLMOps (for monitoring and deployment governance)
+- Module 17, Project 8: AI Safety Evaluation Suite (for compliance testing)
+
+---
+
+## The Regulatory Landscape (2025-2026)
+
+AI regulation is evolving rapidly. As an AI engineer, you need to understand what is required — even if you are not a lawyer. Your job is to **implement** the technical controls that regulations demand.
 
 ### EU AI Act
 
@@ -57,9 +72,34 @@ Required Technical Measures:
 7. Accuracy, robustness, cybersecurity measures
 ```
 
-### NIST AI Risk Management Framework (AI RMF)
+### US Regulatory Approach
 
-The US approach is currently voluntary, led by NIST's AI RMF:
+The US does not have a single comprehensive AI law. Instead, regulation is fragmented:
+
+| Framework | Scope | Status |
+|-----------|-------|--------|
+| **NIST AI RMF** | Voluntary risk management | Active, widely adopted |
+| **Executive Order 14110** | Federal agency AI use | Active |
+| **State laws** (CA, CO, IL) | Automated decision-making, deepfakes | Varies by state |
+| **Sector-specific** (FDA, SEC, EEOC) | Healthcare, finance, hiring | Active enforcement |
+
+---
+
+## What You'll Build
+
+By the end of this lesson, you will have:
+
+- [ ] A risk classification for a sample AI application
+- [ ] A model card documenting capabilities and limitations
+- [ ] An AI review checklist for pre-deployment governance
+- [ ] A compliance mapping from regulation to engineering controls
+- [ ] A governance structure diagram for a small AI team
+
+---
+
+## Architecture
+
+### NIST AI Risk Management Framework
 
 ```
 Four Core Functions:
@@ -77,81 +117,411 @@ oversight
 **Measure**: Assess and monitor risks quantitatively
 **Manage**: Implement controls and mitigations
 
+### Governance Structure
+
+```
+[Executive Sponsor]
+        |
+        v
+[AI Ethics Board / Review Committee]
+        |
+        +-- AI Ethics Lead (policy, review)
+        +-- AI Engineers (implement controls)
+        +-- Product Managers (impact assessment)
+        +-- Legal/Compliance (interpret regulations)
+        +-- Data Scientists (bias testing, fairness)
+        |
+        v
+[AI Review Process]  (before every deployment)
+        |
+        +-- Impact Assessment
+        +-- Technical Review (safety eval, bias test)
+        +-- Documentation (model card, architecture)
+        +-- Approval (sign-off for high-risk)
+        |
+        v
+[Deployed AI System]
+        |
+        +-- Monitoring (drift, bias, errors)
+        +-- Incident Response
+        +-- Periodic Re-evaluation
+```
+
 ---
 
-## Building an AI Governance Structure
+## Step 1: Classify Your AI System's Risk Level
 
-### Roles and Responsibilities
+Use this decision tree to classify any AI application:
 
-| Role | Responsibility |
-|------|---------------|
-| **AI Ethics Lead** | Set policy, review high-risk deployments |
-| **AI Engineers** | Implement safety measures, run evaluations |
-| **Product Managers** | Assess user impact, define acceptable behavior |
-| **Legal/Compliance** | Interpret regulations, manage risk |
-| **Data Scientists** | Bias testing, fairness audits |
+```python
+# src/risk_classifier.py
 
-### The AI Review Process
+RISK_QUESTIONS = [
+    {
+        "question": "Does the system make or influence decisions about people?",
+        "yes_risk": "elevated",
+        "categories": ["hiring", "credit", "medical", "legal", "education"],
+    },
+    {
+        "question": "Could a wrong output cause physical harm or significant financial loss?",
+        "yes_risk": "high",
+        "categories": ["medical", "autonomous", "financial"],
+    },
+    {
+        "question": "Does the system process biometric data or perform surveillance?",
+        "yes_risk": "unacceptable",
+        "categories": ["biometric", "surveillance"],
+    },
+    {
+        "question": "Is the system a chatbot or content generator interacting with users?",
+        "yes_risk": "limited",
+        "categories": ["chatbot", "content_generation"],
+    },
+    {
+        "question": "Does the system automate decisions without human review?",
+        "yes_risk": "high",
+        "categories": ["automated_decision"],
+    },
+]
+
+def classify_risk(answers: dict) -> dict:
+    """Classify AI system risk based on questionnaire answers."""
+    risk_level = "minimal"
+    applicable_regulations = []
+    required_controls = []
+
+    for q in RISK_QUESTIONS:
+        if answers.get(q["question"], False):
+            if q["yes_risk"] == "unacceptable":
+                risk_level = "unacceptable"
+                applicable_regulations.append("EU AI Act: BANNED")
+                break
+            elif q["yes_risk"] == "high" and risk_level != "unacceptable":
+                risk_level = "high"
+            elif q["yes_risk"] == "elevated" and risk_level in ("minimal", "limited"):
+                risk_level = "elevated"
+            elif q["yes_risk"] == "limited" and risk_level == "minimal":
+                risk_level = "limited"
+
+    if risk_level == "high":
+        required_controls = [
+            "conformity_assessment", "technical_documentation",
+            "record_keeping", "human_oversight", "bias_testing",
+            "accuracy_monitoring", "cybersecurity",
+        ]
+    elif risk_level == "limited":
+        required_controls = ["ai_disclosure", "content_labeling"]
+    elif risk_level == "elevated":
+        required_controls = ["bias_testing", "human_oversight", "audit_trail"]
+
+    return {
+        "risk_level": risk_level,
+        "applicable_regulations": applicable_regulations,
+        "required_controls": required_controls,
+    }
+
+# Example: Customer support chatbot
+result = classify_risk({
+    "Does the system make or influence decisions about people?": False,
+    "Is the system a chatbot or content generator interacting with users?": True,
+})
+print(f"Risk level: {result['risk_level']}")
+print(f"Required controls: {result['required_controls']}")
+```
+
+---
+
+## Step 2: Create a Model Card
+
+A model card documents your AI system's capabilities, limitations, and intended use. Required for high-risk systems under the EU AI Act.
+
+```python
+# src/model_card.py
+from dataclasses import dataclass, field
+from datetime import date
+
+@dataclass
+class ModelCard:
+    name: str
+    version: str
+    base_model: str
+    training_data_description: str
+    intended_use: list[str]
+    out_of_scope: list[str]
+    limitations: list[str]
+    bias_evaluation: str
+    monitoring_plan: str
+    last_updated: str = field(default_factory=lambda: date.today().isoformat())
+    owner: str = ""
+
+    def to_markdown(self) -> str:
+        lines = [
+            f"# Model Card: {self.name}",
+            "",
+            f"**Version:** {self.version}",
+            f"**Last updated:** {self.last_updated}",
+            f"**Owner:** {self.owner}",
+            "",
+            "## Model Details",
+            f"- Base model: {self.base_model}",
+            f"- Training data: {self.training_data_description}",
+            "",
+            "## Intended Use",
+        ]
+        for use in self.intended_use:
+            lines.append(f"- {use}")
+        lines.extend(["", "## Out of Scope (NOT intended for)"])
+        for item in self.out_of_scope:
+            lines.append(f"- {item}")
+        lines.extend(["", "## Limitations"])
+        for lim in self.limitations:
+            lines.append(f"- {lim}")
+        lines.extend([
+            "", "## Bias and Fairness", self.bias_evaluation,
+            "", "## Monitoring", self.monitoring_plan,
+        ])
+        return "\n".join(lines)
+
+support_bot_card = ModelCard(
+    name="Customer Support Assistant",
+    version="1.2.0",
+    base_model="GPT-4.1-mini (fine-tuned)",
+    training_data_description="5,000 curated support conversations from 2024-2025",
+    intended_use=[
+        "Answer customer questions about products and policies",
+        "Escalate complex issues to human agents",
+    ],
+    out_of_scope=[
+        "Medical, legal, or financial advice",
+        "Processing payments or modifying accounts",
+        "Accessing real-time order status",
+    ],
+    limitations=[
+        "May hallucinate product details not in knowledge base",
+        "Performance degrades for non-English queries",
+        "Cannot access real-time data (uses RAG over static docs)",
+    ],
+    bias_evaluation=(
+        "Tested across 12 demographic groups: no significant performance "
+        "disparities detected. Known gap: lower accuracy on technical jargon "
+        "from non-native English speakers."
+    ),
+    monitoring_plan=(
+        "Human review of 5% of conversations weekly. "
+        "Automated hallucination detection on all responses. "
+        "Monthly bias re-evaluation with updated test sets."
+    ),
+    owner="AI Engineering Team",
+)
+
+print(support_bot_card.to_markdown())
+```
+
+---
+
+## Step 3: Build the AI Review Process
 
 Before deploying any AI feature, run it through a structured review:
 
+```python
+# src/ai_review.py
+from dataclasses import dataclass, field
+from enum import Enum
+
+class ReviewStatus(str, Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    CONDITIONAL = "conditional"
+
+@dataclass
+class AIReview:
+    project_name: str
+    risk_level: str
+    impact_assessment: dict = field(default_factory=dict)
+    technical_review: dict = field(default_factory=dict)
+    documentation: dict = field(default_factory=dict)
+    status: ReviewStatus = ReviewStatus.PENDING
+    conditions: list[str] = field(default_factory=list)
+
+    def run_impact_assessment(self, answers: dict) -> bool:
+        self.impact_assessment = answers
+        high_impact = answers.get("affects_vulnerable_groups", False)
+        auto_decisions = answers.get("automated_decisions", False)
+        return not (high_impact and auto_decisions)
+
+    def run_technical_review(self, results: dict) -> bool:
+        self.technical_review = results
+        passed = True
+        if results.get("safety_pass_rate", 0) < 0.8:
+            passed = False
+            self.conditions.append("Safety pass rate must exceed 80%")
+        if results.get("bias_disparity", 0) > 0.1:
+            passed = False
+            self.conditions.append("Bias disparity must be below 10%")
+        return passed
+
+    def approve(self) -> ReviewStatus:
+        if self.conditions:
+            self.status = ReviewStatus.CONDITIONAL
+        else:
+            self.status = ReviewStatus.APPROVED
+        return self.status
+
+# Example review
+review = AIReview(project_name="Support Chatbot v2", risk_level="limited")
+review.run_impact_assessment({
+    "affects_vulnerable_groups": False,
+    "automated_decisions": False,
+    "failure_impact": "minor_inconvenience",
+})
+review.run_technical_review({
+    "safety_pass_rate": 0.92,
+    "bias_disparity": 0.03,
+    "hallucination_rate": 0.05,
+})
+status = review.approve()
+print(f"Review status: {status.value}")
+```
+
+### The AI Review Checklist
+
 ```
 1. Impact Assessment
-   - Who is affected by this AI system?
-   - What happens if it fails or produces wrong output?
-   - Is this a high-risk application?
+   - [ ] Who is affected by this AI system?
+   - [ ] What happens if it fails or produces wrong output?
+   - [ ] Is this a high-risk application under EU AI Act?
+   - [ ] Are vulnerable groups disproportionately affected?
 
 2. Technical Review
-   - Bias evaluation results
-   - Security testing (prompt injection, jailbreaks)
-   - Performance benchmarks on diverse inputs
-   - Confidence calibration
+   - [ ] Safety evaluation pass rate > 80%
+   - [ ] Bias evaluation across demographic groups
+   - [ ] Security testing (prompt injection, jailbreaks)
+   - [ ] Performance benchmarks on diverse inputs
+   - [ ] Confidence calibration verified
 
 3. Documentation
-   - Model card (what model, what data, known limitations)
-   - System architecture (data flow, human oversight points)
-   - Incident response plan
+   - [ ] Model card completed
+   - [ ] System architecture documented
+   - [ ] Data flow diagram with human oversight points
+   - [ ] Incident response plan written
 
 4. Approval
-   - Sign-off from ethics lead for high-risk applications
-   - Deployment plan with monitoring and rollback strategy
+   - [ ] Ethics lead sign-off (required for high-risk)
+   - [ ] Deployment plan with monitoring and rollback
+   - [ ] User disclosure implemented (AI labeling)
 ```
 
 ---
 
-## Model Cards and Documentation
+## Step 4: Map Compliance to Engineering
 
-A model card documents your AI system's capabilities, limitations, and intended use:
+Translate regulatory requirements into concrete engineering tasks:
 
-```markdown
-# Model Card: Customer Support Assistant
-
-## Model Details
-- Base model: GPT-4.1-mini (fine-tuned)
-- Training data: 5,000 curated support conversations
-- Last updated: 2025-03-15
-
-## Intended Use
-- Answer customer questions about products and policies
-- Escalate complex issues to human agents
-- NOT intended for medical, legal, or financial advice
-
-## Limitations
-- May hallucinate product details not in knowledge base
-- Performance degrades for non-English queries
-- Cannot access real-time order status (uses RAG over docs)
-
-## Bias and Fairness
-- Tested across 12 demographic groups: no significant
-  performance disparities detected
-- Known gap: lower accuracy on technical jargon from
-  non-native English speakers
-
-## Monitoring
-- Human review of 5% of conversations weekly
-- Automated hallucination detection on all responses
-- Monthly bias re-evaluation
+```python
+COMPLIANCE_MAP = {
+    "ai_disclosure": {
+        "regulation": "EU AI Act (Limited Risk)",
+        "engineering_task": "Add 'Generated by AI' label to all AI outputs",
+        "implementation": "UI badge + API response metadata",
+        "test": "Verify label present in all response paths",
+    },
+    "record_keeping": {
+        "regulation": "EU AI Act (High Risk)",
+        "engineering_task": "Log all AI decisions with full context",
+        "implementation": "AIDecisionLogger from Lesson 6",
+        "test": "Verify 100% of decisions have audit trail entries",
+    },
+    "human_oversight": {
+        "regulation": "EU AI Act (High Risk)",
+        "engineering_task": "Allow human override of AI decisions",
+        "implementation": "Review queue for low-confidence decisions",
+        "test": "Verify human can override and override is logged",
+    },
+    "bias_testing": {
+        "regulation": "EU AI Act (High Risk), EEOC",
+        "engineering_task": "Test performance across demographic groups",
+        "implementation": "Safety eval suite with bias test category",
+        "test": "Performance disparity < 10% across groups",
+    },
+    "accuracy_monitoring": {
+        "regulation": "EU AI Act (High Risk)",
+        "engineering_task": "Ongoing accuracy measurement in production",
+        "implementation": "Weekly eval runs + user feedback tracking",
+        "test": "Accuracy does not degrade > 5% month-over-month",
+    },
+    "cybersecurity": {
+        "regulation": "EU AI Act (High Risk)",
+        "engineering_task": "Protect against prompt injection and data leakage",
+        "implementation": "Input sanitization + output filtering + safety eval CI",
+        "test": "Prompt injection test suite passes at 95%+",
+    },
+}
 ```
+
+---
+
+## Testing Your Build
+
+### Compliance Verification Checklist
+
+- [ ] Risk level classified for your AI application
+- [ ] Model card completed with all required sections
+- [ ] AI review process documented and followed
+- [ ] Required controls mapped to engineering implementations
+- [ ] Safety evaluation suite integrated into CI/CD
+- [ ] Audit trail logging active for all AI decisions
+- [ ] AI disclosure visible to end users
+- [ ] Human override mechanism tested
+
+### Self-Assessment Questions
+
+1. Can you explain your AI system's risk level and why?
+2. If a regulator asked "why did the AI make this decision," can you show the audit trail?
+3. Have you tested for bias across demographic groups in the last 30 days?
+4. Do users know they are interacting with AI?
+5. Can a human override any automated AI decision?
+
+---
+
+## Deployment Notes
+
+### Ongoing Compliance (Not One-Time)
+
+Compliance is a continuous process:
+
+| Activity | Frequency | Owner |
+|----------|-----------|-------|
+| Safety evaluation suite | Every deployment | AI Engineers |
+| Bias re-evaluation | Monthly | Data Scientists |
+| Model card update | On every model change | AI Engineers |
+| Audit trail review | Weekly (sample) | Ethics Lead |
+| Full AI review | On every new feature | Review Committee |
+| Regulatory scan | Quarterly | Legal/Compliance |
+
+### Incident Response Plan
+
+```
+AI Incident Detected
+    |
+    v
+1. CONTAIN: Disable affected feature / route to human
+2. ASSESS: Review audit trail, determine scope and severity
+3. NOTIFY: Alert ethics lead, legal (if required), affected users
+4. FIX: Root cause analysis, implement fix, re-run safety eval
+5. DOCUMENT: Post-incident report, update model card
+6. PREVENT: Add test case to safety suite, update monitoring
+```
+
+---
+
+## Extensions and Challenges
+
+- **Compliance automation**: Build a dashboard that tracks compliance status across all AI systems
+- **Regulatory change monitoring**: Subscribe to AI law updates and map new requirements automatically
+- **Cross-border deployment**: Document which regulations apply when serving EU vs US users
+- **Third-party AI audit**: Prepare documentation packages for external auditors
+- **Privacy impact assessment**: Combine AI governance with GDPR DPIA for data-heavy systems
 
 ---
 
@@ -172,15 +542,6 @@ When building AI applications, use this checklist:
 
 ---
 
-## Resources
-
-- **EU AI Act Full Text**: Official regulation document
-- **NIST AI RMF**: https://www.nist.gov/artificial-intelligence
-- **Anthropic's Responsible Scaling Policy**: Example of industry self-governance
-- **Google Model Cards**: Examples of well-documented AI systems
-
----
-
 ## Key Takeaways
 
 - The EU AI Act classifies AI by risk level and imposes requirements accordingly
@@ -188,6 +549,7 @@ When building AI applications, use this checklist:
 - Every AI team needs clear governance roles and a deployment review process
 - Model cards document capabilities, limitations, and bias testing results
 - Compliance is an ongoing process, not a one-time checklist
+- As an AI engineer, you implement the technical controls — document everything
 
 ---
 

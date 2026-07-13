@@ -27,6 +27,26 @@ objectives:
 
 ---
 
+## Prerequisites
+
+| Requirement | Details |
+|-------------|---------|
+| **GPU access** | Minimum 8 GB VRAM (QLoRA) or 16 GB (LoRA) |
+| **Hugging Face account** | With access token for gated models (Llama) |
+| **Training data** | JSONL chat-format dataset from Lesson 2 |
+| **Python 3.10+** | With CUDA-compatible PyTorch |
+
+**Courses required:**
+- Module 15, Lesson 1-2: Fine-tuning fundamentals and data preparation
+- Module 15, Lesson 3: OpenAI fine-tuning (for comparison context)
+
+```bash
+pip install torch transformers datasets accelerate peft trl bitsandbytes huggingface_hub
+huggingface-cli login  # Enter your HF token
+```
+
+---
+
 ## Why Open-Source Fine-Tuning?
 
 | Factor | OpenAI Fine-Tuning | Open-Source Fine-Tuning |
@@ -40,14 +60,73 @@ objectives:
 
 ---
 
-## Environment Setup
+## What You'll Build
+
+By the end of this lesson, you will have:
+
+- [ ] A LoRA-adapted Llama 3.1 8B model trained on custom data
+- [ ] Training and validation loss curves showing convergence
+- [ ] A saved adapter that can be loaded for inference
+- [ ] A comparison of base vs fine-tuned model outputs
+- [ ] (Optional) Model pushed to Hugging Face Hub
+
+---
+
+## Architecture
+
+```
+[Training Data]  training_data.jsonl
+       |
+       v
+[Dataset Preparation]
+  - Load JSONL
+  - Apply chat template (Llama format)
+  - Train/eval split (90/10)
+       |
+       v
+[Model Loading]
+  - Base: meta-llama/Llama-3.1-8B-Instruct
+  - Quantization: 4-bit (QLoRA)
+  - LoRA adapters on attention + MLP layers
+       |
+       v
+[SFTTrainer]  (Supervised Fine-Tuning)
+  - 3 epochs, cosine LR schedule
+  - Gradient accumulation for effective batch size
+  - Eval after each epoch
+       |
+       v
+[Saved Adapter]  ./my-finetuned-model/
+  - adapter_config.json
+  - adapter_model.safetensors
+       |
+       v
+[Inference]
+  - Load base model + adapter
+  - Generate responses
+       |
+       v
+[Hub] (optional)
+  - Push adapter to Hugging Face
+```
+
+---
+
+## Step 1: Environment Setup and Hardware Check
 
 ```bash
-# Install required packages
-pip install torch transformers datasets accelerate peft trl bitsandbytes
+pip install torch transformers datasets accelerate peft trl bitsandbytes nvitop
+```
 
-# For GPU monitoring
-pip install nvitop
+Verify GPU availability:
+
+```python
+import torch
+
+print(f"CUDA available: {torch.cuda.is_available()}")
+if torch.cuda.is_available():
+    print(f"GPU: {torch.cuda.get_device_name(0)}")
+    print(f"VRAM: {torch.cuda.get_device_properties(0).total_mem / 1e9:.1f} GB")
 ```
 
 ### Hardware Requirements
@@ -61,23 +140,15 @@ pip install nvitop
 
 ---
 
-## Step-by-Step: Fine-Tuning with SFTTrainer
-
-The `SFTTrainer` from Hugging Face's TRL library is the easiest way to fine-tune open-source models.
-
-### Step 1: Load the Base Model
+## Step 2: Load the Base Model with QLoRA
 
 ```python
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-from peft import LoraConfig, get_peft_model
-from trl import SFTTrainer, SFTConfig
-from datasets import load_dataset
+from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 
-# Model configuration
 model_name = "meta-llama/Llama-3.1-8B-Instruct"
 
-# Quantization config for QLoRA (saves VRAM)
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
     bnb_4bit_quant_type="nf4",
@@ -85,74 +156,87 @@ bnb_config = BitsAndBytesConfig(
     bnb_4bit_use_double_quant=True,
 )
 
-# Load model in 4-bit
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     quantization_config=bnb_config,
     device_map="auto",
     torch_dtype=torch.bfloat16,
 )
+model = prepare_model_for_kbit_training(model)
 
-# Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.padding_side = "right"
 ```
 
-### Step 2: Configure LoRA
+---
+
+## Step 3: Configure LoRA Adapters
 
 ```python
-# LoRA configuration
 lora_config = LoraConfig(
-    r=16,                      # Rank of the low-rank matrices
-    lora_alpha=32,             # Scaling factor
-    target_modules=[           # Which layers to adapt
+    r=16,
+    lora_alpha=32,
+    target_modules=[
         "q_proj", "k_proj", "v_proj", "o_proj",
-        "gate_proj", "up_proj", "down_proj"
+        "gate_proj", "up_proj", "down_proj",
     ],
     lora_dropout=0.05,
     bias="none",
     task_type="CAUSAL_LM",
 )
 
-# Apply LoRA to model
 model = get_peft_model(model, lora_config)
 model.print_trainable_parameters()
-# Output: trainable params: 20,971,520 || all params: 8,051,232,768 || 0.26%
+# trainable params: ~21M || all params: ~8B || ~0.26% trainable
 ```
 
-### Step 3: Prepare Your Dataset
+**Why LoRA?** Instead of updating all 8 billion parameters, LoRA trains small adapter matrices (~21M parameters). This reduces VRAM requirements by 4-8x while achieving comparable quality for domain adaptation.
+
+---
+
+## Step 4: Prepare Your Dataset
 
 ```python
-# Load a dataset (or use your own)
+from datasets import load_dataset
+
 dataset = load_dataset("json", data_files="training_data.jsonl", split="train")
 
-# For chat-format datasets, define a formatting function
 def format_chat(example):
-    """Format a training example as a chat conversation."""
     messages = example["messages"]
     text = tokenizer.apply_chat_template(
-        messages, 
-        tokenize=False, 
-        add_generation_prompt=False
+        messages,
+        tokenize=False,
+        add_generation_prompt=False,
     )
     return {"text": text}
 
-# Apply formatting
 dataset = dataset.map(format_chat)
-
-# Split into train/eval
 split = dataset.train_test_split(test_size=0.1, seed=42)
 train_dataset = split["train"]
 eval_dataset = split["test"]
 
-print(f"Train examples: {len(train_dataset)}")
-print(f"Eval examples: {len(eval_dataset)}")
+print(f"Train: {len(train_dataset)}, Eval: {len(eval_dataset)}")
+print(f"Sample:\n{train_dataset[0]['text'][:300]}...")
 ```
 
-### Step 4: Configure Training
+Ensure your training data uses the correct chat format:
+
+```json
+{"messages": [
+  {"role": "system", "content": "You are a helpful customer support agent."},
+  {"role": "user", "content": "What is your return policy?"},
+  {"role": "assistant", "content": "We offer a 30-day return policy for all electronics..."}
+]}
+```
+
+---
+
+## Step 5: Configure Training
 
 ```python
+from trl import SFTTrainer, SFTConfig
+
 training_config = SFTConfig(
     output_dir="./results",
     num_train_epochs=3,
@@ -168,11 +252,16 @@ training_config = SFTConfig(
     bf16=True,
     max_seq_length=2048,
     dataset_text_field="text",
-    packing=True,  # Pack short examples together for efficiency
+    packing=True,
+    report_to="none",
 )
 ```
 
-### Step 5: Train
+**Effective batch size** = `per_device_train_batch_size` × `gradient_accumulation_steps` = 4 × 4 = 16.
+
+---
+
+## Step 6: Train
 
 ```python
 trainer = SFTTrainer(
@@ -184,63 +273,148 @@ trainer = SFTTrainer(
     peft_config=lora_config,
 )
 
-# Start training
+print("Starting training...")
 trainer.train()
 
-# Save the LoRA adapter
 trainer.save_model("./my-finetuned-model")
 tokenizer.save_pretrained("./my-finetuned-model")
+print("Training complete. Adapter saved to ./my-finetuned-model/")
 ```
+
+Monitor these signals during training:
+
+| Signal | Healthy | Problem |
+|--------|---------|---------|
+| Training loss | Steady decrease | Flat or increasing |
+| Eval loss | Decreases then plateaus | Increases (overfitting) |
+| GPU memory | Stable utilization | OOM errors (reduce batch size) |
+| Training speed | ~1-3 steps/sec on T4 | Very slow (check data loading) |
 
 ---
 
-## Testing Your Fine-Tuned Model
+## Step 7: Test Your Fine-Tuned Model
 
 ```python
 from peft import PeftModel
 
-# Load the base model + LoRA adapter
 base_model = AutoModelForCausalLM.from_pretrained(
     model_name,
     quantization_config=bnb_config,
     device_map="auto",
 )
 model = PeftModel.from_pretrained(base_model, "./my-finetuned-model")
+model.eval()
 
-# Generate a response
-messages = [
-    {"role": "user", "content": "What is your return policy for electronics?"}
-]
-input_text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-inputs = tokenizer(input_text, return_tensors="pt").to(model.device)
+def generate_response(user_message: str, system_prompt: str = "") -> str:
+    messages = []
+    if system_prompt:
+        messages.append({"role": "system", "content": system_prompt})
+    messages.append({"role": "user", "content": user_message})
 
-outputs = model.generate(**inputs, max_new_tokens=256, temperature=0.7, do_sample=True)
-response = tokenizer.decode(outputs[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True)
-print(response)
+    input_text = tokenizer.apply_chat_template(
+        messages, tokenize=False, add_generation_prompt=True,
+    )
+    inputs = tokenizer(input_text, return_tensors="pt").to(model.device)
+
+    with torch.no_grad():
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=256,
+            temperature=0.7,
+            do_sample=True,
+            top_p=0.9,
+        )
+    return tokenizer.decode(
+        outputs[0][inputs["input_ids"].shape[-1]:],
+        skip_special_tokens=True,
+    )
+
+# Compare base vs fine-tuned
+print("=== Fine-Tuned ===")
+print(generate_response("What is your return policy for electronics?"))
+
+base_only = AutoModelForCausalLM.from_pretrained(
+    model_name, quantization_config=bnb_config, device_map="auto",
+)
+# Generate with base model for comparison...
 ```
 
 ---
 
-## Pushing to Hugging Face Hub
+## Step 8: Push to Hugging Face Hub
 
 ```python
-# Login to Hugging Face
 from huggingface_hub import login
-login()
 
-# Push the adapter to Hub
-model.push_to_hub("your-username/my-finetuned-model")
-tokenizer.push_to_hub("your-username/my-finetuned-model")
+login()  # Or set HF_TOKEN environment variable
+
+model.push_to_hub("your-username/my-finetuned-llama-support")
+tokenizer.push_to_hub("your-username/my-finetuned-llama-support")
+```
+
+Others can then load your adapter:
+
+```python
+model = PeftModel.from_pretrained(
+    base_model,
+    "your-username/my-finetuned-llama-support",
+)
 ```
 
 ---
 
-## Resources
+## Testing Your Build
 
-- **Hugging Face TRL Documentation**: [huggingface.co/docs/trl](https://huggingface.co/docs/trl)
-- **PEFT Documentation**: [huggingface.co/docs/peft](https://huggingface.co/docs/peft)
-- **Blog: Fine-Tune Llama 3 with Hugging Face**: Comprehensive tutorial on the Hugging Face blog
-- **Google Colab Free GPUs**: Free T4 GPUs for small fine-tuning experiments
+### Verification Checklist
+
+- [ ] Model loads without OOM errors on your GPU
+- [ ] Training loss decreases over epochs
+- [ ] Eval loss does not diverge from training loss
+- [ ] Fine-tuned model produces domain-relevant responses
+- [ ] Adapter files saved correctly (adapter_config.json, adapter_model.safetensors)
+- [ ] Inference works after reloading saved adapter
+
+### Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| CUDA OOM | Reduce `per_device_train_batch_size` to 1-2, increase `gradient_accumulation_steps` |
+| Loss not decreasing | Check data format, increase learning rate to 5e-4 |
+| Gibberish output | Training diverged — reduce LR, check for bad data |
+| Slow training on Colab | Enable `packing=True`, reduce `max_seq_length` to 1024 |
+| Gated model access denied | Request access on Hugging Face model page, re-login |
+
+---
+
+## Deployment Notes
+
+After fine-tuning, you have three deployment paths:
+
+| Path | When to Use |
+|------|------------|
+| **LoRA adapter + base model** | Development, swapping adapters per task |
+| **Merge adapter into base** | Production single-file deployment |
+| **Push to Hub** | Sharing, community use, HF Inference Endpoints |
+
+Merge adapter for standalone deployment:
+
+```python
+merged_model = model.merge_and_unload()
+merged_model.save_pretrained("./my-merged-model")
+tokenizer.save_pretrained("./my-merged-model")
+```
+
+See Lesson 8 for serving with vLLM or TGI.
+
+---
+
+## Extensions and Challenges
+
+- **Multi-GPU training**: Use `accelerate launch` for data parallelism across GPUs
+- **Different base models**: Try Mistral 7B, Gemma 2 9B, or Qwen 2.5 7B
+- **DPO training**: Use TRL's `DPOTrainer` with preference pairs for alignment
+- **Longer context**: Increase `max_seq_length` to 4096 or 8192 if your GPU allows
+- **Custom chat templates**: Fine-tune models without native chat templates using raw text
 
 ---
 
@@ -251,6 +425,7 @@ tokenizer.push_to_hub("your-username/my-finetuned-model")
 - SFTTrainer from TRL simplifies the training loop to just a few configuration steps
 - Always use a validation set and monitor eval loss to detect overfitting
 - Push your model to Hugging Face Hub to share and deploy easily
+- LoRA adapters are small (~50-200 MB) and can be swapped without reloading the base model
 
 ---
 

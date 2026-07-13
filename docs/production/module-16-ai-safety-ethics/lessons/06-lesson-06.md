@@ -29,6 +29,25 @@ objectives:
 
 ---
 
+## Prerequisites
+
+| Requirement | Details |
+|-------------|---------|
+| **Python 3.10+** | With `openai` package |
+| **LLM API access** | OpenAI or equivalent provider |
+| **Basic FastAPI knowledge** | For the audit trail API example |
+
+**Courses required:**
+- Module 16, Lessons 1-5: AI safety fundamentals, bias, privacy
+- Module 3: RAG Systems (for source citation patterns)
+- Module 7: Prompt Engineering (for self-assessment prompts)
+
+```bash
+pip install openai pydantic fastapi python-dotenv
+```
+
+---
+
 ## Why Transparency Matters
 
 Users, regulators, and stakeholders increasingly demand to know **why** an AI system produced a specific output. This is not just a nice-to-have — in regulated industries (healthcare, finance, hiring) it is often a legal requirement.
@@ -36,7 +55,7 @@ Users, regulators, and stakeholders increasingly demand to know **why** an AI sy
 ```
 Black Box AI:
   Input --> [???] --> Output
-  
+
 Transparent AI:
   Input --> [reasoning steps, sources, confidence] --> Output + Explanation
 ```
@@ -49,50 +68,103 @@ Transparent AI:
 | **Explainability** | Providing human-readable reasons for a specific output | "I recommended this because of sources X, Y, Z" |
 | **Interpretability** | Understanding the internal mechanics of the model | Attention maps, feature importance scores |
 
+For LLM applications, focus on **transparency** and **explainability** — true interpretability of billion-parameter models remains an active research area.
+
 ---
 
-## Confidence Scoring for LLM Outputs
+## What You'll Build
 
-LLMs do not natively provide calibrated confidence scores, but you can approximate them:
+By the end of this lesson, you will have:
 
-### Approach 1: Logprob-Based Confidence
+- [ ] A confidence scoring module with three approaches (logprobs, self-assessment, consistency)
+- [ ] An audit trail logger that records every AI decision with full context
+- [ ] A FastAPI endpoint that returns answers with confidence and explanations
+- [ ] UI messaging patterns that communicate uncertainty appropriately
+- [ ] A test suite verifying confidence scores correlate with answer quality
+
+---
+
+## Architecture
+
+```
+[User Query]
+    |
+    v
+[AI Pipeline]
+    |
+    +-- Generate Answer (LLM)
+    |
+    +-- Confidence Scoring
+    |       |-- Logprob-based score
+    |       |-- Self-assessment (high/medium/low)
+    |       +-- Consistency check (optional)
+    |
+    +-- Explanation Generation
+    |       |-- Source citations (RAG)
+    |       +-- Reasoning summary
+    |
+    +-- Audit Trail Logger
+    |       |-- Input, output, model, confidence
+    |       +-- Timestamp, decision ID
+    |
+    v
+[Response to User]
+    {
+      "answer": "...",
+      "confidence": "high",
+      "explanation": "Based on 3 sources...",
+      "caveats": ["Verify with official docs"]
+    }
+```
+
+---
+
+## Step 1: Logprob-Based Confidence
+
+LLMs can return token-level log probabilities. Higher average probability suggests the model is more certain about its output.
 
 ```python
+import math
 from openai import OpenAI
 
 client = OpenAI()
 
-def get_confidence_score(prompt, model="gpt-4.1-mini"):
+def get_confidence_score(prompt: str, model: str = "gpt-4.1-mini") -> tuple[float, str]:
     """Get a rough confidence estimate using logprobs."""
     response = client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": prompt}],
         logprobs=True,
         top_logprobs=3,
-        max_tokens=500
+        max_tokens=500,
     )
-    
-    # Average token-level confidence
+
     logprobs = response.choices[0].logprobs.content
+    answer = response.choices[0].message.content
+
     if not logprobs:
-        return None, response.choices[0].message.content
-    
-    import math
-    avg_prob = sum(
-        math.exp(token.logprob) for token in logprobs
-    ) / len(logprobs)
-    
-    return avg_prob, response.choices[0].message.content
+        return 0.0, answer
+
+    avg_prob = sum(math.exp(token.logprob) for token in logprobs) / len(logprobs)
+    return avg_prob, answer
 
 confidence, answer = get_confidence_score("What is the capital of France?")
 print(f"Answer: {answer}")
 print(f"Confidence: {confidence:.2%}")
 ```
 
-### Approach 2: Self-Assessment Prompting
+**Limitation:** Logprobs measure fluency, not factual correctness. A confident-sounding hallucination still scores high.
+
+---
+
+## Step 2: Self-Assessment Prompting
+
+Ask the model to evaluate its own confidence with structured output:
 
 ```python
-def get_answer_with_confidence(question):
+import json
+
+def get_answer_with_confidence(question: str) -> dict:
     """Ask the model to self-assess its confidence."""
     response = client.chat.completions.create(
         model="gpt-4.1",
@@ -105,77 +177,158 @@ Question: {question}
 Respond in this exact JSON format:
 {{
     "answer": "your answer here",
-    "confidence": "high/medium/low",
+    "confidence": "high",
     "reasoning": "why you are or aren't confident",
     "caveats": ["any important caveats or limitations"]
-}}"""
+}}
+
+Confidence levels:
+- high: You are very confident this is correct
+- medium: Likely correct but some uncertainty
+- low: Educated guess, user should verify""",
         }],
-        response_format={"type": "json_object"}
+        response_format={"type": "json_object"},
     )
-    
-    import json
     return json.loads(response.choices[0].message.content)
+
+result = get_answer_with_confidence("What are the side effects of metformin?")
+print(f"Answer: {result['answer']}")
+print(f"Confidence: {result['confidence']}")
+print(f"Caveats: {result['caveats']}")
 ```
 
-### Approach 3: Consistency Sampling
+---
 
-Ask the same question multiple times and measure agreement:
+## Step 3: Consistency Sampling
+
+Measure confidence by asking the same question multiple times and checking agreement:
 
 ```python
-def consistency_confidence(question, num_samples=5):
+from collections import Counter
+
+def consistency_confidence(question: str, num_samples: int = 5) -> tuple[float, list[str]]:
     """Measure confidence by checking answer consistency across samples."""
     answers = []
     for _ in range(num_samples):
         response = client.chat.completions.create(
             model="gpt-4.1-mini",
             messages=[{"role": "user", "content": question}],
-            temperature=0.7
+            temperature=0.7,
         )
         answers.append(response.choices[0].message.content.strip())
-    
-    # Simple consistency: what fraction of answers match the most common one?
-    from collections import Counter
+
     most_common_count = Counter(answers).most_common(1)[0][1]
     consistency = most_common_count / num_samples
-    
     return consistency, answers
+
+consistency, answers = consistency_confidence("What year was Python first released?")
+print(f"Consistency: {consistency:.0%}")
+print(f"Unique answers: {len(set(answers))}")
+```
+
+| Consistency | Interpretation |
+|-------------|---------------|
+| 100% (5/5 agree) | High confidence |
+| 80% (4/5 agree) | Medium confidence |
+| 60% or below | Low confidence — answers vary significantly |
+
+---
+
+## Step 4: Build a Unified Confidence Module
+
+Combine all three approaches into a single scoring system:
+
+```python
+from dataclasses import dataclass
+from enum import Enum
+
+class ConfidenceLevel(str, Enum):
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+@dataclass
+class ConfidenceResult:
+    level: ConfidenceLevel
+    score: float
+    answer: str
+    explanation: str
+    caveats: list[str]
+    method: str
+
+def compute_confidence(question: str, use_consistency: bool = False) -> ConfidenceResult:
+    """Compute confidence using self-assessment (primary) with optional consistency check."""
+    self_assessment = get_answer_with_confidence(question)
+    level = ConfidenceLevel(self_assessment["confidence"])
+
+    score_map = {ConfidenceLevel.HIGH: 0.9, ConfidenceLevel.MEDIUM: 0.6, ConfidenceLevel.LOW: 0.3}
+    score = score_map[level]
+
+    if use_consistency:
+        consistency, _ = consistency_confidence(question, num_samples=3)
+        score = (score + consistency) / 2
+        if consistency < 0.7:
+            level = ConfidenceLevel.LOW
+        elif consistency < 0.9 and level == ConfidenceLevel.HIGH:
+            level = ConfidenceLevel.MEDIUM
+
+    return ConfidenceResult(
+        level=level,
+        score=score,
+        answer=self_assessment["answer"],
+        explanation=self_assessment["reasoning"],
+        caveats=self_assessment.get("caveats", []),
+        method="self_assessment" + ("+consistency" if use_consistency else ""),
+    )
 ```
 
 ---
 
-## Building Decision Audit Trails
+## Step 5: Decision Audit Trails
 
-For any high-stakes AI application, log every decision with enough context to review it later:
+For high-stakes applications, log every AI decision with enough context to review later:
 
 ```python
 import json
 import datetime
+import uuid
+from pathlib import Path
 
 class AIDecisionLogger:
     """Log AI-assisted decisions with full context for audit."""
-    
-    def __init__(self, log_path="ai_decisions.jsonl"):
-        self.log_path = log_path
-    
-    def log_decision(self, decision_record):
+
+    def __init__(self, log_path: str = "ai_decisions.jsonl"):
+        self.log_path = Path(log_path)
+
+    def log_decision(self, decision_record: dict) -> str:
         record = {
-            "timestamp": datetime.datetime.utcnow().isoformat(),
-            "decision_id": decision_record["id"],
+            "decision_id": decision_record.get("id", str(uuid.uuid4())),
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "input": decision_record["user_input"],
             "model": decision_record["model"],
             "model_output": decision_record["raw_output"],
             "final_decision": decision_record["final_decision"],
             "human_override": decision_record.get("human_override", False),
             "confidence": decision_record.get("confidence"),
+            "confidence_level": decision_record.get("confidence_level"),
             "sources_used": decision_record.get("sources", []),
             "explanation": decision_record.get("explanation", ""),
+            "latency_ms": decision_record.get("latency_ms", 0),
         }
-        
+
         with open(self.log_path, "a") as f:
-            f.write(json.dumps(record) + "
-")
-        
+            f.write(json.dumps(record) + "\n")
+
         return record["decision_id"]
+
+    def query_decisions(self, limit: int = 10) -> list[dict]:
+        if not self.log_path.exists():
+            return []
+        decisions = []
+        with open(self.log_path) as f:
+            for line in f:
+                decisions.append(json.loads(line))
+        return decisions[-limit:]
 ```
 
 ### What to Log
@@ -189,6 +342,60 @@ class AIDecisionLogger:
 | Human override | Was the AI overridden by a human? |
 | Confidence score | How certain was the system? |
 | Sources/context | What information was available |
+| Latency | Performance tracking |
+
+---
+
+## Step 6: Transparent API Endpoint
+
+Combine confidence scoring and audit logging into a production endpoint:
+
+```python
+from fastapi import FastAPI
+from pydantic import BaseModel
+import time
+
+app = FastAPI(title="Transparent AI API")
+logger = AIDecisionLogger()
+
+class QueryRequest(BaseModel):
+    question: str
+    include_consistency_check: bool = False
+
+class TransparentResponse(BaseModel):
+    answer: str
+    confidence: str
+    confidence_score: float
+    explanation: str
+    caveats: list[str]
+    decision_id: str
+
+@app.post("/ask", response_model=TransparentResponse)
+def ask_with_transparency(req: QueryRequest):
+    start = time.time()
+    result = compute_confidence(req.question, use_consistency=req.include_consistency_check)
+    latency = (time.time() - start) * 1000
+
+    decision_id = logger.log_decision({
+        "user_input": req.question,
+        "model": "gpt-4.1",
+        "raw_output": result.answer,
+        "final_decision": result.answer,
+        "confidence": result.score,
+        "confidence_level": result.level.value,
+        "explanation": result.explanation,
+        "latency_ms": latency,
+    })
+
+    return TransparentResponse(
+        answer=result.answer,
+        confidence=result.level.value,
+        confidence_score=result.score,
+        explanation=result.explanation,
+        caveats=result.caveats,
+        decision_id=decision_id,
+    )
+```
 
 ---
 
@@ -199,13 +406,13 @@ Never present AI outputs as absolute truth. Design your UI and messaging to conv
 ### Good Patterns
 
 ```
-"Based on the available information, the most likely answer is X. 
+"Based on the available information, the most likely answer is X.
  However, I'm not fully certain — you may want to verify with [source]."
 
-"I found 3 relevant sources that support this conclusion. 
+"I found 3 relevant sources that support this conclusion.
  Confidence: High (3/3 sources agree)."
 
-"I'm not confident about this answer. Here's my best guess, 
+"I'm not confident about this answer. Here's my best guess,
  but I'd recommend consulting a specialist."
 ```
 
@@ -217,13 +424,82 @@ Never present AI outputs as absolute truth. Design your UI and messaging to conv
 "Trust me on this."  (inappropriate certainty)
 ```
 
+### UI Confidence Indicators
+
+| Confidence | UI Treatment |
+|------------|-------------|
+| High | Green badge, show sources |
+| Medium | Yellow badge, show caveats prominently |
+| Low | Red badge, suggest human review, disclaimer |
+
 ---
 
-## Resources
+## Testing Your Build
 
-- **NIST AI Risk Management Framework**: Guidelines for AI transparency
-- **EU AI Act**: Transparency requirements for high-risk AI systems
-- **Anthropic Research on Honest AI**: Research on training AI to express uncertainty
+### Verification Checklist
+
+- [ ] Logprob confidence returns values between 0 and 1
+- [ ] Self-assessment returns valid JSON with confidence level
+- [ ] Consistency check produces different scores for ambiguous vs factual questions
+- [ ] Audit logger writes valid JSONL entries
+- [ ] API returns confidence level and decision ID
+- [ ] Low-confidence responses include caveats
+
+### Test Cases
+
+```python
+def test_confidence_on_factual_question():
+    result = compute_confidence("What is 2 + 2?")
+    assert result.level in (ConfidenceLevel.HIGH, ConfidenceLevel.MEDIUM)
+
+def test_confidence_on_ambiguous_question():
+    result = compute_confidence("What will the stock market do tomorrow?")
+    assert result.level in (ConfidenceLevel.LOW, ConfidenceLevel.MEDIUM)
+    assert len(result.caveats) > 0
+
+def test_audit_trail_logging():
+    logger = AIDecisionLogger("/tmp/test_audit.jsonl")
+    decision_id = logger.log_decision({
+        "user_input": "test",
+        "model": "gpt-4.1",
+        "raw_output": "test output",
+        "final_decision": "test output",
+        "confidence": 0.9,
+    })
+    assert decision_id is not None
+    decisions = logger.query_decisions()
+    assert len(decisions) == 1
+```
+
+---
+
+## Deployment Notes
+
+### Regulatory Requirements
+
+| Regulation | Transparency Requirement |
+|------------|------------------------|
+| **EU AI Act** | High-risk systems must provide explanations for decisions |
+| **GDPR** | Right to explanation for automated decisions affecting individuals |
+| **US EEOC** | Hiring AI must be auditable for bias |
+
+### Production Checklist
+
+- [ ] All AI-generated content labeled as such
+- [ ] Confidence scores displayed for user-facing decisions
+- [ ] Audit trail retained for required retention period (often 1-7 years)
+- [ ] Human override mechanism available for low-confidence decisions
+- [ ] Explanation available on demand (not just confidence badge)
+
+---
+
+## Extensions and Challenges
+
+- **Calibration**: Plot confidence scores against actual accuracy to calibrate thresholds
+- **RAG explainability**: Show which document chunks influenced the answer with highlighting
+- **Counterfactual explanations**: "If your income were $10K higher, the recommendation would change to X"
+- **Attention visualization**: For smaller models, visualize which input tokens influenced the output
+- **User feedback loop**: Let users rate confidence accuracy to improve thresholds over time
 
 ---
 
@@ -234,6 +510,7 @@ Never present AI outputs as absolute truth. Design your UI and messaging to conv
 - Always log AI decisions with full context for high-stakes applications
 - Communicate uncertainty clearly — never present AI outputs as absolute truth
 - Regulatory requirements for transparency are increasing globally
+- Combine multiple confidence methods for more reliable uncertainty estimates
 
 ---
 
