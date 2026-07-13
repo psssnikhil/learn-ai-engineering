@@ -1,0 +1,104 @@
+# Curriculum — single source of truth for site navigation
+#
+# HOW TO ADD A NEW COURSE:
+#   1. Add a block under `courses` (or `tracks`) in sequential order
+#   2. Run: npm run sync-nav
+#   3. Update docs/learn/index.md course table (or run sync-nav if we auto-generate it later)
+#
+# Folder paths stay as-is (module-NN-* on disk for platform sync).
+# Display titles here — no M-numbers in the UI.
+
+courses:
+  # ── Part 1: Understand AI ─────────────────────────────
+  - title: GenAI Foundations
+    path: foundations/module-00-genai-foundations-from-nlp-to-transformers
+
+  - title: AI Engineering Essentials
+    path: foundations/module-01-ai-engineering-essentials
+
+  - title: Neural Networks & Deep Learning
+    path: foundations/module-05-neural-networks-deep-learning-fundamentals
+
+  - title: Transformers & Attention
+    path: foundations/module-06-transformers-attention-mechanisms
+
+  - title: Large Language Models
+    path: foundations/module-07-large-language-models-llms
+
+  # ── Part 2: Build applications ────────────────────────
+  - title: RAG — Retrieval Augmented Generation
+    path: build/module-09-rag-retrieval-augmented-generation
+
+  - title: AI Agents
+    path: build/module-11-ai-agents-fundamentals
+
+  - title: Agent Harness & Runtime
+    path: build/module-18-agent-harness-tools-runtime
+
+  - title: Multi-Agent Systems
+    path: build/module-12-multi-agent-systems
+
+  - title: Vector Databases
+    path: build/module-13-vector-databases-deep-dive
+
+  - title: Prompt Engineering
+    path: build/module-14-prompt-engineering-mastery
+
+  # ── Part 3: Production ────────────────────────────────
+  - title: LLMOps & Production Systems
+    path: production/module-10-llmops-production-systems
+
+  - title: LLM Evaluation & Quality
+    path: production/module-19-llm-evaluation-quality
+
+  - title: AI Safety & Ethics
+    path: production/module-16-ai-safety-ethics
+
+  # ── Part 4: Advanced ────────────────────────────────
+  - title: Fine-Tuning & Custom Models
+    path: advanced/module-15-fine-tuning-custom-models
+
+  - title: Capstone Projects
+    path: advanced/module-17-capstone-projects
+
+# Focused tracks (optional — read after core path or jump in by topic)
+tracks:
+  - title: Agent Engineering
+    path: agent-engineering
+    pages:
+      - { title: Overview, file: index.md }
+      - { title: The Agent Loop, file: 01-agent-loop.md }
+      - { title: Memory Systems, file: 02-memory.md }
+      - { title: Tools & MCP, file: 03-tools-and-mcp.md }
+      - { title: Harness Engineering, file: 04-harness-engineering.md }
+      - { title: Orchestration, file: 05-orchestration.md }
+      - { title: Observability & Tracing, file: 06-observability-and-tracing.md }
+      - { title: Agent Evals, file: 07-agent-evals.md }
+      - { title: Related Papers, file: related-papers.md }
+
+  - title: Modern AI (2026)
+    path: ai-engineering-2026
+    pages:
+      - { title: Overview, file: index.md }
+      - { title: Claude Code, file: claude-code.md }
+      - { title: Skills & Rules, file: skills-and-rules.md }
+      - { title: Loop Engineering, file: loop-engineering.md }
+      - { title: Context Engineering, file: context-engineering.md }
+      - { title: Related Papers, file: related-papers.md }
+
+reference:
+  - { title: Getting Started, path: getting-started.md }
+  - { title: Study Plans, path: learn/study-plans.md }
+  - { title: Learning Path, path: learning-path.md }
+  - { title: Topic Map, path: topic-map.md }
+  - { title: FAQ, path: faq.md }
+  - { title: Glossary, path: glossary.md }
+  - { title: Agentic AI Hub, path: agentic-ai/index.md }
+  - { title: Evals & Observability, path: evals-observability/index.md }
+  - { title: Deep Dives, path: deep-dives/index.md }
+  - { title: Resources, path: resources/index.md }
+  - { title: Exercises, path: exercises/index.md }
+
+projects:
+  - { title: Overview, path: projects/index.md }
+  - { title: Build These First, path: projects/build-these.md }
