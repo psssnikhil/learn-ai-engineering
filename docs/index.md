@@ -30,27 +30,27 @@ description: The free, open-source path from transformers to production AI
   <div class="persona-card">
     <div class="persona-card__title">New to AI</div>
     <div class="persona-card__desc">Software engineer or student starting from scratch</div>
-    <a class="persona-card__cta" href="start-here/"><strong>Start Here →</strong></a>
+    <a class="persona-card__cta" href="start-here/">Start Here →</a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Know ML, need LLMs</div>
     <div class="persona-card__desc">ML practitioner catching up on transformers and APIs</div>
-    <a class="persona-card__cta" href="learn/"><strong>Jump to Learn →</strong></a>
+    <a class="persona-card__cta" href="learn/">Jump to Learn →</a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Building agents</div>
     <div class="persona-card__desc">Engineer shipping autonomous AI systems</div>
-    <a class="persona-card__cta" href="agent-engineering/"><strong>Agent Engineering →</strong></a>
+    <a class="persona-card__cta" href="agent-engineering/">Agent Engineering →</a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Using Claude Code / Cursor</div>
     <div class="persona-card__desc">Skills, loops, and context for IDE agents</div>
-    <a class="persona-card__cta" href="ai-engineering-2026/"><strong>Modern AI (2026) →</strong></a>
+    <a class="persona-card__cta" href="ai-engineering-2026/">Modern AI (2026) →</a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Shipping to production</div>
     <div class="persona-card__desc">Need LLMOps, evals, monitoring, safety</div>
-    <a class="persona-card__cta" href="production/module-10-llmops-production-systems/"><strong>LLMOps & Production →</strong></a>
+    <a class="persona-card__cta" href="production/module-10-llmops-production-systems/">LLMOps & Production →</a>
   </div>
 </div>
 

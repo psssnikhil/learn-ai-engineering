@@ -183,6 +183,9 @@ theme:
   favicon: assets/favicon.svg
   icon:
     repo: fontawesome/brands/github
+  font:
+    text: Inter
+    code: JetBrains Mono
   palette:
     - scheme: default
       primary: indigo

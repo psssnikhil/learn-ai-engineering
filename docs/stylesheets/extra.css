@@ -2,75 +2,174 @@
    AI Engineering Handbook — custom styles
    ============================================================ */
 
+/* ── Typography (Material overrides) ─────────────────────── */
+:root {
+  --aie-font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --aie-indigo: #4f46e5;
+  --aie-indigo-dark: #4338ca;
+  --aie-indigo-light: #eef2ff;
+}
+
+.md-typeset {
+  font-size: 0.94rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.md-typeset p,
+.md-typeset li {
+  line-height: 1.65;
+}
+
+/* Homepage: site title already in header — hero is the visual headline */
+.md-typeset:has(.hero) > h1:first-of-type {
+  display: none;
+}
+
 /* ── Homepage hero ───────────────────────────────────────── */
 .hero {
-  margin: 0.5rem 0 2rem;
-  padding: 1.75rem 1.5rem;
+  margin: 0.25rem 0 1.75rem;
+  padding: 2rem 1.75rem;
   border-radius: 12px;
-  border: 1px solid var(--md-primary-fg-color--light);
-  background: linear-gradient(
-    135deg,
-    rgba(var(--md-primary-fg-color--rgb), 0.08) 0%,
-    var(--md-code-bg-color) 100%
-  );
+  border: 1px solid rgba(79, 70, 229, 0.25);
+  background: linear-gradient(135deg, var(--aie-indigo-light) 0%, var(--md-code-bg-color) 55%);
+  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.08);
+}
+
+[data-md-color-scheme="slate"] .hero {
+  border-color: rgba(129, 140, 248, 0.35);
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, var(--md-code-bg-color) 60%);
 }
 
 .hero__tagline {
-  font-size: 1.15rem;
-  font-weight: 600;
-  margin: 0 0 0.5rem;
+  font-family: var(--aie-font-sans);
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+  margin: 0 0 0.75rem;
   color: var(--md-default-fg-color);
 }
 
 .hero__sub {
-  font-size: 0.92rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
   color: var(--md-default-fg-color--light);
-  margin: 0 0 1.25rem;
-  max-width: 42rem;
-  line-height: 1.55;
+  margin: 0 0 1.5rem;
+  max-width: 40rem;
 }
 
 .hero__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem;
+  gap: 0.75rem;
   align-items: center;
 }
 
 .hero__btn {
   display: inline-flex;
   align-items: center;
-  padding: 0.55em 1.1em;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.6em 1.25em;
   border-radius: 8px;
-  font-size: 0.88rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition: opacity 0.15s, transform 0.15s;
+  font-family: var(--aie-font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none !important;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s, box-shadow 0.15s;
 }
 
 .hero__btn:hover {
-  opacity: 0.92;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
 }
 
 .hero__btn--primary {
-  background: var(--md-primary-fg-color);
-  color: var(--md-primary-bg-color);
+  background: var(--aie-indigo);
+  border: 2px solid var(--aie-indigo);
+  color: #ffffff !important;
+}
+
+.hero__btn--primary:hover {
+  background: var(--aie-indigo-dark);
+  border-color: var(--aie-indigo-dark);
+  color: #ffffff !important;
 }
 
 .hero__btn--secondary {
-  border: 1.5px solid var(--md-primary-fg-color);
-  color: var(--md-primary-fg-color);
+  background: #ffffff;
+  border: 2px solid var(--aie-indigo);
+  color: var(--aie-indigo) !important;
+}
+
+.hero__btn--secondary:hover {
+  background: var(--aie-indigo-light);
+  color: var(--aie-indigo-dark) !important;
+}
+
+[data-md-color-scheme="slate"] .hero__btn--secondary {
+  background: var(--md-default-bg-color);
 }
 
 .hero__btn--github {
   background: #24292f;
-  color: #fff;
+  border: 2px solid #24292f;
+  color: #ffffff !important;
+}
+
+.hero__btn--github:hover {
+  background: #1c2128;
+  border-color: #1c2128;
+  color: #ffffff !important;
 }
 
 [data-md-color-scheme="slate"] .hero__btn--github {
   background: #f0f6fc;
-  color: #24292f;
+  border-color: #f0f6fc;
+  color: #24292f !important;
+}
+
+[data-md-color-scheme="slate"] .hero__btn--github:hover {
+  background: #dce4ec;
+  color: #24292f !important;
+}
+
+/* Material sets .md-typeset a { color: link } — must override for buttons */
+.md-typeset a.hero__btn,
+.md-typeset a.hero__btn:hover,
+.md-typeset a.hero__btn:focus,
+.md-typeset a.hero__btn strong {
+  text-decoration: none !important;
+}
+
+.md-typeset a.hero__btn--primary,
+.md-typeset a.hero__btn--primary:hover,
+.md-typeset a.hero__btn--primary:focus {
+  color: #ffffff !important;
+}
+
+.md-typeset a.hero__btn--secondary,
+.md-typeset a.hero__btn--secondary:hover,
+.md-typeset a.hero__btn--secondary:focus {
+  color: var(--aie-indigo) !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset a.hero__btn--secondary:hover {
+  color: var(--aie-indigo-dark) !important;
+}
+
+.md-typeset a.hero__btn--github,
+.md-typeset a.hero__btn--github:hover {
+  color: #ffffff !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset a.hero__btn--github,
+[data-md-color-scheme="slate"] .md-typeset a.hero__btn--github:hover {
+  color: #24292f !important;
 }
 
 /* ── Typography & reading width ─────────────────────────── */
@@ -201,30 +300,45 @@
 }
 
 .persona-card__title {
+  font-family: var(--aie-font-sans);
   font-weight: 700;
   font-size: 0.95rem;
   margin-bottom: 0.4rem;
-  color: var(--md-primary-fg-color);
+  color: var(--aie-indigo);
 }
 
 .persona-card__desc {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
   color: var(--md-default-fg-color--light);
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.75rem;
 }
 
 .persona-card__cta {
   display: inline-block;
-  font-size: 0.85rem;
+  font-family: var(--aie-font-sans);
+  font-size: 0.875rem;
   font-weight: 600;
-  color: var(--md-primary-fg-color);
-  text-decoration: none;
+  color: var(--aie-indigo) !important;
+  text-decoration: none !important;
   margin-right: 0.75rem;
-  margin-top: 0.25rem;
+  margin-top: 0.35rem;
 }
 
 .persona-card__cta:hover {
-  text-decoration: underline;
+  color: var(--aie-indigo-dark) !important;
+  text-decoration: underline !important;
+}
+
+.md-typeset a.persona-card__cta,
+.md-typeset a.persona-card__cta:hover,
+.md-typeset a.persona-card__cta strong {
+  color: var(--aie-indigo) !important;
+}
+
+.md-typeset a.persona-card__cta:hover,
+.md-typeset a.persona-card__cta:hover strong {
+  color: var(--aie-indigo-dark) !important;
 }
 
 /* ── Quick-nav pills (homepage, topic map) ──────────────── */
@@ -238,20 +352,35 @@
 .quick-nav__item {
   display: inline-flex;
   align-items: center;
-  padding: 0.4em 0.9em;
-  border-radius: 6px;
-  border: 1.5px solid var(--md-primary-fg-color--light);
-  font-size: 0.82rem;
+  padding: 0.45em 1em;
+  border-radius: 8px;
+  border: 1.5px solid rgba(79, 70, 229, 0.35);
+  font-family: var(--aie-font-sans);
+  font-size: 0.84rem;
   font-weight: 600;
-  color: var(--md-primary-fg-color);
-  text-decoration: none;
+  color: var(--aie-indigo) !important;
+  text-decoration: none !important;
   transition: background 0.15s, border-color 0.15s;
 }
 
 .quick-nav__item:hover {
-  background: var(--md-primary-fg-color--light);
-  border-color: var(--md-primary-fg-color);
-  color: var(--md-primary-fg-color);
+  background: var(--aie-indigo-light);
+  border-color: var(--aie-indigo);
+  color: var(--aie-indigo-dark) !important;
+}
+
+.md-typeset a.quick-nav__item,
+.md-typeset a.quick-nav__item:hover {
+  color: var(--aie-indigo) !important;
+  text-decoration: none !important;
+}
+
+.md-typeset a.quick-nav__item:hover {
+  color: var(--aie-indigo-dark) !important;
+}
+
+[data-md-color-scheme="slate"] .quick-nav__item:hover {
+  background: rgba(79, 70, 229, 0.2);
 }
 
 /* ── Module stat pills on homepage ──────────────────────── */
@@ -265,24 +394,36 @@
 .stat-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.35em 0.9em;
+  gap: 0.35rem;
+  padding: 0.4em 1em;
   border-radius: 99px;
-  border: 1.5px solid var(--md-primary-fg-color--light);
-  font-size: 0.82rem;
-  font-weight: 600;
+  border: 1.5px solid rgba(79, 70, 229, 0.3);
+  background: #ffffff;
+  font-family: var(--aie-font-sans);
+  font-size: 0.84rem;
+  font-weight: 500;
   color: var(--md-default-fg-color);
 }
 
+[data-md-color-scheme="slate"] .stat-pill {
+  background: var(--md-default-bg-color);
+}
+
 .stat-pill__value {
-  color: var(--md-primary-fg-color);
-  font-size: 1rem;
+  color: var(--aie-indigo);
+  font-size: 1.05rem;
+  font-weight: 700;
 }
 
 /* ── Phase table improvements ───────────────────────────── */
 .md-typeset table:not([class]) th {
-  background: var(--md-primary-fg-color);
-  color: var(--md-primary-bg-color);
+  background: var(--aie-indigo);
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.md-typeset table:not([class]) th a {
+  color: #ffffff !important;
 }
 
 /* ── Mermaid diagram centering ──────────────────────────── */
@@ -301,9 +442,16 @@
 
 /* ── Announcement banner ─────────────────────────────────── */
 .md-banner {
-  background: var(--md-primary-fg-color);
-  color: var(--md-primary-bg-color);
-  font-size: 0.82rem;
+  background: var(--aie-indigo);
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 500;
+}
+
+.md-banner a {
+  color: #ffffff !important;
+  text-decoration: underline;
+  font-weight: 600;
 }
 
 /* ── Code block improvements ───────────────────────────── */
