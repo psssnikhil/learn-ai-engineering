@@ -3,21 +3,45 @@ title: Agent Loop and State
 description: >-
   Implement the perceive-reason-act cycle in a harness, manage conversation and
   working state, and design checkpoints for resume and audit
-duration: 45 min
+duration: 60 min
 difficulty: advanced
 has_code: true
 module: module-18
 ---
 # Agent Loop and State
 
+## Prerequisites
+
+- [Lesson 1 — What Is an Agent Harness?](01-what-is-an-agent-harness.md): loop, state, and termination primitives
+- [M11 Lesson 3 — ReAct Pattern](../../module-11-ai-agents-fundamentals/lessons/03-ReAct-Pattern.md): the reason-act trace structure
+- Comfortable with Python dataclasses, `uuid`, and JSON serialization
+- Basic understanding of context window / token counting
+
+---
+
 ## What You'll Learn
 
 | Objective | Time | Difficulty |
 |-----------|------|------------|
-| Implement perceive-reason-act inside a harness | 45 min | Advanced |
-| Design state schemas for conversation and working memory | | |
-| Build checkpoint and restore for long-running agents | | |
+| Implement perceive-reason-act inside a harness, with each phase clearly separated | 60 min | Advanced |
+| Design typed state schemas that separate the model's view from the audit log | | |
+| Build checkpoint and restore for long-running and resumable agents | | |
 | Handle context growth without losing critical information | | |
+| Implement human-in-the-loop pause and resume at the harness level | | |
+
+---
+
+## Intuition First
+
+Every software system that manages long-running work must solve two problems: **what is the current state?** and **how do we recover if something fails?**
+
+For databases, the answer is transactions and WAL logs. For agents, the answer is a typed state schema and checkpoints.
+
+Without structured state, an agent run is a black box. You know the user's input and the final output. If the run fails at step 8 of 15, you lose all work. If a human needs to approve a sensitive action at step 5, there's nowhere to pause.
+
+With structured state, every step is observable: you know which tool was called, what arguments were passed, how long it took, and whether it succeeded. You can pause at any step, serialize the state to disk, and resume hours later.
+
+The harness is the component that *owns* this structure. The model sees a window of messages. The harness sees everything.
 
 ---
 
@@ -31,7 +55,6 @@ module: module-18
   │ Build context│     │  LLM call    │     │ Run tools    │
   │ from state   │     │  + parse     │     │ in sandbox   │
   └──────┬───────┘     └──────┬───────┘     └──────┬───────┘
-         │                    │                    │
          │                    │                    │
          └────────────────────┴────────────────────┘
                               │
@@ -98,7 +121,38 @@ class AgentState:
         })
 ```
 
-**Why separate `tool_results` from `messages`?** Messages are the model's view (possibly trimmed). `tool_results` is the harness audit log — full payloads, timings, and success flags for observability and replay.
+**Why separate `tool_results` from `messages`?**
+
+`messages` is the model's view — it may be trimmed, compacted, or restructured for different providers. `tool_results` is the harness's audit log — full payloads, timings, and success flags that live independently of what the model sees.
+
+**The `scratchpad` field:** A typed dictionary for harness-managed working memory — the agent's current plan, a list of discovered entity IDs, a running count of retries. Storing this in state (rather than in messages) keeps it out of the model's context unless the perceive phase explicitly injects it.
+
+**Worked example — state after 3 steps:**
+
+```python
+# Initial state
+state = AgentState(goal="Find pricing for plans A and B")
+print(state.step)           # 0
+print(state.total_cost_usd) # 0.0
+
+# After step 1 (search tool call)
+state.step = 1
+state.total_tokens = 1_847
+state.total_cost_usd = 0.00277
+
+# After step 2 (second search)
+state.step = 2
+state.total_tokens = 3_412
+state.total_cost_usd = 0.00512
+
+# After step 3 (final answer, no tool calls)
+state.step = 3
+state.status = "finished"
+state.total_tokens = 4_891
+state.total_cost_usd = 0.00734
+```
+
+At any step, you can serialize this to disk, inspect it, or pass it to a monitoring system.
 
 ---
 
@@ -255,16 +309,27 @@ class CheckpointStore:
         for r in payload.get("tool_results", []):
             state.tool_results.append(ToolResult(**r))
         return state
+
+    def list_checkpoints(self, run_id: str) -> list[int]:
+        """Return step numbers for all saved checkpoints for a run."""
+        steps = []
+        for path in self.base_dir.glob(f"{run_id}_step*.json"):
+            step_str = path.stem.split("_step")[-1]
+            try:
+                steps.append(int(step_str))
+            except ValueError:
+                pass
+        return sorted(steps)
 ```
 
-### When to checkpoint
+### When to Checkpoint
 
-| Strategy | Trade-off |
-|----------|-----------|
-| **Every step** | Maximum recoverability; more I/O |
-| **After tool calls** | Good for human-in-the-loop pause points |
-| **On error** | Capture failure context before retry |
-| **Periodic (every N steps)** | Balance for long research tasks |
+| Strategy | Trade-off | Best for |
+|----------|-----------|----------|
+| **Every step** | Maximum recoverability; more I/O | Short runs, critical tasks |
+| **After tool calls** | Good pause points for human-in-the-loop | Coding agents, file writers |
+| **On error** | Capture failure context before retry | Debugging unstable tools |
+| **Periodic (every N steps)** | Balance for long research tasks | Multi-hour research agents |
 
 ```python
 def _maybe_checkpoint(self, state: AgentState):
@@ -281,9 +346,23 @@ LangGraph and similar frameworks provide built-in checkpoint backends (SQLite, P
 
 ## Context Growth and Compaction
 
-Each loop iteration appends to `messages`. Token usage grows roughly **linearly with step count** for the prompt side — a common source of cost blowups (see [M11 Lesson 3](../../module-11-ai-agents-fundamentals/lessons/03-ReAct-Pattern.md)).
+Each loop iteration appends to `messages`. Token usage grows roughly **linearly with step count** for the prompt side — a common source of cost blowups.
 
-Harness strategies:
+**Numerical example:**
+
+```
+Step 0: system(200) + user(50) = 250 tokens in context
+Step 1: + assistant(tool_call 80) + tool_result(400) = 730 tokens
+Step 2: + assistant(tool_call 80) + tool_result(600) = 1,410 tokens
+Step 5: ~4,000 tokens
+Step 10: ~8,000 tokens
+Step 20: ~16,000 tokens
+Step 50: ~40,000 tokens (approaching many context limits)
+```
+
+At `gpt-4o` pricing ($2.50/1M input tokens), 50 steps costs ~$0.10 in *input tokens alone* per run. At 10,000 runs/day, that's $1,000/day just from context accumulation.
+
+Harness strategies for managing growth:
 
 ```python
 def _trim_messages(self, messages: list[dict], max_tokens: int) -> list[dict]:
@@ -301,6 +380,28 @@ def compact_tool_outputs(self, state: AgentState, max_chars: int = 4000):
     for msg in state.messages:
         if msg.get("role") == "tool" and len(msg["content"]) > max_chars:
             msg["content"] = msg["content"][:max_chars] + "\n...[truncated by harness]"
+
+def summarize_old_steps(self, state: AgentState, client, keep_recent: int = 5) -> AgentState:
+    """Summarize steps older than keep_recent into a single system note."""
+    if len(state.messages) <= keep_recent + 2:  # +2 for system + original user
+        return state
+
+    to_summarize = state.messages[2:-keep_recent]
+    summary_resp = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "Summarize the following agent steps concisely. Include: tools called, key findings, and any decisions made."},
+            {"role": "user", "content": str(to_summarize)},
+        ],
+    )
+    summary = summary_resp.choices[0].message.content
+
+    state.messages = (
+        state.messages[:2]  # system + original goal
+        + [{"role": "system", "content": f"[Summary of earlier steps]: {summary}"}]
+        + state.messages[-keep_recent:]
+    )
+    return state
 ```
 
 !!! warning "Compaction is lossy"
@@ -313,29 +414,133 @@ def compact_tool_outputs(self, state: AgentState, max_chars: int = 4000):
 Checkpoints enable **pause** without losing work:
 
 ```python
-# Agent requests a sensitive action → harness pauses
-if call.name in SENSITIVE_TOOLS:
-    state.status = "paused"
-    store.save(state)
-    return state  # UI prompts human; on approval, reload and continue
+SENSITIVE_TOOLS = {"write_file", "run_terminal", "send_email", "delete_resource"}
 
-# Resume after approval
-state = store.load(run_id=run_id, step=last_step)
-state.status = "running"
-harness.run_from(state)  # continue the loop
+def run_with_hitl(
+    self,
+    state: AgentState,
+    approval_callback: callable,  # (tool_name, args) -> bool
+) -> AgentState:
+    """Loop with human-in-the-loop pause for sensitive tool calls."""
+    store = CheckpointStore(self.checkpoint_dir)
+
+    while state.status == "running" and state.step < self.policy.max_steps:
+        turn = self.reason(state)
+        response = turn["response"]
+
+        if not response.tool_calls:
+            state.append_assistant(response.text)
+            state.status = "finished"
+            break
+
+        state.append_assistant(response.text, response.tool_calls)
+
+        for tool_call in response.tool_calls:
+            if tool_call.name in SENSITIVE_TOOLS:
+                # Pause and ask for approval
+                state.status = "paused"
+                store.save(state)
+
+                approved = approval_callback(tool_call.name, tool_call.arguments)
+                if not approved:
+                    state.append_tool_result(ToolResult(
+                        tool_call_id=tool_call.id,
+                        name=tool_call.name,
+                        arguments=tool_call.arguments,
+                        output='{"error": "User rejected this action. Try a different approach."}',
+                        duration_ms=0,
+                        success=False,
+                    ))
+                    state.status = "running"
+                    continue
+
+            # Execute approved or non-sensitive tool
+            results = self.act(state, [tool_call])
+            for r in results:
+                state.append_tool_result(r)
+
+            state.status = "running"
+
+        state.step += 1
+
+    return state
+
+# Resume from checkpoint after human approves
+def resume_from_checkpoint(run_id: str, step: int, harness) -> AgentState:
+    store = CheckpointStore(harness.checkpoint_dir)
+    state = store.load(run_id, step)
+    state.status = "running"
+    return harness.run_with_hitl(state, approval_callback=interactive_approval)
 ```
 
 This pattern is how Cursor and Claude Desktop gate filesystem writes and terminal commands.
 
 ---
 
+## State Machine View
+
+It helps to think of `AgentState.status` as a mini state machine — each transition is explicit and testable:
+
+```
+            ┌──────────┐
+ goal ─────▶│ running  │◀──────────────────────┐
+            └────┬─────┘                        │
+                 │ [no tool calls]  [tool approved, resume]
+                 │                              │
+          ┌──────▼──────┐      ┌───────────────┴─┐
+          │  finished   │      │    paused (HITL) │
+          └─────────────┘      └─────────────────┘
+                 │
+          ┌──────▼──────┐
+          │   failed    │  ← budget exceeded, unrecoverable error
+          └─────────────┘
+```
+
+Every `status` transition should be logged and checkpointed. Test all four paths (running → finished, running → paused → running, running → failed, step budget → finished) with unit tests before the first production deployment.
+
+---
+
+## Common Misconceptions
+
+**"I can reconstruct state from the message history alone."** You can reconstruct *what the model saw*, but not the full audit data — tool execution durations, success/failure status, raw arguments before validation, approval records. Typed `ToolResult` objects capture these separately.
+
+**"Checkpoints are only needed for long runs."** Any agent that makes irreversible side effects (file writes, API calls, database mutations) should checkpoint before those actions — even on a 2-step run. A checkpoint before the dangerous step enables forensics when something goes wrong.
+
+**"Compaction loses context the model needed."** Full payloads live in `tool_results`. The model's *view* can be summarized; the harness's audit log stays intact. This is the correct separation.
+
+**"Step count equals iteration count."** Not always. If you execute parallel tool calls in a single step (multiple `tool_calls` in one response), the harness can execute all of them before incrementing `step`. The semantics of "step" are yours to define consistently.
+
+---
+
+## Production Tips
+
+- **Use typed state from day one.** Migrating from a flat dict to a `@dataclass` after you have 10,000 checkpoint files in S3 is painful. Design the schema before writing the loop.
+- **Store `run_id` everywhere.** Correlation across logs, traces, checkpoints, and user-facing output becomes trivial when every artifact carries the same `run_id`.
+- **Version your checkpoint schema.** Add a `"schema_version": 1` field. When you change the state structure, bump the version and write a migration loader.
+- **Test restore.** Write a test that saves a checkpoint after step 3, loads it, and continues the loop. Restore bugs are common and silent — they only appear in the middle of production incidents.
+- **Compact aggressively, audit completely.** Trim messages for the model, but never throw away `tool_results`. Storage is cheap; debugging without audit data is not.
+
+---
+
 ## Key Takeaways
 
 - The harness implements **perceive** (context), **reason** (model call), and **act** (sandboxed tools) — the model only reasons
-- Use **typed state** with separate audit logs (`tool_results`) and model-facing `messages`
+- Use **typed state** with separate audit logs (`tool_results`) and model-facing `messages` — they serve different consumers
 - **Checkpoints** at step boundaries enable resume, human approval, and post-mortem replay
 - **Context compaction** is a harness responsibility — preserve full history for observability, trim for the model
+- Token counts grow linearly with steps; design compaction strategy before you hit context limits in production
 - Frameworks like LangGraph provide checkpoint primitives; understand the semantics regardless of tooling
+
+---
+
+## Related Papers
+
+| Paper | Year | Key contribution |
+|-------|------|-----------------|
+| [Cognitive Architectures for Language Agents (CoALA)](https://arxiv.org/abs/2309.02427) | 2023 | Formal framework for agent memory types: working, episodic, semantic, procedural |
+| [A Survey on Large Language Model-based Autonomous Agents](https://arxiv.org/abs/2308.11432) | 2023 | Memory and state management patterns across agent architectures |
+| [LangGraph: Building Stateful, Multi-Actor Applications with LLMs](https://langchain-ai.github.io/langgraph/) | 2024 | Checkpoint-backed state machine for production agent loops |
+| [Voyager: An Open-Ended Embodied Agent with Large Language Models](https://arxiv.org/abs/2305.16291) | 2023 | Long-running agent with skill library (persistent state across sessions) |
 
 ---
 
@@ -348,4 +553,4 @@ This pattern is how Cursor and Claude Desktop gate filesystem writes and termina
 
 ## Next Lesson
 
-**Lesson 3: Tools and Function Calling** — Tool schemas, execution sandboxes, and structured error handling in the harness.
+**[Lesson 3: Tools and Function Calling](03-tools-and-function-calling.md)** — Tool schemas, execution sandboxes, and structured error handling in the harness.

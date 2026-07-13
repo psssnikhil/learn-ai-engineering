@@ -90,10 +90,9 @@ Use the top tabs in this order depending on your goal:
 9. **[Glossary](glossary.md)** — quick definitions
 10. **[Resources](resources/index.md)** — papers, videos, tools, OSS hubs
 
-## Depth promise
+## How lessons are structured
 
-!!! tip "What to expect in every lesson"
-    Each lesson covers **why** before **how**: motivation, mental model, worked example, and a hands-on exercise or code walkthrough. No shallow overviews.
+Each lesson walks through the concept, a worked example, and what to try hands-on. Capstone modules at the end tie everything together.
 
 ## Inspired by (and links to) great OSS hubs
 

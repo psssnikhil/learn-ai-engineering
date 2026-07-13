@@ -65,7 +65,7 @@ Pair with [Agent Engineering](../agent-engineering/index.md) for harness, memory
 
 ## Depth standard for this section
 
-Each page targets **1,500+ words** with worked examples, misconceptions, and production ties — same bar as [DEPTH_STANDARDS.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/DEPTH_STANDARDS.md) beginner intros. Read in order: Claude Code → Skills → Loop → Context.
+Read in order: [Claude Code](claude-code.md) → [Skills & Rules](skills-and-rules.md) → [Loop Engineering](loop-engineering.md) → [Context Engineering](context-engineering.md).
 
 ## OSS hubs to watch
 

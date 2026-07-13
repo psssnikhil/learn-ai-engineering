@@ -112,7 +112,7 @@ Loaded every Claude Code session — reduces repeated corrections.
 
 ## Handbook skill
 
-This repo includes authoring guidance in [DEPTH_STANDARDS.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/DEPTH_STANDARDS.md) — use the same rigor for skills.
+See the [Contribute](../contribute.md) guide if you want to add or improve a skill for your team.
 
 ## Security
 

@@ -7,9 +7,6 @@ description: Week-by-week study plans for beginners, intermediates, and agent en
 
 This handbook is **140+ lessons** across four phases. This guide gives you **week-by-week plans** by persona — not a replacement for the [Learning Path](../learning-path.md), but a concrete schedule with hours, checkpoints, and hands-on milestones.
 
-!!! tip "Depth standard"
-    Core module lessons target **2,500+ words** (Foundations) or **1,500–4,000** by level per [DEPTH_STANDARDS.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/DEPTH_STANDARDS.md). Supplemental tracks ([Agent Engineering](../agent-engineering/index.md), [2026 Skills](../ai-engineering-2026/index.md)) are practitioner guides at **1,500+ words** each.
-
 ## Choose your path
 
 | Persona | Background | Time/week | Duration | Jump to |

@@ -15,10 +15,8 @@ Your **free, open-source** path from transformers and LLMs to production-grade R
   <span class="stat-pill"><span class="stat-pill__value">MIT</span> license</span>
 </div>
 
-<div class="callout callout--depth">
-  <div class="callout-title">Depth promise</div>
-  Every lesson covers <em>why</em> before <em>how</em> — no shallow overviews, no link dumps. Each module ends with a hands-on exercise or capstone.
-</div>
+!!! tip "New here?"
+    Go to **[Start Here](start-here.md)** — one page to pick your path, prerequisites, and first project.
 
 ---
 

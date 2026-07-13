@@ -213,7 +213,7 @@ This handbook covers the **technical stack** (LLMs, RAG, agents, evals, producti
 
 ### How does this compare to other free resources?
 
-We **curate and extend** OSS hubs — not duplicate them. See [Open Source Hubs](resources/open-source-hubs.md) and [Courses & Communities](resources/courses-and-communities.md). This site adds: unified path, depth standards, exercises, and production evals/harness content.
+We **curate and extend** OSS hubs — not duplicate them. See [Open Source Hubs](resources/open-source-hubs.md) and [Courses & Communities](resources/courses-and-communities.md). This site adds a unified learning path, hands-on exercises, agent/eval tracks, and production-focused modules.
 
 ---
 
