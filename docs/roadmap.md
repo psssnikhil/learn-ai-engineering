@@ -4,35 +4,45 @@ title: Roadmap
 
 # Handbook Roadmap
 
-## Depth status
+## Launch status — v1.0
 
-| Phase | Modules | Status |
-|-------|---------|--------|
-| **Foundations** | M00–M07 | ✅ Deep |
-| **Build** | M09, M11, M18 | ✅ Deep |
-| **Production** | M10, M19 | ✅ Deep |
-| **Build** | M12–M14 | 🔄 Next |
-| **Production** | M16 | 🔄 Next |
-| **Advanced** | M15, M17 | 📋 Planned |
-| **Onboarding** | Start Here, FAQ, How to Learn | ✅ Complete |
+**Soft launch: ready.** Site navigation, core path, and 100+ deep lessons are live.
 
-## Shipped (v0.6)
+| Area | Status |
+|------|--------|
+| Sequential Learn path (16 courses) | ✅ Shipped |
+| Start Here, FAQ, Study Plans, Topic Map | ✅ Shipped |
+| GitHub Pages link fixes | ✅ Shipped |
+| Foundations + core Build/Production depth | ✅ Deep |
+| Agent Engineering + Modern AI tracks | ✅ Shipped |
 
-- Production depth: **M10** (10 lessons) + **M19** (6 lessons)
-- Build depth: **M09 L6–10** + **M18** (6 lessons)
-- Removed author/meta copy from learner-facing pages
+### Post-launch depth pass (does not block launch)
 
-## In progress
+| Courses | Status |
+|---------|--------|
+| Multi-Agent, Vector DBs, Prompt Engineering (09–11) | 🔄 Depth pass next |
+| AI Safety (14) | 🔄 Depth pass next |
+| Fine-Tuning, Capstones (15–16) | 📋 Planned |
+| More exercises & notebooks for RAG + Agents | 📋 Planned |
 
-- M12, M13, M14 depth pass
-- M16 safety depth pass
-- M15, M17 advanced depth pass
-- M09/M11 exercise files and notebooks
+---
+
+## Shipped recently
+
+- **v1.0 nav** — One Learn tab, numbered courses, no module codes in UI
+- **curriculum.yml** — Single source of truth for maintainers
+- **Link fixer** — Post-build script for GitHub Pages
+- **Production depth** — LLMOps + LLM Evaluation courses
+- **Agent stack** — Harness, MCP, orchestration, evals
+
+---
 
 ## Planned
 
 - OpenTelemetry + Langfuse hands-on lab
 - Multimodal module
-- Nav tab consolidation
+- Custom domain (`aiengineering.dev` or similar)
+- Social preview card image
+- Community translation contributors
 
 See [Contribute](contribute.md).

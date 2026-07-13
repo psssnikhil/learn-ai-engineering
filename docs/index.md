@@ -1,21 +1,26 @@
 ---
 title: AI Engineering Handbook
-description: One-stop open-source knowledge base for AI/ML engineering
+description: The free, open-source path from transformers to production AI
 ---
 
 # AI Engineering Handbook
 
-Your **free, open-source** path from transformers and LLMs to production-grade RAG, agentic AI, harnesses, tools, orchestration, evals, and observability.
+<div class="hero">
+  <p class="hero__tagline">The open-source path from zero to production AI</p>
+  <p class="hero__sub">One sequential curriculum — transformers, RAG, agents, harnesses, evals, and LLMOps. No paywall. No module codes. Just start at course 01 and build real systems.</p>
+  <div class="hero__actions">
+    <a class="hero__btn hero__btn--primary" href="start-here/">Start Here</a>
+    <a class="hero__btn hero__btn--secondary" href="learn/">Browse all 16 courses</a>
+    <a class="hero__btn hero__btn--github" href="https://github.com/psssnikhil/learn-ai-engineering">★ Star on GitHub</a>
+  </div>
+</div>
 
 <div class="stat-row">
   <span class="stat-pill"><span class="stat-pill__value">16</span> courses</span>
   <span class="stat-pill"><span class="stat-pill__value">140+</span> lessons</span>
-  <span class="stat-pill"><span class="stat-pill__value">2</span> optional tracks</span>
+  <span class="stat-pill"><span class="stat-pill__value">2</span> agent tracks</span>
   <span class="stat-pill"><span class="stat-pill__value">MIT</span> license</span>
 </div>
-
-!!! tip "New here?"
-    Go to **[Start Here](start-here.md)** — one page to pick your path, prerequisites, and first project.
 
 ---
 
@@ -65,20 +70,16 @@ Your **free, open-source** path from transformers and LLMs to production-grade R
 
 | Goal | Go to |
 |------|-------|
-| **Follow the curriculum** | **[Learn](learn/index.md)** — 16 courses in order, lessons inside each course |
-| **New here** | [Start Here](start-here.md) — persona routing and first project |
+| **Follow the curriculum** | **[Learn](learn/index.md)** — 16 courses in order |
+| **New here** | [Start Here](start-here.md) |
 | **Week-by-week schedule** | [Study Plans](learn/study-plans.md) |
-| **Build something** | [Build These First](projects/build-these.md) — 10 portfolio projects |
-| **Find a topic** | [Topic Map](topic-map.md) — concept → course lookup |
-| **Questions / stuck** | [FAQ](faq.md) |
-| **Optional agent track** | [Agent Engineering](agent-engineering/index.md) — concise 7-lesson path |
-| **IDE agent skills** | [Modern AI (2026)](ai-engineering-2026/index.md) |
+| **Build a portfolio** | [Build These First](projects/build-these.md) |
+| **Find any topic** | [Topic Map](topic-map.md) |
+| **Questions** | [FAQ](faq.md) |
 
 ---
 
-## The learning path (overview)
-
-Work through courses **01 → 16** in the **Learn** tab. Each course opens with a lesson list.
+## The learning path
 
 | Part | Courses | Topics |
 |------|---------|--------|
@@ -87,36 +88,27 @@ Work through courses **01 → 16** in the **Learn** tab. Each course opens with 
 | **Production** | 12–14 | LLMOps, evals, safety |
 | **Advanced** | 15–16 | Fine-tuning, capstone projects |
 
-Optional focused tracks at the bottom of **Learn**: [Agent Engineering](agent-engineering/index.md) · [Modern AI (2026)](ai-engineering-2026/index.md)
+Optional tracks: [Agent Engineering](agent-engineering/index.md) · [Modern AI (2026)](ai-engineering-2026/index.md)
 
 [Full course list →](learn/index.md)
 
 ---
 
-## The agentic stack
+## Why this handbook?
 
-```mermaid
-flowchart LR
-  LLM[LLMs] --> RAG[RAG]
-  RAG --> Agent[Agents]
-  Agent --> Harness[Harness & MCP]
-  Harness --> Multi[Multi-Agent]
-  Harness --> Obs[Observability]
-  Obs --> Evals[Evals]
-  Evals --> Prod[Production]
-```
+| | Typical blog / course | This handbook |
+|---|----------------------|---------------|
+| **Structure** | Scattered posts | One sequential path, 16 courses |
+| **Depth** | Surface-level | Engineer-grade foundations + production |
+| **Agents** | Tutorial-only | Harness, MCP, multi-agent, evals |
+| **Cost** | Paywalled | Free, MIT, forever |
 
 ---
 
-## Resources & practice
+## Contribute & star
 
-- [Essential Papers](resources/essential-papers.md) · [Essential Videos](resources/essential-videos.md)
-- [Open Source Hubs](resources/open-source-hubs.md) — Agents Towards Production, Awesome Evals, RAG Techniques
-- [Exercises](exercises/index.md) · [Build These First](projects/build-these.md) · [FAQ](faq.md)
+If this helps you learn or ship AI systems, **[star the repo on GitHub](https://github.com/psssnikhil/learn-ai-engineering)** — it helps others find it.
 
----
+Improve a lesson, fix a link, or add an exercise: [Contribute](contribute.md) · [Roadmap](roadmap.md)
 
-## Contribute
-
-Help make this the best free AI engineering handbook. See [Contribute](contribute.md) and [Roadmap](roadmap.md).
 [GitHub →](https://github.com/psssnikhil/learn-ai-engineering){ .md-button }

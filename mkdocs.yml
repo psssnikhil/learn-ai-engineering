@@ -1,12 +1,16 @@
 site_name: AI Engineering Handbook
-site_description: One-stop open-source curriculum for AI and ML engineering
+site_description: The free, open-source path from transformers to production AI — RAG, agents, harnesses, evals, and LLMOps.
 site_url: https://psssnikhil.github.io/learn-ai-engineering/
 repo_url: https://github.com/psssnikhil/learn-ai-engineering
-repo_name: learn-ai-engineering
+repo_name: Star on GitHub
 edit_uri: edit/main/docs/
 
 theme:
   name: material
+  logo: assets/logo.svg
+  favicon: assets/favicon.svg
+  icon:
+    repo: fontawesome/brands/github
   palette:
     - scheme: default
       primary: indigo
@@ -34,6 +38,17 @@ theme:
 
 extra_css:
   - stylesheets/extra.css
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/psssnikhil/learn-ai-engineering
+  announcement:
+    text: "Free & open source — if this handbook helps you, star us on GitHub"
+    link: https://github.com/psssnikhil/learn-ai-engineering
+
+copyright: Copyright &copy; 2026 AI Engineering Handbook contributors · MIT License
 
 extra_javascript:
   - javascripts/mathjax-config.js

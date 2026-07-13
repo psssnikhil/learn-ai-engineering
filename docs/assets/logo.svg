@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="AI Engineering Handbook">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#g)"/>
+  <path fill="#fff" d="M18 16h20a4 4 0 0 1 4 4v28a2 2 0 0 0-2-2H20a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4z" opacity=".95"/>
+  <path fill="#c7d2fe" d="M24 24h16v2H24zm0 6h16v2H24zm0 6h12v2H24z"/>
+  <circle cx="44" cy="22" r="3" fill="#a5b4fc"/>
+  <circle cx="50" cy="30" r="2.5" fill="#e0e7ff"/>
+  <circle cx="46" cy="38" r="2" fill="#c7d2fe"/>
+  <path stroke="#e0e7ff" stroke-width="1.5" fill="none" d="M44 22l6 8M44 22l2 16"/>
+</svg>
