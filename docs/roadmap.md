@@ -1,47 +1,69 @@
 ---
 title: Roadmap
+description: What the handbook covers today and what we are building next for learners
 ---
 
 # Handbook Roadmap
 
-## v1.0 — Hard launch ✅
-
-The handbook is **live and ready for public launch**.
-
-| Launch criterion | Status |
-|------------------|--------|
-| Sequential Learn path (16 courses) | ✅ |
-| Start Here, FAQ, Study Plans, Topic Map | ✅ |
-| GitHub Pages links working | ✅ |
-| README + branding + logo | ✅ |
-| Core depth (foundations, RAG, agents, LLMOps, evals) | ✅ |
-| Issue / PR templates | ✅ |
-
-**Launch:** Share on GitHub, HN, Reddit, X, LinkedIn. Ask for stars if it helped.
+This page is for **you** — what is in the curriculum now, what is coming next, and how to shape what we add.
 
 ---
 
-## Post-launch (v1.1+)
+## What is available today
 
-| Priority | Work |
-|----------|------|
-| High | Depth pass: Multi-Agent, Vector DBs, Prompt Engineering (courses 09–11) |
-| High | More RAG + agent exercises and notebooks |
-| Medium | AI Safety depth (course 14) |
-| Medium | Fine-Tuning + Capstones depth (courses 15–16) |
-| Medium | Custom domain + social preview PNG |
-| Low | OpenTelemetry + Langfuse lab |
-| Low | Multimodal module |
+The handbook is a **free, open-source path** from foundations through production AI engineering.
+
+| Track | What you get |
+|-------|----------------|
+| **Learn** | 16 numbered courses — GenAI foundations → RAG → agents → LLMOps → safety → fine-tuning → capstones |
+| **Start Here** | Persona routing, prerequisite chains, and a 4-week career-switcher plan |
+| **Agent Engineering** | Optional deep track on harnesses, tools, orchestration, and agent evals |
+| **Modern AI (2026)** | Optional track on current tooling and workflows |
+| **Projects & exercises** | Portfolio projects, starter/solution code, and course exercises where available |
+
+**Best place to begin:** [Start Here](start-here.md) → [Learn path](learn/index.md)
 
 ---
 
-## Shipped in v1.0
+## Coming next
 
-- One **Learn** tab — numbered courses, no module codes in UI
-- `curriculum.yml` + `npm run sync-nav` for maintainers
-- Post-build link fixer for GitHub Pages
-- Agent Engineering + Modern AI (2026) tracks
-- Homepage hero + star CTA
-- FAQ and Getting Started aligned with new navigation
+We improve the handbook continuously. Planned additions that benefit learners:
 
-See [Contribute](contribute.md) · [GAPS.md on GitHub](https://github.com/psssnikhil/learn-ai-engineering/blob/main/GAPS.md)
+| Area | Planned work |
+|------|----------------|
+| **Exercises** | More hands-on notebooks for RAG (Course 06) and agents (Course 07) |
+| **Deep dives** | Standalone pages on LoRA, hybrid search tuning, agent tracing, and related topics |
+| **Observability labs** | OpenTelemetry and Langfuse walkthroughs in the LLMOps course |
+| **Multimodal** | Vision + audio modules for image and document understanding |
+| **Community content** | More capstone examples, case studies, and real-world patterns from contributors |
+
+Timelines shift based on contributor capacity. Check [GitHub Issues](https://github.com/psssnikhil/learn-ai-engineering/issues) for active work.
+
+---
+
+## Recently added
+
+| Release | Highlights |
+|---------|------------|
+| **v1.1** | Depth expansion for Multi-Agent, Vector DBs, Prompt Engineering, AI Safety, Fine-Tuning, and Capstone courses |
+| **v1.0** | Full 16-course Learn path, Start Here hub, FAQ, study plans, Agent Engineering track, GitHub Pages site |
+
+See the full history in [CHANGELOG](https://github.com/psssnikhil/learn-ai-engineering/blob/main/CHANGELOG.md).
+
+---
+
+## Help shape the roadmap
+
+This is an open project. You can influence what we build next:
+
+1. **Open an issue** — request a topic, report a gap, or suggest an exercise ([issues](https://github.com/psssnikhil/learn-ai-engineering/issues))
+2. **Contribute a lesson** — typos, clearer explanations, or new exercises ([Contribute](contribute.md))
+3. **Pick a good first issue** — labeled tasks for new contributors on GitHub
+
+If something is missing for your learning path, say so — that is how the curriculum grows.
+
+---
+
+## Maintainer notes
+
+Internal planning (content gaps, migration tooling, CI) lives in the GitHub repo: [GAPS.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/GAPS.md) and [CONTRIBUTING.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/CONTRIBUTING.md).

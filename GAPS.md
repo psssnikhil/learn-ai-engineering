@@ -1,27 +1,23 @@
-# Content Gaps
+# Content Gaps (maintainers)
 
-Last updated: 2026-07-12 (v1.0 hard launch)
+Last updated: 2026-07-13 (v1.1 content depth)
 
-**Launch blockers:** none. Items below are v1.1 improvements.
+**Launch blockers:** none.
 
-## Recently closed (v1.0)
+Public-facing “what’s next” for learners: [docs/roadmap.md](docs/roadmap.md).
 
-- [x] Sequential navigation + curriculum.yml
-- [x] GitHub Pages link fixes
-- [x] FAQ / Getting Started aligned with course numbers
-- [x] Agent harness, evals, multi-agent courses
-- [x] Deep foundations + production depth
-- [x] Launch README, logo, issue templates
+## Recently closed
 
-## Open (post-launch)
+- [x] v1.1 depth pass — courses 09–11, 14–16
+- [x] v1.0 sequential nav, GitHub Pages, FAQ, branding, issue templates
+
+## Open
 
 | Priority | Gap | Plan |
 |----------|-----|------|
 | High | Jupyter notebooks for RAG + Agents | Courses 06–07 |
-| Medium | Depth pass courses 09–11, 14–16 | v1.1 |
-| Medium | OpenTelemetry + Langfuse lab | Course 12–13 |
-| Low | Deep Dives: RoPE, LoRA, KV cache | deep-dives/ |
+| Medium | OpenTelemetry + Langfuse lab | Courses 12–13 |
+| Low | Deep Dives: RoPE, LoRA, KV cache | `docs/deep-dives/` |
 | Low | Multimodal module | Future course 17+ |
 | Low | Custom domain + OG social image | GitHub settings |
-
-See [Roadmap on site](docs/roadmap.md).
+| Low | Rename generic lesson filenames (courses 10–16) | `01-lesson-01.md` → descriptive names |
