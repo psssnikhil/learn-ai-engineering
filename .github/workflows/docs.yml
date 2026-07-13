@@ -38,7 +38,10 @@ jobs:
           node-version: '20'
 
       - name: Build site
-        run: mkdocs build && node scripts/fix-site-links.mjs
+        run: npm run build:docs
+
+      - name: Verify built artifact
+        run: node scripts/verify-site-artifact.mjs
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

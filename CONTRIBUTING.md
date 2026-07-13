@@ -2,6 +2,8 @@
 
 Thank you for helping grow this open knowledge base.
 
+Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before participating.
+
 ## Ways to contribute
 
 1. **Fix a lesson** — typos, clearer explanations, updated code samples

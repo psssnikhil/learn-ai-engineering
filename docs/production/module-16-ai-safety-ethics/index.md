@@ -1,16 +1,15 @@
 ---
 title: AI Safety & Ethics
-module_id: module-16
 phase: Production
+module_id: module-16
 ---
+# AI Safety & Ethics
 Understand the critical challenges of AI safety, bias, alignment, and responsible deployment. Learn to build AI systems that are fair, transparent, and aligned with human values.
-| | |
-|---|---|
-| **Module ID** | `module-16` |
-| **Phase** | Production |
-| **Lessons** | 10 |
-| **Est. hours** | ~10h |
+!!! note "Core content ready · depth expanding"
+    All lessons are listed and ready to read. Selected lessons in this course are being deepened in v1.1 with more examples and exercises.
+**Course 14** · Production · 10 lessons · ~12h
 ## Lessons
+
 | # | Lesson | Duration | Level |
 |---|--------|----------|-------|
 | 1 | [Foundations of AI Safety and Responsible Development](lessons/01-lesson-01.md) | 40 min | intermediate |
@@ -23,6 +22,4 @@ Understand the critical challenges of AI safety, bias, alignment, and responsibl
 | 8 | [Red Teaming and Adversarial Testing for AI](lessons/08-lesson-08.md) | 40 min | advanced |
 | 9 | [Responsible Deployment Practices](lessons/09-lesson-09.md) | 35 min | advanced |
 | 10 | [AI Safety Audit — Putting It All Together](lessons/10-lesson-10.md) | 45 min | advanced |
-
-
 **Start here:** [Foundations of AI Safety and Responsible Development](lessons/01-lesson-01.md)

@@ -1,16 +1,15 @@
 ---
 title: Vector Databases Deep Dive
-module_id: module-13
 phase: Build
+module_id: module-13
 ---
+# Vector Databases Deep Dive
 Master vector databases from fundamentals to production: embeddings, indexing strategies, similarity search algorithms, and building scalable semantic search systems.
-| | |
-|---|---|
-| **Module ID** | `module-13` |
-| **Phase** | Build |
-| **Lessons** | 10 |
-| **Est. hours** | ~10h |
+!!! note "Core content ready · depth expanding"
+    All lessons are listed and ready to read. Selected lessons in this course are being deepened in v1.1 with more examples and exercises.
+**Course 10** · Build · 10 lessons · ~12h
 ## Lessons
+
 | # | Lesson | Duration | Level |
 |---|--------|----------|-------|
 | 1 | [Introduction to Vector Databases](lessons/01-lesson-01.md) | 40 min | intermediate |
@@ -23,6 +22,4 @@ Master vector databases from fundamentals to production: embeddings, indexing st
 | 8 | [Hybrid Search with Vector Databases](lessons/08-lesson-08.md) | 40 min | intermediate |
 | 9 | [Vector Database Evaluation and Testing](lessons/09-lesson-09.md) | 35 min | intermediate |
 | 10 | [Production Vector Database Patterns](lessons/10-lesson-10.md) | 40 min | advanced |
-
-
 **Start here:** [Introduction to Vector Databases](lessons/01-lesson-01.md)

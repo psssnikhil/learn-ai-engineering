@@ -1,16 +1,15 @@
 ---
 title: Capstone Projects
-module_id: module-17
 phase: Advanced
+module_id: module-17
 ---
+# Capstone Projects
 Apply everything you have learned by building end-to-end AI projects: a RAG-powered knowledge assistant, an autonomous coding agent, and a multi-agent research system.
-| | |
-|---|---|
-| **Module ID** | `module-17` |
-| **Phase** | Advanced |
-| **Lessons** | 10 |
-| **Est. hours** | ~20h |
+!!! note "Core content ready · depth expanding"
+    All lessons are listed and ready to read. Selected lessons in this course are being deepened in v1.1 with more examples and exercises.
+**Course 16** · Advanced · 10 lessons · ~20h
 ## Lessons
+
 | # | Lesson | Duration | Level |
 |---|--------|----------|-------|
 | 1 | [Capstone Overview: Building Production AI Applications](lessons/01-lesson-01.md) | 30 min | advanced |
@@ -23,6 +22,4 @@ Apply everything you have learned by building end-to-end AI projects: a RAG-powe
 | 8 | [Project 8: Chatbot with Long-Term Memory](lessons/08-lesson-08.md) | 180 min | advanced |
 | 9 | [Project 9: AI Safety Evaluation Suite](lessons/09-lesson-09.md) | 180 min | advanced |
 | 10 | [Project 10: Deploy Your AI Application](lessons/10-lesson-10.md) | 240 min | advanced |
-
-
 **Start here:** [Capstone Overview: Building Production AI Applications](lessons/01-lesson-01.md)

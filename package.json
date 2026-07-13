@@ -7,7 +7,9 @@
   "scripts": {
     "migrate": "node scripts/migrate-from-platform.mjs",
     "sync-nav": "node scripts/generate-nav.mjs",
-    "build:docs": "mkdocs build --strict && node scripts/fix-site-links.mjs",
+    "fix:modules": "node scripts/fix-module-indexes.mjs",
+    "fix:exercises": "node scripts/generate-exercise-indexes.mjs",
+    "build:docs": "mkdocs build --strict && node scripts/fix-site-links.mjs && node scripts/verify-site-artifact.mjs",
     "verify:site": "node scripts/verify-site-links.mjs",
     "extract-resources": "node scripts/extract-resources.mjs",
     "docs:serve": "mkdocs serve",

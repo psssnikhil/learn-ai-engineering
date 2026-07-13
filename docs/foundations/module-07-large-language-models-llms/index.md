@@ -1,16 +1,13 @@
 ---
 title: Large Language Models (LLMs)
-module_id: module-07
 phase: Foundations
+module_id: module-07
 ---
+# Large Language Models (LLMs)
 Master Large Language Models from pre-training to fine-tuning and deployment.
-| | |
-|---|---|
-| **Module ID** | `module-07` |
-| **Phase** | Foundations |
-| **Lessons** | 11 |
-| **Est. hours** | ~15h 30m |
+**Course 05** · Foundations · 11 lessons · ~22h
 ## Lessons
+
 | # | Lesson | Duration | Level |
 |---|--------|----------|-------|
 | 1 | [Introduction to Large Language Models](lessons/01-introduction-to-llms.md) | 55 min | intermediate |
@@ -24,6 +21,4 @@ Master Large Language Models from pre-training to fine-tuning and deployment.
 | 9 | [LLM Model Architectures](lessons/09-model-architectures.md) | 65 min | advanced |
 | 10 | [Working with LLM APIs](lessons/10-working-with-apis.md) | 60 min | intermediate |
 | 11 | [Reasoning Models and Test-Time Compute](lessons/11-reasoning-models-and-test-time-compute.md) | 55 min | advanced |
-
-
 **Start here:** [Introduction to Large Language Models](lessons/01-introduction-to-llms.md)

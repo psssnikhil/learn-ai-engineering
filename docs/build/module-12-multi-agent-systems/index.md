@@ -1,16 +1,15 @@
 ---
 title: Multi-Agent Systems
-module_id: module-12
 phase: Build
+module_id: module-12
 ---
+# Multi-Agent Systems
 Learn to build systems where multiple AI agents collaborate, communicate, and coordinate to solve complex tasks that single agents cannot handle alone.
-| | |
-|---|---|
-| **Module ID** | `module-12` |
-| **Phase** | Build |
-| **Lessons** | 10 |
-| **Est. hours** | ~14h |
+!!! note "Core content ready · depth expanding"
+    All lessons are listed and ready to read. Selected lessons in this course are being deepened in v1.1 with more examples and exercises.
+**Course 09** · Build · 10 lessons · ~14h
 ## Lessons
+
 | # | Lesson | Duration | Level |
 |---|--------|----------|-------|
 | 1 | [Introduction to Multi-Agent Systems](lessons/01-introduction-to-multi-agent-systems.md) | 35 min | intermediate |
@@ -23,6 +22,4 @@ Learn to build systems where multiple AI agents collaborate, communicate, and co
 | 8 | [Shared Memory and Blackboards](lessons/08-shared-memory-and-blackboards.md) | 40 min | intermediate |
 | 9 | [Conflict Resolution and Consensus](lessons/09-conflict-resolution-and-consensus.md) | 40 min | intermediate |
 | 10 | [Building a Multi-Agent System](lessons/10-building-a-multi-agent-system.md) | 50 min | intermediate |
-
-
 **Start here:** [Introduction to Multi-Agent Systems](lessons/01-introduction-to-multi-agent-systems.md)

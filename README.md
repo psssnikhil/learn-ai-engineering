@@ -6,6 +6,8 @@
 
 **The free, open-source curriculum from transformers → RAG → agents → production.**
 
+![AI Engineering Handbook — homepage](docs/assets/social-preview.png)
+
 <br/>
 
 [![Read the handbook](https://img.shields.io/badge/📖_Read_the_handbook-indigo?style=for-the-badge)](https://psssnikhil.github.io/learn-ai-engineering/)

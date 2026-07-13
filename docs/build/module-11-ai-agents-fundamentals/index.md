@@ -1,16 +1,13 @@
 ---
 title: AI Agents Fundamentals
-module_id: module-11
 phase: Build
+module_id: module-11
 ---
+# AI Agents Fundamentals
 Master AI agents from basics to building autonomous systems with tools and memory.
-| | |
-|---|---|
-| **Module ID** | `module-11` |
-| **Phase** | Build |
-| **Lessons** | 10 |
-| **Est. hours** | ~16h |
+**Course 07** · Build · 10 lessons · ~16h
 ## Lessons
+
 | # | Lesson | Duration | Level |
 |---|--------|----------|-------|
 | 1 | [Introduction to AI Agents](lessons/01-Introduction-to-Agents.md) | 60 min | intermediate |
@@ -23,6 +20,4 @@ Master AI agents from basics to building autonomous systems with tools and memor
 | 8 | [Agent Frameworks (LangGraph, CrewAI)](lessons/08-Agent-Frameworks.md) | 35 min | advanced |
 | 9 | [Agent Types & Patterns](lessons/09-Agent-Types.md) | 35 min | advanced |
 | 10 | [Workflow vs Agent Design](lessons/10-Workflow-vs-Agent.md) | 35 min | advanced |
-
-
 **Start here:** [Introduction to AI Agents](lessons/01-Introduction-to-Agents.md)

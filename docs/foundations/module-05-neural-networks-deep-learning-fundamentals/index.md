@@ -1,16 +1,13 @@
 ---
 title: Neural Networks & Deep Learning Fundamentals
-module_id: module-05
 phase: Foundations
+module_id: module-05
 ---
+# Neural Networks & Deep Learning Fundamentals
 Master the fundamentals of neural networks, backpropagation, and how deep learning models learn from first principles
-| | |
-|---|---|
-| **Module ID** | `module-05` |
-| **Phase** | Foundations |
-| **Lessons** | 10 |
-| **Est. hours** | ~20h |
+**Course 03** · Foundations · 10 lessons · ~20h
 ## Lessons
+
 | # | Lesson | Duration | Level |
 |---|--------|----------|-------|
 | 1 | [Introduction to Neural Networks & Deep Learning](lessons/01-introduction-to-neural-networks.md) | 25 min | beginner |
@@ -23,10 +20,7 @@ Master the fundamentals of neural networks, backpropagation, and how deep learni
 | 8 | [Convolutional Neural Networks (CNNs)](lessons/08-cnns-intro.md) | 55 min | intermediate |
 | 9 | [Recurrent Neural Networks (RNNs) & LSTMs](lessons/09-rnns-lstms.md) | 55 min | intermediate |
 | 10 | [Training Best Practices & Optimization](lessons/10-training-best-practices.md) | 60 min | intermediate |
-
-
 **Start here:** [Introduction to Neural Networks & Deep Learning](lessons/01-introduction-to-neural-networks.md)
-
 ## Exercises
 
-Python files are in the [`exercises/`](exercises/) folder (`*-starter.py` and `*-solution.py`).
+Hands-on files: [exercises/index.md](exercises/index.md)

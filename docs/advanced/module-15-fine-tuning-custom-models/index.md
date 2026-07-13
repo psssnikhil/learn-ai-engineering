@@ -1,16 +1,15 @@
 ---
 title: Fine-Tuning & Custom Models
-module_id: module-15
 phase: Advanced
+module_id: module-15
 ---
+# Fine-Tuning & Custom Models
 Learn when and how to fine-tune LLMs for specialized tasks, including data preparation, training strategies, evaluation, and deploying custom models cost-effectively.
-| | |
-|---|---|
-| **Module ID** | `module-15` |
-| **Phase** | Advanced |
-| **Lessons** | 10 |
-| **Est. hours** | ~16h |
+!!! note "Core content ready · depth expanding"
+    All lessons are listed and ready to read. Selected lessons in this course are being deepened in v1.1 with more examples and exercises.
+**Course 15** · Advanced · 10 lessons · ~14h
 ## Lessons
+
 | # | Lesson | Duration | Level |
 |---|--------|----------|-------|
 | 1 | [When and Why to Fine-Tune LLMs](lessons/01-lesson-01.md) | 35 min | advanced |
@@ -23,6 +22,4 @@ Learn when and how to fine-tune LLMs for specialized tasks, including data prepa
 | 8 | [Deploying Fine-Tuned Models](lessons/08-lesson-08.md) | 45 min | advanced |
 | 9 | [Model Distillation and Compression](lessons/09-lesson-09.md) | 40 min | advanced |
 | 10 | [Fine-Tuning Best Practices and Case Studies](lessons/10-lesson-10.md) | 35 min | advanced |
-
-
 **Start here:** [When and Why to Fine-Tune LLMs](lessons/01-lesson-01.md)

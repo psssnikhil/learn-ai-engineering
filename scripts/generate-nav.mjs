@@ -77,27 +77,25 @@ function writeLearnIndex(curriculum) {
   const rows = curriculum.courses.map((course, i) => {
     const n = i + 1;
     const href = courseHref(course.path);
-    return `| ${n} | [${course.title}](${href}) | [Start →](${href}) |`;
+    return `| ${n} | [${course.title}](${href}) |`;
   });
 
   const trackRows = curriculum.tracks.map(
-    (t) => `| [${t.title}](../${t.path}/index.md) | Optional focused path |`,
+    (t) => `| [${t.title}](../${t.path}/index.md) |`,
   );
 
   const body = `Follow this order from top to bottom. Each course opens with a lesson list — work through them in sequence.
 
 ## Core path (${curriculum.courses.length} courses)
 
-| # | Course | |
-|---|--------|---|
+| # | Course |
+|---|--------|
 ${rows.join('\n')}
 
 ## Optional tracks
 
-Read these when you need a focused path on agents or modern tooling:
-
-| Track | |
-|-------|---|
+| Track |
+|-------|
 ${trackRows.join('\n')}
 
 ## Quick links
@@ -228,6 +226,7 @@ copyright: Copyright &copy; 2026 AI Engineering Handbook contributors · MIT Lic
 extra_javascript:
   - javascripts/mathjax-config.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js
   - javascripts/mermaid-init.js
 
 plugins:

@@ -28,7 +28,7 @@ The **orchestrator-worker pattern** is where a central agent (orchestrator) brea
 
 ### Architecture
 
-\`\`\`
+```
                     ┌──────────────────┐
                     │   Orchestrator   │
                     │   (Coordinator)  │
@@ -40,7 +40,7 @@ The **orchestrator-worker pattern** is where a central agent (orchestrator) brea
       │ Worker 1 │     │ Worker 2 │    │ Worker 3 │
       │(Research)│     │(Analysis)│    │(Writing) │
       └──────────┘     └──────────┘    └──────────┘
-\`\`\`
+```
 
 ### Key Responsibilities
 
@@ -82,7 +82,7 @@ The **orchestrator-worker pattern** is where a central agent (orchestrator) brea
 
 ## 💻 Implementation: Basic Orchestrator
 
-\`\`\`python
+```python
 from typing import List, Dict, Any
 import asyncio
 

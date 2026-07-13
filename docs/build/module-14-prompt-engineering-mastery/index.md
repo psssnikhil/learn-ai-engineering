@@ -1,16 +1,15 @@
 ---
 title: Prompt Engineering Mastery
-module_id: module-14
 phase: Build
+module_id: module-14
 ---
+# Prompt Engineering Mastery
 Master advanced prompt engineering techniques including few-shot learning, chain-of-thought reasoning, structured outputs, and building reliable prompt pipelines for production.
-| | |
-|---|---|
-| **Module ID** | `module-14` |
-| **Phase** | Build |
-| **Lessons** | 10 |
-| **Est. hours** | ~12h |
+!!! note "Core content ready · depth expanding"
+    All lessons are listed and ready to read. Selected lessons in this course are being deepened in v1.1 with more examples and exercises.
+**Course 11** · Build · 10 lessons · ~12h
 ## Lessons
+
 | # | Lesson | Duration | Level |
 |---|--------|----------|-------|
 | 1 | [Foundations of Prompt Engineering](lessons/01-lesson-01.md) | 40 min | intermediate |
@@ -23,6 +22,4 @@ Master advanced prompt engineering techniques including few-shot learning, chain
 | 8 | [Handling Edge Cases and Guardrails](lessons/08-lesson-08.md) | 35 min | advanced |
 | 9 | [Prompt Engineering for Different Models](lessons/09-lesson-09.md) | 35 min | intermediate |
 | 10 | [Production Prompt Engineering](lessons/10-lesson-10.md) | 40 min | advanced |
-
-
 **Start here:** [Foundations of Prompt Engineering](lessons/01-lesson-01.md)

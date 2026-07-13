@@ -10,7 +10,7 @@ Ten projects ordered by difficulty. Each maps to specific modules so you know **
 !!! tip "Portfolio rule of three"
     Ship **one RAG app**, **one agent**, and **one production-ready demo with evals** — that's stronger than finishing every lesson without building.
 
-Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full briefs) · [Exercises](../exercises/index.md) (skill drills)
+Related: [Course 16 · Capstones](../advanced/module-17-capstone-projects/index.md) (full briefs) · [Exercises](../exercises/index.md) (skill drills)
 
 ---
 
@@ -18,16 +18,16 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 
 | # | Project | Difficulty | Modules | Est. time |
 |---|---------|------------|---------|-----------|
-| 1 | [Doc Q&A bot (RAG starter)](#1-doc-qa-bot-rag-starter) | Beginner | M01, M09 | 1 weekend |
-| 2 | [Enterprise RAG with citations](#2-enterprise-rag-with-citations) | Intermediate | M09, M13, M10 | 1–2 weeks |
-| 3 | [Semantic search over code/docs](#3-semantic-search-engine) | Intermediate | M09, M13 | 1 week |
-| 4 | [Tool-using research agent](#4-tool-using-research-agent) | Intermediate | M11, M18 | 1–2 weeks |
-| 5 | [Multi-agent research system](#5-multi-agent-research-system) | Advanced | M12, M09, M19 | 2–3 weeks |
-| 6 | [Support bot with routing](#6-support-bot-with-routing) | Intermediate | M09, M11, M12 | 2 weeks |
-| 7 | [LLM data extraction pipeline](#7-llm-data-extraction-pipeline) | Intermediate | M14, M10 | 1 week |
-| 8 | [Domain style fine-tune](#8-domain-style-fine-tune) | Advanced | M15, M07 | 2–3 weeks |
-| 9 | [AI quality eval suite](#9-ai-quality-eval-suite) | Intermediate | M19, M16 | 1 week |
-| 10 | [Deploy your AI app](#10-deploy-your-ai-app) | Advanced | M10, M17 | 1–2 weeks |
+| 1 | [Doc Q&A bot (RAG starter)](#1-doc-qa-bot-rag-starter) | Beginner | Course 02, Course 06 | 1 weekend |
+| 2 | [Enterprise RAG with citations](#2-enterprise-rag-with-citations) | Intermediate | Course 06, Course 10, Course 12 | 1–2 weeks |
+| 3 | [Semantic search over code/docs](#3-semantic-search-engine) | Intermediate | Course 06, Course 10 | 1 week |
+| 4 | [Tool-using research agent](#4-tool-using-research-agent) | Intermediate | Course 07, Course 08 | 1–2 weeks |
+| 5 | [Multi-agent research system](#5-multi-agent-research-system) | Advanced | Course 09, Course 06, Course 13 | 2–3 weeks |
+| 6 | [Support bot with routing](#6-support-bot-with-routing) | Intermediate | Course 06, Course 07, Course 09 | 2 weeks |
+| 7 | [LLM data extraction pipeline](#7-llm-data-extraction-pipeline) | Intermediate | Course 11, Course 12 | 1 week |
+| 8 | [Domain style fine-tune](#8-domain-style-fine-tune) | Advanced | Course 15, Course 05 | 2–3 weeks |
+| 9 | [AI quality eval suite](#9-ai-quality-eval-suite) | Intermediate | Course 13, Course 14 | 1 week |
+| 10 | [Deploy your AI app](#10-deploy-your-ai-app) | Advanced | Course 12, Course 16 | 1–2 weeks |
 
 ---
 
@@ -39,8 +39,8 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 
 | Module | Lessons |
 |--------|---------|
-| [M01](../foundations/module-01-ai-engineering-essentials/index.md) | L2 First app, L5 APIs |
-| [M09](../build/module-09-rag-retrieval-augmented-generation/index.md) | L1–5 (intro → basic RAG) |
+| [Course 02](../foundations/module-01-ai-engineering-essentials/index.md) | L2 First app, L5 APIs |
+| [Course 06](../build/module-09-rag-retrieval-augmented-generation/index.md) | L1–5 (intro → basic RAG) |
 
 **Build checklist:**
 
@@ -51,7 +51,7 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 
 **Stretch:** Add Streamlit or FastAPI frontend.
 
-**Capstone link:** [M17 Project 1 — RAG Knowledge Assistant](../advanced/module-17-capstone-projects/lessons/02-lesson-02.md)
+**Capstone link:** [Capstone project 1 — RAG Knowledge Assistant](../advanced/module-17-capstone-projects/lessons/02-lesson-02.md)
 
 ---
 
@@ -63,9 +63,9 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 
 | Module | Lessons |
 |--------|---------|
-| [M09](../build/module-09-rag-retrieval-augmented-generation/index.md) | L6–10 (advanced RAG, hybrid, eval, production) |
-| [M13](../build/module-13-vector-databases-deep-dive/index.md) | L1–5 (indexing, schema) |
-| [M10](../production/module-10-llmops-production-systems/index.md) | L2 Observability |
+| [Course 06](../build/module-09-rag-retrieval-augmented-generation/index.md) | L6–10 (advanced RAG, hybrid, eval, production) |
+| [Course 10](../build/module-13-vector-databases-deep-dive/index.md) | L1–5 (indexing, schema) |
+| [Course 12](../production/module-10-llmops-production-systems/index.md) | L2 Observability |
 
 **Build checklist:**
 
@@ -74,7 +74,7 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 - [ ] Inline citations `[doc_id:chunk]`
 - [ ] Log retrieval scores + latency
 
-**Capstone link:** M17 Project 1 (extended)
+**Capstone link:** Capstone project 1 (extended)
 
 ---
 
@@ -86,8 +86,8 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 
 | Module | Lessons |
 |--------|---------|
-| [M09](../build/module-09-rag-retrieval-augmented-generation/index.md) | L2 Vector DBs, L4 Retrieval |
-| [M13](../build/module-13-vector-databases-deep-dive/index.md) | L6–8 (schema, scaling, hybrid) |
+| [Course 06](../build/module-09-rag-retrieval-augmented-generation/index.md) | L2 Vector DBs, L4 Retrieval |
+| [Course 10](../build/module-13-vector-databases-deep-dive/index.md) | L6–8 (schema, scaling, hybrid) |
 
 **Build checklist:**
 
@@ -95,7 +95,7 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 - [ ] Highlight matched spans
 - [ ] Evaluate recall@k on 20 hand-labeled queries
 
-**Capstone link:** [M17 Project 6 — Semantic Search Engine](../advanced/module-17-capstone-projects/lessons/06-lesson-06.md)
+**Capstone link:** [Capstone project 6 — Semantic Search Engine](../advanced/module-17-capstone-projects/lessons/06-lesson-06.md)
 
 ---
 
@@ -107,8 +107,8 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 
 | Module | Lessons |
 |--------|---------|
-| [M11](../build/module-11-ai-agents-fundamentals/index.md) | L1–4, L7 (loop, ReAct, tools) |
-| [M18](../build/module-18-agent-harness-tools-runtime/index.md) | L1–3 (harness, loop, tools) |
+| [Course 07](../build/module-11-ai-agents-fundamentals/index.md) | L1–4, L7 (loop, ReAct, tools) |
+| [Course 08](../build/module-18-agent-harness-tools-runtime/index.md) | L1–3 (harness, loop, tools) |
 
 **Build checklist:**
 
@@ -117,7 +117,7 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 - [ ] Structured final report (markdown)
 - [ ] Trace log of each step
 
-**Capstone link:** [M17 Project 2 — Autonomous Coding Agent](../advanced/module-17-capstone-projects/lessons/03-lesson-03.md) (adapt tools for research)
+**Capstone link:** [Capstone project 2 — Autonomous Coding Agent](../advanced/module-17-capstone-projects/lessons/03-lesson-03.md) (adapt tools for research)
 
 ---
 
@@ -129,9 +129,9 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 
 | Module | Lessons |
 |--------|---------|
-| [M12](../build/module-12-multi-agent-systems/index.md) | L1–6 (orchestrator, handoffs) |
-| [M09](../build/module-09-rag-retrieval-augmented-generation/index.md) | L9 Agentic RAG |
-| [M19](../production/module-19-llm-evaluation-quality/index.md) | L4 Agent trajectory evals |
+| [Course 09](../build/module-12-multi-agent-systems/index.md) | L1–6 (orchestrator, handoffs) |
+| [Course 06](../build/module-09-rag-retrieval-augmented-generation/index.md) | L9 Agentic RAG |
+| [Course 13](../production/module-19-llm-evaluation-quality/index.md) | L4 Agent trajectory evals |
 
 **Build checklist:**
 
@@ -139,7 +139,7 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 - [ ] Shared state or blackboard
 - [ ] Eval: did final report cite all sources?
 
-**Capstone link:** [M17 Project 3 — Multi-Agent Research](../advanced/module-17-capstone-projects/lessons/04-lesson-04.md)
+**Capstone link:** [Capstone project 3 — Multi-Agent Research](../advanced/module-17-capstone-projects/lessons/04-lesson-04.md)
 
 ---
 
@@ -151,16 +151,16 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 
 | Module | Lessons |
 |--------|---------|
-| [M09](../build/module-09-rag-retrieval-augmented-generation/index.md) | L1–5 |
-| [M11](../build/module-11-ai-agents-fundamentals/index.md) | L10 Workflow vs Agent |
-| [M12](../build/module-12-multi-agent-systems/index.md) | L5 Supervisor/Router |
+| [Course 06](../build/module-09-rag-retrieval-augmented-generation/index.md) | L1–5 |
+| [Course 07](../build/module-11-ai-agents-fundamentals/index.md) | L10 Workflow vs Agent |
+| [Course 09](../build/module-12-multi-agent-systems/index.md) | L5 Supervisor/Router |
 
 **Build checklist:**
 
 - [ ] Router classifies intent
 - [ ] Separate RAG indexes per domain
 - [ ] Escalation to human when confidence low
-- [ ] Guardrails ([M16 L4](../production/module-16-ai-safety-ethics/lessons/04-lesson-04.md))
+- [ ] Guardrails ([Course 14 L4](../production/module-16-ai-safety-ethics/lessons/04-lesson-04.md))
 
 ---
 
@@ -172,8 +172,8 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 
 | Module | Lessons |
 |--------|---------|
-| [M14](../build/module-14-prompt-engineering-mastery/index.md) | L4 Structured output, L6 Chaining |
-| [M10](../production/module-10-llmops-production-systems/index.md) | L4 Caching, L8 API design |
+| [Course 11](../build/module-14-prompt-engineering-mastery/index.md) | L4 Structured output, L6 Chaining |
+| [Course 12](../production/module-10-llmops-production-systems/index.md) | L4 Caching, L8 API design |
 
 **Build checklist:**
 
@@ -181,7 +181,7 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 - [ ] Batch processing with retries
 - [ ] Golden set of 50 examples + accuracy metric
 
-**Capstone link:** [M17 Project 7 — Data Extraction Pipeline](../advanced/module-17-capstone-projects/lessons/07-lesson-07.md)
+**Capstone link:** [Capstone project 7 — Data Extraction Pipeline](../advanced/module-17-capstone-projects/lessons/07-lesson-07.md)
 
 ---
 
@@ -193,8 +193,8 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 
 | Module | Lessons |
 |--------|---------|
-| [M07](../foundations/module-07-large-language-models-llms/index.md) | L6–7 Fine-tuning, instruction tuning |
-| [M15](../advanced/module-15-fine-tuning-custom-models/index.md) | L1–5 (when, data prep, LoRA) |
+| [Course 05](../foundations/module-07-large-language-models-llms/index.md) | L6–7 Fine-tuning, instruction tuning |
+| [Course 15](../advanced/module-15-fine-tuning-custom-models/index.md) | L1–5 (when, data prep, LoRA) |
 
 **Build checklist:**
 
@@ -213,8 +213,8 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 
 | Module | Lessons |
 |--------|---------|
-| [M19](../production/module-19-llm-evaluation-quality/index.md) | All 6 lessons |
-| [M16](../production/module-16-ai-safety-ethics/index.md) | L3 Hallucination, L8 Red teaming |
+| [Course 13](../production/module-19-llm-evaluation-quality/index.md) | All 6 lessons |
+| [Course 14](../production/module-16-ai-safety-ethics/index.md) | L3 Hallucination, L8 Red teaming |
 
 **Build checklist:**
 
@@ -222,7 +222,7 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 - [ ] Regression test in CI
 - [ ] Dashboard or report for pass/fail trends
 
-**Capstone link:** [M17 Project 9 — AI Safety Evaluation Suite](../advanced/module-17-capstone-projects/lessons/09-lesson-09.md)
+**Capstone link:** [Capstone project 9 — AI Safety Evaluation Suite](../advanced/module-17-capstone-projects/lessons/09-lesson-09.md)
 
 ---
 
@@ -234,8 +234,8 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 
 | Module | Lessons |
 |--------|---------|
-| [M10](../production/module-10-llmops-production-systems/index.md) | L6–10 (cost, deployment, scaling) |
-| [M19](../production/module-19-llm-evaluation-quality/index.md) | L5–6 (CI/CD, monitoring) |
+| [Course 12](../production/module-10-llmops-production-systems/index.md) | L6–10 (cost, deployment, scaling) |
+| [Course 13](../production/module-19-llm-evaluation-quality/index.md) | L5–6 (CI/CD, monitoring) |
 
 **Build checklist:**
 
@@ -244,7 +244,7 @@ Related: [M17 Capstones](../advanced/module-17-capstone-projects/index.md) (full
 - [ ] Rate limiting + cost alerts
 - [ ] README with architecture diagram
 
-**Capstone link:** [M17 Project 10 — Deploy](../advanced/module-17-capstone-projects/lessons/10-lesson-10.md)
+**Capstone link:** [Capstone project 10 — Deploy](../advanced/module-17-capstone-projects/lessons/10-lesson-10.md)
 
 ---
 

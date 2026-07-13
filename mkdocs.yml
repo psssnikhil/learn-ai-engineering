@@ -56,6 +56,7 @@ copyright: Copyright &copy; 2026 AI Engineering Handbook contributors · MIT Lic
 extra_javascript:
   - javascripts/mathjax-config.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js
   - javascripts/mermaid-init.js
 
 plugins:
@@ -124,6 +125,7 @@ nav:
           - Context Engineering: ai-engineering-2026/context-engineering.md
           - Related Papers: ai-engineering-2026/related-papers.md
   - Reference:
+      - Roadmap: roadmap.md
       - Getting Started: getting-started.md
       - Study Plans: learn/study-plans.md
       - Learning Path: learning-path.md

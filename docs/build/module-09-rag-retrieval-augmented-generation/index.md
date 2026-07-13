@@ -1,16 +1,13 @@
 ---
 title: 'RAG: Retrieval Augmented Generation'
-module_id: module-09
 phase: Build
+module_id: module-09
 ---
+# RAG: Retrieval Augmented Generation
 Master RAG systems from basics to advanced agentic patterns for building knowledge-intensive AI applications.
-| | |
-|---|---|
-| **Module ID** | `module-09` |
-| **Phase** | Build |
-| **Lessons** | 11 |
-| **Est. hours** | ~18h |
+**Course 06** · Build · 11 lessons · ~18h
 ## Lessons
+
 | # | Lesson | Duration | Level |
 |---|--------|----------|-------|
 | 1 | [Introduction to RAG Systems](lessons/01-introduction-to-rag.md) | 50 min | beginner |
@@ -24,6 +21,4 @@ Master RAG systems from basics to advanced agentic patterns for building knowled
 | 9 | [Agentic RAG](lessons/09-Agentic-RAG.md) | 60 min | advanced |
 | 10 | [RAG in Production](lessons/10-RAG-in-Production.md) | 65 min | advanced |
 | 11 | [Graph RAG and Knowledge Graphs](lessons/11-graph-rag-and-knowledge-graphs.md) | 60 min | advanced |
-
-
 **Start here:** [Introduction to RAG Systems](lessons/01-introduction-to-rag.md)

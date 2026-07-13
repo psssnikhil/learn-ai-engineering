@@ -1,16 +1,13 @@
 ---
 title: Transformers & Attention Mechanisms
-module_id: module-06
 phase: Foundations
+module_id: module-06
 ---
+# Transformers & Attention Mechanisms
 Master the revolutionary Transformer architecture and attention mechanisms that power modern AI.
-| | |
-|---|---|
-| **Module ID** | `module-06` |
-| **Phase** | Foundations |
-| **Lessons** | 10 |
-| **Est. hours** | ~12h |
+**Course 04** · Foundations · 10 lessons · ~18h
 ## Lessons
+
 | # | Lesson | Duration | Level |
 |---|--------|----------|-------|
 | 1 | [Introduction to Attention Mechanisms](lessons/01-introduction-to-attention.md) | 55 min | intermediate |
@@ -23,10 +20,7 @@ Master the revolutionary Transformer architecture and attention mechanisms that 
 | 8 | [Transformer Variants](lessons/08-transformer-variants.md) | 55 min | intermediate |
 | 9 | [Implementing Attention from Scratch](lessons/09-implementing-attention.md) | 65 min | advanced |
 | 10 | [Scaling Laws & Efficient Transformers](lessons/10-scaling-laws.md) | 55 min | advanced |
-
-
 **Start here:** [Introduction to Attention Mechanisms](lessons/01-introduction-to-attention.md)
-
 ## Exercises
 
-Python files are in the [`exercises/`](exercises/) folder (`*-starter.py` and `*-solution.py`).
+Hands-on files: [exercises/index.md](exercises/index.md)

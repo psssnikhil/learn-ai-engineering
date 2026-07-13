@@ -72,6 +72,17 @@ function moduleLabel(mod) {
   return `M${num} · ${mod.title}`;
 }
 
+const COURSE_NUM = {
+  'module-00': 1, 'module-01': 2, 'module-05': 3, 'module-06': 4, 'module-07': 5,
+  'module-09': 6, 'module-11': 7, 'module-18': 8, 'module-12': 9, 'module-13': 10,
+  'module-14': 11, 'module-10': 12, 'module-19': 13, 'module-16': 14, 'module-15': 15,
+  'module-17': 16,
+};
+
+function curriculumCourseNum(moduleId) {
+  return COURSE_NUM[moduleId] ?? 0;
+}
+
 function readModule(moduleId) {
   if (!MODULE_PHASE[moduleId]) return null;
   if (HANDBOOK_NATIVE_IDS.has(moduleId)) {
@@ -273,14 +284,11 @@ function main() {
 
     const lessonTable = buildLessonTable(lessonMeta);
     const indexBody = [
+      `# ${mod.title}`,
+      '',
       mod.description,
       '',
-      `| | |`,
-      `|---|---|`,
-      `| **Module ID** | \`${mod.id}\` |`,
-      `| **Phase** | ${PHASE_META[phase].label} |`,
-      `| **Lessons** | ${lessonMeta.length} |`,
-      `| **Est. hours** | ~${mod.estimatedHours}h |`,
+      `**Course ${String(curriculumCourseNum(mod.id)).padStart(2, '0')}** · ${PHASE_META[phase].label} · ${lessonMeta.length} lessons · ~${mod.estimatedHours}h`,
       '',
       '## Lessons',
       '',
@@ -289,7 +297,7 @@ function main() {
         ? `\n**Start here:** [${lessonMeta[0].title}](lessons/${lessonMeta[0].file})\n`
         : '',
       exercisesDir && fs.existsSync(exercisesDir)
-        ? '## Exercises\n\nPython files are in the [`exercises/`](exercises/) folder (`*-starter.py` and `*-solution.py`).\n'
+        ? '## Exercises\n\nHands-on files: [exercises/index.md](exercises/index.md)\n'
         : '',
     ]
       .filter(Boolean)

@@ -1,16 +1,13 @@
 ---
 title: 'GenAI Foundations: From NLP to Transformers'
-module_id: module-00
 phase: Foundations
+module_id: module-00
 ---
+# GenAI Foundations: From NLP to Transformers
 Build the foundational knowledge needed for modern AI engineering — from prerequisites and NLP basics through the revolutionary Attention mechanism and Transformer architecture that powers today's LLMs.
-| | |
-|---|---|
-| **Module ID** | `module-00` |
-| **Phase** | Foundations |
-| **Lessons** | 8 |
-| **Est. hours** | ~15h |
+**Course 01** · Foundations · 8 lessons · ~15h
 ## Lessons
+
 | # | Lesson | Duration | Level |
 |---|--------|----------|-------|
 | 1 | [Prerequisites — What You Need Before Starting](lessons/01-prerequisites.md) | 45 min | beginner |
@@ -21,6 +18,4 @@ Build the foundational knowledge needed for modern AI engineering — from prere
 | 6 | [Self-Attention and Multi-Head Attention](lessons/06-self-attention-multi-head.md) | 45 min | intermediate |
 | 7 | [The Complete Transformer Architecture](lessons/07-transformer-architecture.md) | 50 min | intermediate |
 | 8 | [From Transformers to Large Language Models](lessons/08-transformers-to-llms.md) | 40 min | intermediate |
-
-
 **Start here:** [Prerequisites — What You Need Before Starting](lessons/01-prerequisites.md)

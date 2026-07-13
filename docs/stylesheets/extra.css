@@ -172,6 +172,37 @@
   color: #24292f !important;
 }
 
+/* ── Mobile & tables ─────────────────────────────────────── */
+@media screen and (max-width: 768px) {
+  .hero {
+    padding: 1.25rem 1rem;
+  }
+
+  .hero__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero__btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .persona-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .md-typeset table:not([class]) {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .md-sidebar--primary {
+    max-width: 100%;
+  }
+}
+
 /* ── Typography & reading width ─────────────────────────── */
 .md-content {
   max-width: 860px;

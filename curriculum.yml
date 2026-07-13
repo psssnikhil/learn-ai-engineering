@@ -87,6 +87,7 @@ tracks:
       - { title: Related Papers, file: related-papers.md }
 
 reference:
+  - { title: Roadmap, path: roadmap.md }
   - { title: Getting Started, path: getting-started.md }
   - { title: Study Plans, path: learn/study-plans.md }
   - { title: Learning Path, path: learning-path.md }
