@@ -25,27 +25,27 @@ Your **free, open-source** path from transformers and LLMs to production-grade R
   <div class="persona-card">
     <div class="persona-card__title">New to AI</div>
     <div class="persona-card__desc">Software engineer or student starting from scratch</div>
-    <a class="persona-card__cta" href="start-here.md"><strong>Start Here →</strong></a>
+    <a class="persona-card__cta" href="start-here/"><strong>Start Here →</strong></a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Know ML, need LLMs</div>
     <div class="persona-card__desc">ML practitioner catching up on transformers and APIs</div>
-    <a class="persona-card__cta" href="learn/index.md"><strong>Jump to Learn →</strong></a>
+    <a class="persona-card__cta" href="learn/"><strong>Jump to Learn →</strong></a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Building agents</div>
     <div class="persona-card__desc">Engineer shipping autonomous AI systems</div>
-    <a class="persona-card__cta" href="agent-engineering/index.md"><strong>Agent Engineering →</strong></a>
+    <a class="persona-card__cta" href="agent-engineering/"><strong>Agent Engineering →</strong></a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Using Claude Code / Cursor</div>
     <div class="persona-card__desc">Skills, loops, and context for IDE agents</div>
-    <a class="persona-card__cta" href="ai-engineering-2026/index.md"><strong>Modern AI (2026) →</strong></a>
+    <a class="persona-card__cta" href="ai-engineering-2026/"><strong>Modern AI (2026) →</strong></a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Shipping to production</div>
     <div class="persona-card__desc">Need LLMOps, evals, monitoring, safety</div>
-    <a class="persona-card__cta" href="production/module-10-llmops-production-systems/index.md"><strong>Course 12 · LLMOps →</strong></a>
+    <a class="persona-card__cta" href="production/module-10-llmops-production-systems/"><strong>LLMOps & Production →</strong></a>
   </div>
 </div>
 
@@ -54,13 +54,13 @@ Your **free, open-source** path from transformers and LLMs to production-grade R
 ## How to navigate
 
 <div class="quick-nav">
-  <a class="quick-nav__item" href="start-here.md">Start Here</a>
-  <a class="quick-nav__item" href="learn/index.md">Learn</a>
-  <a class="quick-nav__item" href="learn/study-plans.md">Study Plans</a>
-  <a class="quick-nav__item" href="projects/build-these.md">Build These</a>
-  <a class="quick-nav__item" href="topic-map.md">Topic Map</a>
-  <a class="quick-nav__item" href="faq.md">FAQ</a>
-  <a class="quick-nav__item" href="getting-started.md">Setup</a>
+  <a class="quick-nav__item" href="start-here/">Start Here</a>
+  <a class="quick-nav__item" href="learn/">Learn</a>
+  <a class="quick-nav__item" href="learn/study-plans/">Study Plans</a>
+  <a class="quick-nav__item" href="projects/build-these/">Build These</a>
+  <a class="quick-nav__item" href="topic-map/">Topic Map</a>
+  <a class="quick-nav__item" href="faq/">FAQ</a>
+  <a class="quick-nav__item" href="getting-started/">Setup</a>
 </div>
 
 | Goal | Go to |

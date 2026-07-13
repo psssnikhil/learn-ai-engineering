@@ -16,33 +16,33 @@ Welcome to the **AI Engineering Handbook** — a free, open-source path from fou
   <div class="persona-card">
     <div class="persona-card__title">New to AI</div>
     <div class="persona-card__desc">Software engineer or student, no ML background</div>
-    <a class="persona-card__cta" href="foundations/module-00-genai-foundations-from-nlp-to-transformers/index.md">M00 GenAI Foundations →</a>
-    <a class="persona-card__cta" href="foundations/module-01-ai-engineering-essentials/index.md">M01 Essentials →</a>
+    <a class="persona-card__cta" href="foundations/module-00-genai-foundations-from-nlp-to-transformers/">GenAI Foundations →</a>
+    <a class="persona-card__cta" href="foundations/module-01-ai-engineering-essentials/">AI Essentials →</a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Know ML, need LLMs</div>
     <div class="persona-card__desc">ML practitioner who needs to catch up on transformers and APIs</div>
-    <a class="persona-card__cta" href="foundations/module-07-large-language-models-llms/index.md">M07 LLMs →</a>
-    <a class="persona-card__cta" href="build/module-09-rag-retrieval-augmented-generation/index.md">M09 RAG →</a>
+    <a class="persona-card__cta" href="foundations/module-07-large-language-models-llms/">Large Language Models →</a>
+    <a class="persona-card__cta" href="build/module-09-rag-retrieval-augmented-generation/">RAG →</a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Want to build agents</div>
     <div class="persona-card__desc">Engineer focusing on autonomous AI systems</div>
-    <a class="persona-card__cta" href="agent-engineering/index.md">Agent Engineering track →</a>
-    <a class="persona-card__cta" href="build/module-11-ai-agents-fundamentals/index.md">M11 Agents →</a>
-    <a class="persona-card__cta" href="build/module-18-agent-harness-tools-runtime/index.md">M18 Harness →</a>
+    <a class="persona-card__cta" href="agent-engineering/">Agent Engineering track →</a>
+    <a class="persona-card__cta" href="build/module-11-ai-agents-fundamentals/">AI Agents →</a>
+    <a class="persona-card__cta" href="build/module-18-agent-harness-tools-runtime/">Agent Harness →</a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Using Claude Code / Cursor</div>
     <div class="persona-card__desc">Skills files, loop engineering, context windows</div>
-    <a class="persona-card__cta" href="ai-engineering-2026/index.md">2026 Skills →</a>
-    <a class="persona-card__cta" href="ai-engineering-2026/claude-code.md">Claude Code →</a>
+    <a class="persona-card__cta" href="ai-engineering-2026/">Modern AI (2026) →</a>
+    <a class="persona-card__cta" href="ai-engineering-2026/claude-code/">Claude Code →</a>
   </div>
   <div class="persona-card">
     <div class="persona-card__title">Shipping to production</div>
     <div class="persona-card__desc">Need LLMOps, evals, monitoring, safety</div>
-    <a class="persona-card__cta" href="production/module-10-llmops-production-systems/index.md">M10 LLMOps →</a>
-    <a class="persona-card__cta" href="production/module-19-llm-evaluation-quality/index.md">M19 Evals →</a>
+    <a class="persona-card__cta" href="production/module-10-llmops-production-systems/">LLMOps →</a>
+    <a class="persona-card__cta" href="production/module-19-llm-evaluation-quality/">LLM Evaluation →</a>
   </div>
 </div>
 

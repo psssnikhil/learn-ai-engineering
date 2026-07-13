@@ -7,12 +7,12 @@
   "scripts": {
     "migrate": "node scripts/migrate-from-platform.mjs",
     "sync-nav": "node scripts/generate-nav.mjs",
+    "build:docs": "mkdocs build --strict && node scripts/fix-site-links.mjs",
     "extract-resources": "node scripts/extract-resources.mjs",
     "docs:serve": "mkdocs serve",
     "docs:build": "mkdocs build"
   },
   "devDependencies": {
-    "gray-matter": "^4.0.3",
-    "yaml": "^2.9.0"
+    "gray-matter": "^4.0.3"
   }
 }

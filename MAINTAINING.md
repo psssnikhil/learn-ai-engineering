@@ -80,7 +80,8 @@ This copies lessons and calls `syncNav()` — **do not** hand-edit `mkdocs.yml` 
 
 ```bash
 pip install mkdocs-material
-mkdocs serve
+npm run build:docs   # mkdocs build + fix GitHub Pages links
+mkdocs serve         # or serve after build for preview
 ```
 
 Or see [Getting Started](docs/getting-started.md).

@@ -50,6 +50,8 @@ curriculum.yml  →  npm run sync-nav  →  mkdocs.yml + learn/index.md
 
 Do not hand-edit the `nav:` section of `mkdocs.yml`.
 
+**Important:** Raw HTML links in markdown (`<a href="page.md">`) break on GitHub Pages. Use trailing-slash paths (`href="page/"`) in HTML blocks, or markdown links `[text](page.md)`. The build runs `scripts/fix-site-links.mjs` as a safety net.
+
 ## Pull request checklist
 
 - [ ] Markdown renders correctly (`mkdocs serve` locally)

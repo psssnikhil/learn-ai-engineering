@@ -7,11 +7,11 @@ title: Topic Map
 Find any concept across the handbook. Course numbers match the **Learn** tab (01–16).
 
 <div class="quick-nav">
-  <a class="quick-nav__item" href="learn/index.md">Learn</a>
-  <a class="quick-nav__item" href="start-here.md">Start Here</a>
-  <a class="quick-nav__item" href="agent-engineering/index.md">Agent Engineering</a>
-  <a class="quick-nav__item" href="ai-engineering-2026/index.md">Modern AI (2026)</a>
-  <a class="quick-nav__item" href="glossary.md">Glossary</a>
+  <a class="quick-nav__item" href="learn/">Learn</a>
+  <a class="quick-nav__item" href="start-here/">Start Here</a>
+  <a class="quick-nav__item" href="agent-engineering/">Agent Engineering</a>
+  <a class="quick-nav__item" href="ai-engineering-2026/">Modern AI (2026)</a>
+  <a class="quick-nav__item" href="glossary/">Glossary</a>
 </div>
 
 !!! tip "Can't find it?"
