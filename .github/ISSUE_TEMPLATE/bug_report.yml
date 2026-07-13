@@ -1,0 +1,30 @@
+name: Bug report
+description: Something broken on the site or in a lesson
+title: "[bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve the handbook. Include the page URL if it's a site issue.
+  - type: input
+    id: url
+    attributes:
+      label: Page URL
+      placeholder: https://psssnikhil.github.io/learn-ai-engineering/...
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: 1. Go to ... 2. Click ...

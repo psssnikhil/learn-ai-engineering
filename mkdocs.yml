@@ -45,7 +45,7 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/psssnikhil/learn-ai-engineering
   announcement:
-    text: "Free & open source — if this handbook helps you, star us on GitHub"
+    text: "v1.0 — Free handbook for AI engineers. Star on GitHub if this helps you ship."
     link: https://github.com/psssnikhil/learn-ai-engineering
 
 copyright: Copyright &copy; 2026 AI Engineering Handbook contributors · MIT License

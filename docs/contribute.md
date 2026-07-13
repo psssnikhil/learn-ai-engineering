@@ -4,47 +4,50 @@ title: Contribute
 
 # Contribute
 
-The AI Engineering Handbook is MIT-licensed and community-driven. Help make it the best one-stop shop for AI/ML engineering.
+The AI Engineering Handbook is MIT-licensed and community-driven. **PRs welcome** — typos, clearer explanations, exercises, and new lessons.
 
-## Ways to contribute
+If this project helps you, **[star it on GitHub](https://github.com/psssnikhil/learn-ai-engineering)** so others can find it.
+
+## Quick wins
 
 | Type | How |
 |------|-----|
 | **Fix a lesson** | Edit markdown in `docs/`, open a PR |
-| **Add a lesson** | Follow module structure under `docs/{phase}/module-NN-*/lessons/` |
-| **Curate resources** | Edit `docs/resources/essential-*.md` |
-| **Report gaps** | Open a GitHub issue or update [Roadmap](roadmap.md) |
+| **Fix a broken link** | Use trailing-slash paths in HTML (`href="page/"`), not `.md` |
+| **Add an exercise** | `exercises/*-starter.py` + solution in a course folder |
+| **Report a gap** | [Open an issue](https://github.com/psssnikhil/learn-ai-engineering/issues/new/choose) |
 
 ## Content standards
 
-1. **Frontmatter** — `title`, `description`, `duration`, `difficulty`, `module`
-2. **Structure** — objectives table → content → key takeaways → next lesson link
-3. **Code** — runnable Python 3.10+ where `has_code: true`
-4. **Links** — prefer handbook cross-links + curated OSS references
-5. **Images** — use open educational sources (Jalammar, Wikimedia) with attribution; mermaid for diagrams
+1. **Frontmatter** — `title`, `description`, `duration`, `difficulty`
+2. **Structure** — objectives → content → key takeaways → next lesson
+3. **Code** — Python 3.10+, runnable where `has_code: true`
+4. **Tone** — learner-facing only (no author meta, word counts, or internal standards on pages)
+5. **Links** — markdown links OK; raw HTML must use `href="path/"` not `href="path.md"`
 
 ## Local preview
 
 ```bash
-git clone https://github.com/psssnikhil/learn-ai-engineering.git
-cd learn-ai-engineering
 pip install -r requirements.txt
-mkdocs serve
+npm install
+mkdocs serve          # preview
+npm run build:docs    # full build + link fix (same as CI)
 ```
 
-## Sync from platform
+## Adding a course to the curriculum
 
-Lessons migrated from the [ai-learning](https://github.com/psssnikhil/ai-learning) platform use:
+1. Add content under `docs/{phase}/module-NN-{slug}/`
+2. Edit `curriculum.yml` in order
+3. Run `npm run sync-nav`
+
+See [MAINTAINING.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/MAINTAINING.md).
+
+## Sync from platform
 
 ```bash
 npm run migrate
 ```
 
-Handbook-native modules (M18, M19) are **not** overwritten by migrate.
+Handbook-native courses (Harness, Evals, Multi-Agent extensions) are preserved.
 
-## Module numbering
-
-- Use canonical IDs: `module-09`, `module-18`, etc.
-- Folder pattern: `module-NN-{slug}/`
-
-See [CONTRIBUTING.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/CONTRIBUTING.md) on GitHub for the full guide.
+Full guide: [CONTRIBUTING.md](https://github.com/psssnikhil/learn-ai-engineering/blob/main/CONTRIBUTING.md)

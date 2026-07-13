@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Read the handbook
+    url: https://psssnikhil.github.io/learn-ai-engineering/
+    about: Live site — Start Here, Learn path, FAQ
+  - name: Start Here guide
+    url: https://psssnikhil.github.io/learn-ai-engineering/start-here/
+    about: Pick your path by background and goal

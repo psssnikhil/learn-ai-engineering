@@ -1,0 +1,34 @@
+name: Content improvement
+description: Suggest a lesson fix, new topic, or depth improvement
+title: "[content]: "
+labels: ["content"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Foundations (courses 01–05)
+        - Build (courses 06–11)
+        - Production (courses 12–14)
+        - Advanced (courses 15–16)
+        - Agent Engineering track
+        - Modern AI (2026) track
+        - Hub page / navigation
+        - Exercises / projects
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What should improve?
+      description: Be specific — lesson link, missing topic, unclear explanation, etc.
+    validations:
+      required: true
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Contribution
+      options:
+        - label: I'm willing to open a PR for this
+          required: false
